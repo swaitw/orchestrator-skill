@@ -1,0 +1,4 @@
+interface:
+  display_name: "Run Orchestrator Loop"
+  short_description: "Run a delegated orchestrator loop."
+  default_prompt: "Use $run-orchestrator-loop to run or resume this repository's orchestrator loop."
