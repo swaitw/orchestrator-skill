@@ -1,0 +1,4 @@
+interface:
+  display_name: "Scaffold Orchestrator Loop"
+  short_description: "Set up an orchestrator repo loop."
+  default_prompt: "Use -orchestrator-loop to scaffold an orchestrator loop for this repository."
