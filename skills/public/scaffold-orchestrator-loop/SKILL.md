@@ -1,85 +1,62 @@
 ---
 name: scaffold-orchestrator-loop
-description: [TODO: Complete and informative explanation of what the skill does and when to use it. Include WHEN to use this skill - specific scenarios, file types, or tasks that trigger it.]
+description: Use when a repository needs a new repo-local orchestrator workflow scaffolded from a goal, including an initial roadmap, `orchestrator/` control files, a verification contract, and inspectable role prompts before delegated runtime execution begins.
 ---
 
 # Scaffold Orchestrator Loop
 
 ## Overview
 
-[TODO: 1-2 sentences explaining what this skill enables]
+Create the repository-local control plane for the orchestrator workflow. Review the goal and repository first, scaffold a tailored `orchestrator/` directory, prepare the repo for per-round worktrees, and stop after the initial checkpoint commit.
 
-## Structuring This Skill
+## Workflow
 
-[TODO: Choose the structure that best fits this skill's purpose. Common patterns:
+1. Survey the repository and the goal.
+2. Build the initial roadmap.
+3. Scaffold and tailor the `orchestrator/` contract.
+4. Commit the initial checkpoint and stop.
 
-**1. Workflow-Based** (best for sequential processes)
-- Works well when there are clear step-by-step procedures
-- Example: DOCX skill with "Workflow Decision Tree" -> "Reading" -> "Creating" -> "Editing"
-- Structure: ## Overview -> ## Workflow Decision Tree -> ## Step 1 -> ## Step 2...
+## Step 1: Survey the Repository
 
-**2. Task-Based** (best for tool collections)
-- Works well when the skill offers different operations/capabilities
-- Example: PDF skill with "Quick Start" -> "Merge PDFs" -> "Split PDFs" -> "Extract Text"
-- Structure: ## Overview -> ## Quick Start -> ## Task Category 1 -> ## Task Category 2...
+Inspect the repository before writing anything:
 
-**3. Reference/Guidelines** (best for standards or specifications)
-- Works well for brand guidelines, coding standards, or requirements
-- Example: Brand styling with "Brand Guidelines" -> "Colors" -> "Typography" -> "Features"
-- Structure: ## Overview -> ## Guidelines -> ## Specifications -> ## Usage...
+- top-level files and docs
+- existing tests and verification commands
+- current Git status
+- whether Git is initialized already
 
-**4. Capabilities-Based** (best for integrated systems)
-- Works well when the skill provides multiple interrelated features
-- Example: Product Management with "Core Capabilities" -> numbered capability list
-- Structure: ## Overview -> ## Core Capabilities -> ### 1. Feature -> ### 2. Feature...
+If Git is missing, initialize it with `git init -b main`.
 
-Patterns can be mixed and matched as needed. Most skills combine patterns (e.g., start with task-based, add workflow for complex operations).
+## Step 2: Build the Initial Roadmap
 
-Delete this entire "Structuring This Skill" section when done - it's just guidance.]
+Read [roadmap-generation.md](references/roadmap-generation.md), then replace the roadmap template with a repo-specific ordered roadmap. Keep later items coarse and make the next item concrete.
 
-## [TODO: Replace with the first main section based on chosen structure]
+## Step 3: Scaffold the Repo Contract
 
-[TODO: Add content here. See examples in existing skills:
-- Code samples for technical skills
-- Decision trees for complex workflows
-- Concrete examples with realistic user requests
-- References to scripts/templates/references as needed]
+Read [repo-contract.md](references/repo-contract.md) and [verification-contract.md](references/verification-contract.md).
 
-## Resources (optional)
+Then:
 
-Create only the resource directories this skill actually needs. Delete this section if no resources are required.
+- copy [assets/orchestrator](assets/orchestrator) into the target repo root as `orchestrator/`
+- replace template placeholders with repo-specific content
+- tune the role prompts if the goal or repo needs stronger guidance
+- ensure `.worktrees/` is ignored so future rounds can use dedicated worktrees
 
-### scripts/
-Executable code (Python/Bash/etc.) that can be run directly to perform specific operations.
+Keep `state.json` machine-oriented. Put reasoning and reviewable content in the human-facing files under `orchestrator/`.
 
-**Examples from other skills:**
-- PDF skill: `fill_fillable_fields.py`, `extract_form_field_info.py` - utilities for PDF manipulation
-- DOCX skill: `document.py`, `utilities.py` - Python modules for document processing
+## Step 4: Create the Checkpoint Commit
 
-**Appropriate for:** Python scripts, shell scripts, or any executable code that performs automation, data processing, or specific operations.
+After the scaffolded files are tailored:
 
-**Note:** Scripts may be executed without loading into context, but can still be read by Codex for patching or environment adjustments.
+- stage the new orchestrator files
+- create the initial checkpoint commit
+- stop after setup
 
-### references/
-Documentation and reference material intended to be loaded into context to inform Codex's process and thinking.
+Do not start implementation rounds. Runtime orchestration belongs to `$run-orchestrator-loop`, not this skill.
 
-**Examples from other skills:**
-- Product management: `communication.md`, `context_building.md` - detailed workflow guides
-- BigQuery: API reference documentation and query examples
-- Finance: Schema documentation, company policies
+## Resources
 
-**Appropriate for:** In-depth documentation, API references, database schemas, comprehensive guides, or any detailed information that Codex should reference while working.
-
-### assets/
-Files not intended to be loaded into context, but rather used within the output Codex produces.
-
-**Examples from other skills:**
-- Brand styling: PowerPoint template files (.pptx), logo files
-- Frontend builder: HTML/React boilerplate project directories
-- Typography: Font files (.ttf, .woff2)
-
-**Appropriate for:** Templates, boilerplate code, document templates, images, icons, fonts, or any files meant to be copied or used in the final output.
-
----
-
-**Not every skill requires all three types of resources.**
+- [repo-contract.md](references/repo-contract.md): required file layout, state schema, and ownership rules
+- [roadmap-generation.md](references/roadmap-generation.md): how to derive the initial roadmap from the goal and repo
+- [verification-contract.md](references/verification-contract.md): how to tailor `orchestrator/verification.md`
+- [assets/orchestrator](assets/orchestrator): templates for the scaffolded repo contract
