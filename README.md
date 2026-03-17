@@ -97,9 +97,24 @@ skills/public/
 - `references/` contains supporting rules for roadmap generation, state transitions, resume behavior, and merge boundaries.
 - `assets/` contains the starter `orchestrator/` contract used by the scaffold skill.
 
+## Installation
+
+Treat this repository as the source of truth and `~/.codex/skills` as the runtime install location.
+
+For local development, prefer symlinks instead of copying the skill directories. A symlinked install updates immediately when the repo changes and avoids drift between the repo copy and the installed copy.
+
+```bash
+ln -s /path/to/orchestratorpattern/skills/public/scaffold-orchestrator-loop ~/.codex/skills/scaffold-orchestrator-loop
+ln -s /path/to/orchestratorpattern/skills/public/run-orchestrator-loop ~/.codex/skills/run-orchestrator-loop
+```
+
+If either path already exists in `~/.codex/skills`, move or remove the existing entry before creating the symlink.
+
+Copying the directories into `~/.codex/skills` also works, but it creates a second independent copy that can drift and must be resynced manually.
+
 ## Typical Usage
 
-1. Add or install these skills in your Codex environment.
+1. Install these skills in your Codex environment, preferably by symlinking from `skills/public`.
 2. In a target repository, invoke `scaffold-orchestrator-loop` with the high-level goal.
 3. Review the generated `orchestrator/` contract and initial checkpoint commit.
 4. Invoke `run-orchestrator-loop` to start or resume the delegated round loop.
