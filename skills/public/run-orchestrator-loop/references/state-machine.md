@@ -2,6 +2,8 @@
 
 Use one strict linear round at a time.
 
+The outer stage order stays linear even when a repo-local retry subloop is active inside one stage.
+
 ## Stages
 
 1. `select-task`
@@ -27,8 +29,8 @@ Use one strict linear round at a time.
 - `select-task` -> `plan`
 - `plan` -> `implement`
 - `implement` -> `review`
-- `review` -> `plan` when rejected
-- `review` -> `merge` when approved
+- `review` -> `plan` when the repo-local review contract requests retry
+- `review` -> `merge` when the repo-local review contract approves finalization
 - `merge` -> `update-roadmap`
 - `update-roadmap` -> `done`
 

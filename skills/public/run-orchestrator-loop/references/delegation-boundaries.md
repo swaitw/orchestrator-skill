@@ -5,9 +5,10 @@ The runtime skill is a controller, not a worker.
 ## The Orchestrator May Do Directly
 
 - read repo and orchestrator state
+- read repo-local retry contract docs when present
 - create the round branch and worktree
 - update `orchestrator/state.json`
-- record artifact paths and stage markers
+- record artifact paths, retry-state fields, and stage markers exactly as the repo-local contract requires
 - perform squash-merge bookkeeping after approval
 
 ## The Orchestrator Must Delegate

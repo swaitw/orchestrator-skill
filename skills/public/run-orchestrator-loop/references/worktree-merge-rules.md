@@ -15,11 +15,11 @@ Example:
 - Use one dedicated worktree per round.
 - Prefer `.worktrees/<round-id>` in the repository root.
 - Ensure `.worktrees/` is gitignored before creating the worktree.
-- Reuse the same worktree for planner, implementer, and reviewer within the round.
+- Reuse the same worktree for planner, implementer, reviewer, and any same-round retry attempts within the round.
 
 ## Merge Rules
 
-- Merge only after reviewer approval.
+- Merge only after reviewer approval that finalizes the round under the repo-local review contract.
 - Use squash merge into the recorded base branch.
 - Keep the round branch until the squash merge succeeds.
 
@@ -28,6 +28,7 @@ Example:
 After a successful squash merge:
 
 - clear active round fields in `state.json`
+- clear retry-state fields in `state.json` when the repo-local contract uses them
 - set `last_completed_round`
 - advance to `update-roadmap`
 - let the guider update `orchestrator/roadmap.md`

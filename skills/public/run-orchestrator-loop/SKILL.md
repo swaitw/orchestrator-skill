@@ -7,7 +7,7 @@ description: Use when a repository already has an initialized `orchestrator/` di
 
 ## Overview
 
-Act as a pure controller over the persisted repo-local orchestrator contract. Read state, delegate every substantive stage to fresh real subagents, update only machine-control state, and continue until the roadmap is complete.
+Act as a pure controller over the persisted repo-local orchestrator contract. Read state, load any repo-local retry rules, delegate every substantive stage to fresh real subagents, update only machine-control state, and continue until the roadmap is complete.
 
 If real subagents are unavailable, stop and tell the user this skill cannot honor its delegation contract in the current environment.
 
@@ -16,7 +16,7 @@ If real subagents are unavailable, stop and tell the user this skill cannot hono
 1. Load state and references.
 2. Resume an active round or start a new one with the guider.
 3. Use one branch and one worktree for the active round.
-4. Delegate each stage in order.
+4. Delegate each stage in order, including same-round retry loops required by the repo-local review contract.
 5. Squash-merge approved rounds and continue.
 
 ## Load Before Acting
@@ -26,6 +26,7 @@ Read these files first:
 - `orchestrator/state.json`
 - `orchestrator/roadmap.md`
 - `orchestrator/verification.md`
+- `orchestrator/retry-subloop.md` when present
 - `orchestrator/roles/`
 - [state-machine.md](references/state-machine.md)
 - [resume-rules.md](references/resume-rules.md)
@@ -46,10 +47,11 @@ Do not simulate these roles in your own voice.
 ## Controller Rules
 
 - Update only machine-control state directly.
-- Keep the same round id, branch, and worktree until the round is accepted.
-- On review rejection, return to `plan` for the same round.
-- Resume the exact incomplete stage after interruption.
-- Merge only after explicit reviewer approval.
+- Keep the same round id, branch, and worktree until the round is finalized.
+- When repo-local review output requests retry, return to `plan` for the same round instead of merging, even if the attempt itself was accepted as valid evidence.
+- Resume the exact incomplete stage and exact retry attempt after interruption.
+- Merge only after explicit reviewer approval that finalizes the current stage or round under the repo-local contract.
+- Do not invent retry behavior; read it from repo-local state and retry docs when they exist.
 
 ## Subagent Rules
 
