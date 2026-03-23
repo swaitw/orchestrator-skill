@@ -7,9 +7,11 @@ If the repo exposes a retry contract file such as `orchestrator/retry-subloop.md
 ## Startup
 
 1. Read `orchestrator/state.json`.
-2. If `active_round_id` is null and `stage` is `done`, start a new round with the guider.
-3. If a round is active, reopen the recorded branch and worktree and resume the recorded stage.
-4. If repo-local machine state includes retry bookkeeping, resume the exact recorded attempt instead of guessing a new one.
+2. If `active_round_id` is null and `stage` is `done`, inspect `orchestrator/roadmap.md` before stopping or replying.
+3. If `active_round_id` is null, `stage` is `done`, and the roadmap still has unfinished `[pending]` or `[in-progress]` items, treat that as a stale non-terminal `done` state and start a new round with the guider.
+4. If `active_round_id` is null, `stage` is `done`, and the roadmap has no unfinished items, the controller may stop.
+5. If a round is active, reopen the recorded branch and worktree and resume the recorded stage.
+6. If repo-local machine state includes retry bookkeeping, resume the exact recorded attempt instead of guessing a new one.
 
 ## Retry Outcomes
 
@@ -25,6 +27,7 @@ If the repo exposes a retry contract file such as `orchestrator/retry-subloop.md
 - Resume the exact recorded retry attempt when retry state is active.
 - Use a fresh subagent for the resumed stage.
 - Do not create a replacement round just because a stage was interrupted.
+- If interruption leaves `stage: "done"` while the roadmap still has unfinished items, resume at `select-task` instead of treating the loop as complete.
 
 ## Missing Worktree
 

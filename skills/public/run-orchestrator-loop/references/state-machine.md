@@ -32,6 +32,7 @@ The outer stage order stays linear even when a repo-local retry subloop is activ
 - `review` -> `plan` when the repo-local review contract requests retry
 - `review` -> `merge` when the repo-local review contract approves finalization
 - `merge` -> `update-roadmap`
-- `update-roadmap` -> `done`
+- `update-roadmap` -> `select-task` when the roadmap still has unfinished `[pending]` or `[in-progress]` items
+- `update-roadmap` -> `done` only when the roadmap has no unfinished items
 
 Do not skip forward and do not invent parallel stages.
