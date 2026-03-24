@@ -26,7 +26,7 @@ If the repo exposes a retry contract file such as `orchestrator/retry-subloop.md
 - If the active stage becomes non-observable or loses trustworthy controller-visible evidence, resume into recovery instead of recording immediate blockage.
 - While recovering, the controller keeps the same round, same branch, same worktree, and same stage until controller-visible evidence or repo-local state lawfully changes them.
 - The controller also preserves `current_task` and the retry attempt unless the missing stage or repo-local retry state is the thing that legitimately changes them.
-- Direct blockage is allowed only when no qualifying `recovery-investigator` can launch.
+- Direct blockage is allowed only when no qualifying `recovery-investigator` can launch through any available delegation mechanism.
 - Leave recovery only after controller-visible evidence shows whether the controller can safely resume, retry, or record a precise blockage.
 
 ## Interrupted Stages
