@@ -1,5 +1,8 @@
 # Revisioned Roadmap Skill Contract Implementation Plan
 
+> [!INFO] Historical migration playbook
+> This is the migration plan for moving from the legacy top-level contract to the current revisioned-roadmap model. It intentionally includes legacy-path gaps for comparison; these are historical references, not current operating instructions.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Move `run-orchestrator-loop` and `scaffold-orchestrator-loop` to a revisioned-roadmap contract where live control files are resolved through `state.json` roadmap metadata instead of top-level `orchestrator/roadmap.md`, `orchestrator/verification.md`, and `orchestrator/retry-subloop.md`.

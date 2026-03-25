@@ -23,6 +23,7 @@ If the repo has no automation yet, say so explicitly and give the reviewer the m
 The verification contract should also require reviewers to confirm that:
 
 - the round stayed within the active roadmap bundle recorded in `state.json`;
+- the round's recorded `roadmap_id` matches the active family's scaffolded `YYYY-MM-DD-NN-<slug>` identifier rather than a recomputed title-derived value;
 - `selection.md` records `roadmap_id`, `roadmap_revision`, and `roadmap_dir`; and
 - `review-record.json` records the same roadmap identity when the round finalizes.
 

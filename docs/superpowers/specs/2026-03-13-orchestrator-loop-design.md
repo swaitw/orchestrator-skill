@@ -1,5 +1,7 @@
 # Orchestrator Loop Skill Set Design
 
+> Note: This document describes the original top-level roadmap contract. The current live contract uses revisioned roadmap bundles resolved from `orchestrator/state.json` via `roadmap_id`, `roadmap_revision`, and `roadmap_dir` (see [2026-03-25-revisioned-roadmap-skill-contract](../plans/2026-03-25-revisioned-roadmap-skill-contract.md)).
+
 ## Summary
 
 Build a two-skill system for repository-local orchestration:
@@ -73,9 +75,10 @@ Responsibilities:
 
 Outputs:
 
-- `orchestrator/roadmap.md`
+- `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/roadmap.md`
 - `orchestrator/state.json`
-- `orchestrator/verification.md`
+- `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/verification.md`
+- `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/retry-subloop.md`
 - `orchestrator/roles/*.md`
 - `orchestrator/rounds/`
 
@@ -105,7 +108,7 @@ All persistent loop state lives in a visible top-level `orchestrator/` directory
 
 ### Required Files
 
-- `orchestrator/roadmap.md`
+- `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/roadmap.md`
   - Ordered roadmap items.
   - Status per item.
   - Dependencies and completion notes.
@@ -117,7 +120,7 @@ All persistent loop state lives in a visible top-level `orchestrator/` directory
   - Resume pointers.
   - Current task selection.
 
-- `orchestrator/verification.md`
+- `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/verification.md`
   - Canonical verification contract.
   - Baseline commands or checks every reviewer must run.
   - Guidance for adding change-specific checks.
@@ -127,6 +130,8 @@ All persistent loop state lives in a visible top-level `orchestrator/` directory
 - `orchestrator/roles/implementer.md`
 - `orchestrator/roles/reviewer.md`
 - `orchestrator/roles/merger.md`
+- `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/retry-subloop.md`
+  - Retry policy for same-round review retries, when used.
 
 ### Round Artifacts
 
@@ -164,7 +169,7 @@ The guider owns `select-task`.
 
 The guider is responsible for:
 
-- Reviewing `orchestrator/roadmap.md`.
+- Reviewing `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/roadmap.md`.
 - Reviewing current repository and prior round status.
 - Choosing the next roadmap item to execute.
 - Recording rationale in a delegated round artifact.
@@ -260,7 +265,7 @@ Rationale:
 
 ## Verification Contract
 
-The setup skill must write a canonical verification contract into `orchestrator/verification.md`.
+The setup skill must write a canonical verification contract into `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/verification.md`.
 
 That contract defines:
 

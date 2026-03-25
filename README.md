@@ -17,7 +17,7 @@ It is responsible for:
 
 - surveying the repository and current goal
 - generating the first roadmap
-- scaffolding `orchestrator/roadmap.md`, `orchestrator/state.json`, `orchestrator/verification.md`, and repo-local role agents under `.codex/agents/`
+- scaffolding revisioned roadmap bundle files (for example `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/roadmap.md`, `.../verification.md`, and `.../retry-subloop.md`, which stays present even when same-round retry is disabled), `orchestrator/state.json`, and repo-local role agents under `.codex/agents/`
 - preparing the repository for per-round worktrees
 - creating the initial checkpoint commit
 
@@ -66,16 +66,20 @@ The scaffolded repository gets a visible top-level `orchestrator/` directory plu
     └── orchestrator-merger.toml
 
 orchestrator/
-├── roadmap.md
 ├── state.json
-├── verification.md
-└── rounds/
+├── rounds/
+└── roadmaps/
+    └── <roadmap_id>/
+        └── <roadmap_revision>/
+            ├── roadmap.md
+            ├── verification.md
+            └── retry-subloop.md
 ```
 
 Key ideas behind that contract:
 
 - `state.json` stays machine-oriented and tracks the active round, stage, branch, worktree, and resume errors.
-- Human-facing reasoning stays in `roadmap.md`, repo-local role agents, and round artifacts.
+- Human-facing reasoning stays in the active roadmap bundle `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/roadmap.md`, repo-local role agents, and round artifacts.
 - Each round folder stores delegated artifacts such as `selection.md`, `plan.md`, `implementation-notes.md`, `review.md`, and `merge.md`.
 - The runtime skill prefers `.codex/agents/orchestrator-*.toml` per role and uses `orchestrator/roles/*.md` only when the matching repo-local agent file is missing.
 

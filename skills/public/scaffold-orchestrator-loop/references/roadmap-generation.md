@@ -12,12 +12,13 @@ Build the initial roadmap from the goal plus a fast repository survey.
 ## Process
 
 1. Survey the repository before drafting tasks.
-2. Choose a stable `roadmap_id` that names the control-plane family rather than one transient round.
-3. Initialize the first revision as `rev-001`.
-4. Identify the smallest meaningful milestones that move the goal forward.
-5. Sequence milestones so each item leaves the repo in a coherent state.
-6. Record dependencies only when they change ordering.
-7. Keep later items coarse; make the next item concrete.
+2. Choose a stable descriptive slug that names the control-plane family rather than one transient round.
+3. Mint `roadmap_id` as `YYYY-MM-DD-NN-<slug>`, where `YYYY-MM-DD` is the scaffold date in the repo-local controller context and `NN` is that day's zero-based roadmap-family ordinal (`00`, `01`, ...).
+4. Initialize the first revision as `rev-001`.
+5. Identify the smallest meaningful milestones that move the goal forward.
+6. Sequence milestones so each item leaves the repo in a coherent state.
+7. Record dependencies only when they change ordering.
+8. Keep later items coarse; make the next item concrete.
 
 ## Roadmap Rules
 
@@ -28,6 +29,7 @@ Build the initial roadmap from the goal plus a fast repository survey.
 - Avoid planning parallel rounds or speculative implementation detail far ahead.
 - Prefer 3-7 initial items unless the goal is truly smaller.
 - Write the initial roadmap to `orchestrator/roadmaps/<roadmap_id>/rev-001/roadmap.md`.
+- Keep the descriptive slug stable once chosen; later revisions under the same roadmap family keep the same `roadmap_id`.
 - Keep a roadmap revision immutable once any round uses it; later semantic updates should create `rev-00N+1` under the same `roadmap_id`.
 
 ## First Item Quality Bar

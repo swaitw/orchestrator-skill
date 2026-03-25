@@ -29,7 +29,7 @@ If Git is missing, initialize it with `git init -b main`.
 
 ## Step 2: Build the Initial Roadmap
 
-Read [roadmap-generation.md](references/roadmap-generation.md), choose a stable `roadmap_id`, then replace the initial revisioned roadmap template with a repo-specific ordered roadmap at `orchestrator/roadmaps/<roadmap_id>/rev-001/roadmap.md`. Keep later items coarse and make the next item concrete.
+Read [roadmap-generation.md](references/roadmap-generation.md), mint a stable `roadmap_id` in `YYYY-MM-DD-NN-<slug>` form, and draft the repo-specific ordered roadmap content for `orchestrator/roadmaps/<roadmap_id>/rev-001/roadmap.md`. Keep later items coarse and make the next item concrete.
 
 ## Step 3: Scaffold the Repo Contract
 
@@ -39,6 +39,7 @@ Then:
 
 - copy [assets/orchestrator](assets/orchestrator) into the target repo root as `orchestrator/`
 - copy [assets/.codex/agents](assets/.codex/agents) into the target repo root as `.codex/agents/`
+- write the drafted roadmap into the scaffolded active roadmap bundle and tailor `verification.md` plus `retry-subloop.md` for the repo
 - replace template placeholders with repo-specific content
 - set `state.json` `roadmap_id`, `roadmap_revision`, and `roadmap_dir` to the initial active roadmap bundle
 - tune the repo-local role agents if the goal or repo needs stronger guidance
@@ -51,7 +52,7 @@ Keep `state.json` machine-oriented. Put reasoning and reviewable content in the 
 
 After the scaffolded files are tailored:
 
-- stage the new orchestrator files and the scaffolded `.codex/agents/` role agents
+- stage the new orchestrator files, the scaffolded `.codex/agents/` role agents, and any ignore-file edits required for `.worktrees/` or `.codex/agents/` tracking
 - create the initial checkpoint commit
 - stop after setup
 

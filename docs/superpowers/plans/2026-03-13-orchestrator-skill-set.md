@@ -1,5 +1,8 @@
 # Orchestrator Skill Set Implementation Plan
 
+> [!NOTE] Historical context
+> This plan predates the revisioned roadmap contract and is kept for audit history. It references legacy top-level `orchestrator/roadmap.md` / `orchestrator/verification.md` paths and is not the current operating contract.
+
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build two repo-local skills, `scaffold-orchestrator-loop` and `run-orchestrator-loop`, that implement the approved orchestrator contract and runtime loop.
