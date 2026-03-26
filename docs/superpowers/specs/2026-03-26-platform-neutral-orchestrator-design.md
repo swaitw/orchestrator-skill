@@ -29,7 +29,11 @@ The only canonical repo-local role source will be:
 - `orchestrator/roles/<role>.md`
 
 The repo will no longer mention, scaffold, prefer, or fall back to
-`.codex/agents/`.
+`.codex/agents/` in any active skill, asset, contract, or user-facing
+documentation surface.
+
+Legacy references may remain only in explicitly historical documents that are
+describing the retired contract rather than defining the live one.
 
 ## Target Contract
 
@@ -179,10 +183,14 @@ Because this repository is documentation- and skill-contract-heavy rather than
 code-heavy, verification should focus on observable contract integrity:
 
 - `git diff --check`
-- `rg` checks showing `.codex/agents/` has been removed from the runtime
-  contract and README
+- `rg` checks showing `.codex/agents/` has been removed from all active skill,
+  asset, contract, and README surfaces
+- `rg` checks showing active branch-prefix references use
+  `orchestrator/round-` rather than `codex/round-`
 - `npx skills add . --list` confirming both skills are still discoverable
 - local `skills` CLI checks for the documented agent flags when available
+- validation that the six documented install targets still match the current
+  `skills` CLI agent identifiers before finalizing README commands
 - one remote `npx skills add <repo-url> --list` check when network conditions
   allow it
 
