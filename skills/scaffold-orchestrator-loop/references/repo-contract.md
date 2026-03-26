@@ -1,6 +1,6 @@
 # Repo Contract
 
-Scaffold a visible top-level `orchestrator/` directory plus repo-local `.codex/agents/` role definitions in the target repository.
+Scaffold a visible top-level `orchestrator/` directory in the target repository. The required repo contract lives under `orchestrator/`, including role definitions and worktree preparation.
 
 ## Required Files
 
@@ -8,12 +8,14 @@ Scaffold a visible top-level `orchestrator/` directory plus repo-local `.codex/a
 - `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/roadmap.md`
 - `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/retry-subloop.md`
 - `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/verification.md`
-- `.codex/agents/orchestrator-guider.toml`
-- `.codex/agents/orchestrator-planner.toml`
-- `.codex/agents/orchestrator-implementer.toml`
-- `.codex/agents/orchestrator-reviewer.toml`
-- `.codex/agents/orchestrator-merger.toml`
+- `orchestrator/roles/guider.md`
+- `orchestrator/roles/planner.md`
+- `orchestrator/roles/implementer.md`
+- `orchestrator/roles/reviewer.md`
+- `orchestrator/roles/merger.md`
+- `orchestrator/roles/recovery-investigator.md`
 - `orchestrator/rounds/`
+- `orchestrator/worktrees/`
 
 ## `state.json` Schema
 
@@ -45,15 +47,10 @@ Use a small machine-oriented state file.
 ## File Ownership
 
 - The orchestrator may update `orchestrator/state.json` and round bookkeeping only.
+- The scaffolded role files under `orchestrator/roles/` are required repo contract files. Tailor them during setup and keep them tracked in the main checkout.
 - Delegated role agents author roadmap bundle content, round artifacts, review records, and merge notes.
 - The guider owns task selection and roadmap updates.
 - Once any round has used a roadmap revision, keep that revision immutable. Publish a new revision directory instead of rewriting a used revision.
-
-## Compatibility and Migration
-
-- New repos should scaffold the namespaced `.codex/agents/orchestrator-<role>.toml` files as the default contract.
-- Runtime remains compatible with legacy `orchestrator/roles/<role>.md` files on a per-role basis.
-- During migration, keep each legacy role file until the matching `.codex/agents/orchestrator-<role>.toml` file exists.
 
 ## Round Artifacts
 
@@ -74,7 +71,7 @@ Every round must record the active `roadmap_id`, `roadmap_revision`, and `roadma
 
 Prepare the repository for round worktrees during setup:
 
-- Ensure `.worktrees/` is gitignored.
-- Ensure the scaffolded `.codex/agents/` files stay tracked; if `.codex/` is ignored, carve out an exception for the orchestrator role agents.
-- Do not place machine state inside `.worktrees/`.
-- Keep `orchestrator/` in the main checkout so resume state and roadmap bundles stay visible.
+- `orchestrator/worktrees/` is the canonical location for round worktrees.
+- Ensure `orchestrator/worktrees/` is ignored by a tracked ignore rule.
+- Do not place machine state inside `orchestrator/worktrees/`.
+- Keep the rest of `orchestrator/` in the main checkout so resume state, role files, and roadmap bundles stay visible.

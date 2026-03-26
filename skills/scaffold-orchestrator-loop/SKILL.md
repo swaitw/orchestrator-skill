@@ -1,13 +1,13 @@
 ---
 name: scaffold-orchestrator-loop
-description: Use when a repository needs a new repo-local orchestrator workflow scaffolded from a goal, including an initial roadmap, `orchestrator/` control files, a verification contract, and repo-local `.codex/agents` role definitions before delegated runtime execution begins.
+description: Use when a repository needs a new repo-local orchestrator workflow scaffolded from a goal, including an initial roadmap, `orchestrator/` control files, a verification contract, and repo-local `orchestrator/roles/` definitions before delegated runtime execution begins.
 ---
 
 # Scaffold Orchestrator Loop
 
 ## Overview
 
-Create the repository-local control plane for the orchestrator workflow. Review the goal and repository first, scaffold a tailored `orchestrator/` directory plus repo-local `.codex/agents/` role files, create the initial revisioned roadmap bundle under `orchestrator/roadmaps/`, prepare the repo for per-round worktrees, and stop after the initial checkpoint commit.
+Create the repository-local control plane for the orchestrator workflow. Review the goal and repository first, scaffold a tailored `orchestrator/` directory containing controller state, repo-local role files under `orchestrator/roles/`, the initial revisioned roadmap bundle under `orchestrator/roadmaps/`, round artifacts under `orchestrator/rounds/`, and per-round worktree preparation under `orchestrator/worktrees/`, then stop after the initial checkpoint commit.
 
 ## Workflow
 
@@ -37,14 +37,12 @@ Read [repo-contract.md](references/repo-contract.md) and [verification-contract.
 
 Then:
 
-- copy [assets/orchestrator](assets/orchestrator) into the target repo root as `orchestrator/`
-- copy [assets/.codex/agents](assets/.codex/agents) into the target repo root as `.codex/agents/`
+- copy the full [assets/orchestrator](assets/orchestrator) scaffold tree into the target repo root as `orchestrator/` so `roles/`, `rounds/`, and `worktrees/` are created together
 - write the drafted roadmap into the scaffolded active roadmap bundle and tailor `verification.md` plus `retry-subloop.md` for the repo
 - replace template placeholders with repo-specific content
 - set `state.json` `roadmap_id`, `roadmap_revision`, and `roadmap_dir` to the initial active roadmap bundle
-- tune the repo-local role agents if the goal or repo needs stronger guidance
-- ensure `.codex/agents/` is tracked in git; if the repo ignores `.codex/`, add an exception for the scaffolded role agents
-- ensure `.worktrees/` is ignored so future rounds can use dedicated worktrees
+- tune the repo-local role files under `orchestrator/roles/` if the goal or repo needs stronger guidance
+- ensure `orchestrator/worktrees/` is ignored by a tracked ignore rule so future rounds can use dedicated worktrees
 
 Keep `state.json` machine-oriented. Put reasoning and reviewable content in the human-facing files under the active roadmap bundle and round artifacts under `orchestrator/`.
 
@@ -52,7 +50,7 @@ Keep `state.json` machine-oriented. Put reasoning and reviewable content in the 
 
 After the scaffolded files are tailored:
 
-- stage the new orchestrator files, the scaffolded `.codex/agents/` role agents, and any ignore-file edits required for `.worktrees/` or `.codex/agents/` tracking
+- stage only the new `orchestrator/` files and any ignore-file edits required for `orchestrator/worktrees/`
 - create the initial checkpoint commit
 - stop after setup
 
@@ -63,5 +61,4 @@ Do not start implementation rounds. Runtime orchestration belongs to `$run-orche
 - [repo-contract.md](references/repo-contract.md): required file layout, state schema, and ownership rules
 - [roadmap-generation.md](references/roadmap-generation.md): how to derive the initial roadmap from the goal and repo
 - [verification-contract.md](references/verification-contract.md): how to tailor the active roadmap bundle's `verification.md`
-- [assets/orchestrator](assets/orchestrator): templates for the scaffolded controller state
-- [assets/.codex/agents](assets/.codex/agents): templates for the scaffolded repo-local role agents
+- [assets/orchestrator](assets/orchestrator): templates for the scaffolded controller state, role files, round artifacts, and worktree directory
