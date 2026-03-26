@@ -85,10 +85,10 @@ Key ideas behind that contract:
 
 ## Repository Layout
 
-This repository ships the skills under `skills/public`:
+This repository ships the skills under `skills/`:
 
 ```text
-skills/public/
+skills/
 ├── scaffold-orchestrator-loop/
 │   ├── SKILL.md
 │   ├── agents/openai.yaml
@@ -109,11 +109,19 @@ skills/public/
 
 Treat this repository as the source of truth and `~/.codex/skills` as the runtime install location.
 
+To install directly from GitHub with the public `skills` CLI:
+
+```bash
+npx skills add https://github.com/soulomoon/orchestrator-skill --list
+npx skills add https://github.com/soulomoon/orchestrator-skill --skill scaffold-orchestrator-loop
+npx skills add https://github.com/soulomoon/orchestrator-skill --skill run-orchestrator-loop
+```
+
 For local development, prefer symlinks instead of copying the skill directories. A symlinked install updates immediately when the repo changes and avoids drift between the repo copy and the installed copy.
 
 ```bash
-ln -s /path/to/orchestratorpattern/skills/public/scaffold-orchestrator-loop ~/.codex/skills/scaffold-orchestrator-loop
-ln -s /path/to/orchestratorpattern/skills/public/run-orchestrator-loop ~/.codex/skills/run-orchestrator-loop
+ln -s /path/to/orchestratorpattern/skills/scaffold-orchestrator-loop ~/.codex/skills/scaffold-orchestrator-loop
+ln -s /path/to/orchestratorpattern/skills/run-orchestrator-loop ~/.codex/skills/run-orchestrator-loop
 ```
 
 If either path already exists in `~/.codex/skills`, move or remove the existing entry before creating the symlink.
@@ -122,7 +130,7 @@ Copying the directories into `~/.codex/skills` also works, but it creates a seco
 
 ## Typical Usage
 
-1. Install these skills in your Codex environment, preferably by symlinking from `skills/public`.
+1. Install these skills in your Codex environment, either from GitHub with `npx skills add ...` or by symlinking from `skills/`.
 2. In a target repository, invoke `scaffold-orchestrator-loop` with the high-level goal.
 3. Review the generated `orchestrator/` contract and initial checkpoint commit.
 4. Invoke `run-orchestrator-loop` to start or resume the delegated round loop.
