@@ -7,7 +7,7 @@ description: Use when a repository already has an initialized `orchestrator/` di
 
 ## Overview
 
-Act as a pure controller over the persisted repo-local orchestrator contract. Read `orchestrator/state.json`, resolve the active roadmap bundle from `roadmap_id`, `roadmap_revision`, and `roadmap_dir`, load any repo-local retry rules from that bundle, resolve repo-local role agents, delegate every substantive stage to fresh real subagents, update only machine-control state, and continue until the roadmap is complete.
+Act as a pure controller over the persisted repo-local orchestrator contract. Read `orchestrator/state.json`, resolve the active roadmap bundle from `roadmap_id`, `roadmap_revision`, and `roadmap_dir`, load any repo-local retry rules from that bundle, load the required runtime roles from `orchestrator/roles/`, delegate every substantive stage to fresh real subagents, update only machine-control state, and continue until the roadmap is complete.
 
 Treat incidental delegation failure as missing or untrustworthy stage artifacts that leave the controller without trustworthy controller-visible evidence for the active stage outcome.
 
@@ -23,7 +23,7 @@ delegation contract in the current environment.
 
 1. Load state and references.
 2. Resume an active round or start a new one with the guider.
-3. Use one branch and one worktree for the active round.
+3. Use one `orchestrator/round-<nn>-<slug>` branch and one `orchestrator/worktrees/<round-id>` worktree for the active round.
 4. Delegate each stage in order, including same-round retry loops required by the repo-local review contract.
 5. Squash-merge approved rounds, run `update-roadmap`, then re-read `state.json` plus the active roadmap bundle before deciding whether another round must start immediately.
 
@@ -35,13 +35,17 @@ Read these files first:
 - active roadmap bundle `roadmap.md` resolved from `state.json.roadmap_dir`
 - active roadmap bundle `verification.md` resolved from `state.json.roadmap_dir`
 - active roadmap bundle `retry-subloop.md` resolved from `state.json.roadmap_dir`
-- `.codex/agents/` when present
-- `orchestrator/roles/` only as a per-role compatibility fallback when a matching repo-local agent file is missing
-- [state-machine.md](references/state-machine.md)
-- [resume-rules.md](references/resume-rules.md)
-- [recovery-investigator.md](references/recovery-investigator.md)
-- [delegation-boundaries.md](references/delegation-boundaries.md)
-- [worktree-merge-rules.md](references/worktree-merge-rules.md)
+- `orchestrator/roles/guider.md`
+- `orchestrator/roles/planner.md`
+- `orchestrator/roles/implementer.md`
+- `orchestrator/roles/reviewer.md`
+- `orchestrator/roles/merger.md`
+- `orchestrator/roles/recovery-investigator.md`
+- [state-machine.md](references/state-machine.md) as supporting documentation
+- [resume-rules.md](references/resume-rules.md) as supporting documentation
+- [recovery-investigator.md](references/recovery-investigator.md) as supporting documentation for the scaffolded recovery role contract
+- [delegation-boundaries.md](references/delegation-boundaries.md) as supporting documentation
+- [worktree-merge-rules.md](references/worktree-merge-rules.md) as supporting documentation
 
 ## Stage Rules
 
@@ -60,9 +64,10 @@ Do not simulate these roles in your own voice.
 - Require `roadmap_id`, `roadmap_revision`, and `roadmap_dir` in `orchestrator/state.json`; if any are missing or unusable, stop and record the exact controller error instead of guessing.
 - Treat `roadmap_id` as an opaque scaffolded identifier that should normally look like `YYYY-MM-DD-NN-<slug>`; preserve it verbatim and do not recompute it from roadmap titles or paths.
 - Do not treat top-level `orchestrator/roadmap.md`, `orchestrator/verification.md`, or `orchestrator/retry-subloop.md` as live sources in this contract.
-- For each stage, prefer the matching repo-local `.codex/agents/orchestrator-<role>.toml` file when it exists.
-- If the matching repo-local agent file is missing, fall back to `orchestrator/roles/<role>.md`.
-- Recovery must resolve repo-local guider/planner/implementer/reviewer/merger sources exactly as it does today.
+- Load each required runtime role only from `orchestrator/roles/<role>.md`.
+- If any required `orchestrator/roles/<role>.md` file is missing, stop and record the exact controller error instead of inventing a fallback path.
+- Use round branches named `orchestrator/round-<nn>-<slug>`.
+- Use round worktrees at `orchestrator/worktrees/<round-id>`.
 - Keep the same round id, branch, and worktree until the round is finalized.
 - When repo-local review output requests retry, return to `plan` for the same round instead of merging, even if the attempt itself was accepted as valid evidence.
 - Resume the exact incomplete stage and exact retry attempt after interruption.
@@ -80,15 +85,15 @@ Do not simulate these roles in your own voice.
   - `orchestrator/state.json` records a precise controller blockage or `resume_error` that prevents safe progress; or
   - the user explicitly interrupted or redirected the loop.
 - If the guider authored a new roadmap revision during `update-roadmap`, activate it by updating `state.json` `roadmap_id`, `roadmap_revision`, and `roadmap_dir` before the next roadmap re-check.
-- If neither repo-local role source exists for a required stage, stop and record the exact controller error instead of guessing.
 
 ## Recovery Rules
 
-- An available delegation mechanism is any mechanism that can launch a fresh real subagent in the current environment, keep it running without timeout or interruption, and preserve the repo-local role-source contract.
+- An available delegation mechanism is any mechanism that can launch a fresh real subagent in the current environment, keep it running without timeout or interruption, and preserve the repo-local role contract.
 - When incidental delegation failure occurs, launch a dedicated real-subagent
-  `recovery-investigator` using
-  [recovery-investigator.md](references/recovery-investigator.md) before
-  recording a delegation-failure stop.
+  `recovery-investigator` from `orchestrator/roles/recovery-investigator.md`
+  before recording a delegation-failure stop. Treat
+  [recovery-investigator.md](references/recovery-investigator.md) as
+  supporting documentation only.
 - The `recovery-investigator` may recommend retrying with the same mechanism or switching to another available real-subagent mechanism.
 - Record the precise direct blockage in `orchestrator/state.json` only after
   the controller has either:
@@ -125,6 +130,6 @@ exact problem in `state.json` instead of guessing.
 
 - [state-machine.md](references/state-machine.md): stage order, ownership, and legal transitions
 - [resume-rules.md](references/resume-rules.md): automatic resume behavior
-- [recovery-investigator.md](references/recovery-investigator.md): dedicated recovery subagent contract
-- [delegation-boundaries.md](references/delegation-boundaries.md): what the controller may and may not do
-- [worktree-merge-rules.md](references/worktree-merge-rules.md): per-round worktree and squash-merge rules
+- [recovery-investigator.md](references/recovery-investigator.md): supporting documentation for the scaffolded recovery role contract
+- [delegation-boundaries.md](references/delegation-boundaries.md): supporting documentation for what the controller may and may not do
+- [worktree-merge-rules.md](references/worktree-merge-rules.md): supporting documentation for per-round worktree and squash-merge rules

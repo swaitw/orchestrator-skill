@@ -3,18 +3,18 @@
 ## Branches
 
 - Use one branch per round.
-- Prefix every round branch with `codex/`.
+- Prefix every round branch with `orchestrator/`.
 - Include the round id and a short task slug when practical.
 
 Example:
 
-- `codex/round-003-add-readme`
+- `orchestrator/round-003-add-readme`
 
 ## Worktrees
 
 - Use one dedicated worktree per round.
-- Prefer `.worktrees/<round-id>` in the repository root.
-- Ensure `.worktrees/` is gitignored before creating the worktree.
+- Use `orchestrator/worktrees/<round-id>`.
+- Ensure `orchestrator/worktrees/` is ignored by a tracked ignore rule before creating the worktree.
 - Reuse the same worktree for planner, implementer, reviewer, and any same-round retry attempts within the round.
 
 ## Merge Rules

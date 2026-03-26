@@ -35,9 +35,10 @@ resume review outcomes.
 - While recovering, the controller keeps the same round, same branch, same worktree, and same stage until controller-visible evidence or repo-local state lawfully changes them.
 - The controller also preserves `current_task` and the retry attempt unless the missing stage or repo-local retry state is the thing that legitimately changes them.
 - For any non-terminal delegated-stage stop, the controller must attempt a
-  qualifying `recovery-investigator` before treating the stop as terminal,
-  unless it can record a deterministic reason why no available delegation
-  mechanism can launch one at all.
+  qualifying repo-local `recovery-investigator` from
+  `orchestrator/roles/recovery-investigator.md` before treating the stop as
+  terminal, unless it can record a deterministic reason why no available
+  delegation mechanism can launch one at all.
 - Direct blockage is allowed only when the attempted
   `recovery-investigator` does not yield a qualifying recovery path, or when
   no qualifying `recovery-investigator` can launch through any available

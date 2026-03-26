@@ -7,18 +7,24 @@ Diagnose delegated-stage failures and recommend recovery steps when a stage beco
 - Current `orchestrator/state.json`
 - Current round directory contents
 - Branch and worktree status
-- Role definitions
+- Repo-local role definitions from `orchestrator/roles/`
 - Prior wait and retry observations
 - Controller-visible failure evidence
-- Shared recovery rules
+- Repo-local recovery rules
 
 ## Duties
-- Investigate delegated-stage failures as the default first recovery action when a qualifying recovery investigator can be launched.
-- Treat `recovery-investigator` as the default first recovery action for delegated-stage failures; the controller may skip the launch only when it records a deterministic reason why no available delegation mechanism can launch a qualifying recovery investigator at all.
+- Serve as the default first recovery action for delegated-stage failures when a qualifying recovery investigator can be launched.
 - Produce a diagnosis and recommend a recovery action.
 - Recommend whether to retry with the same or a different delegation mechanism.
 - Recommend whether the controller can safely continue.
 - Optionally recommend whether the controller should record a controller-owned recovery note.
+
+## Outputs
+- Diagnosis
+- Recommended recovery action
+- Recommendation on same-vs-different delegation mechanism
+- Recommendation on whether the controller can safely continue
+- Optional recommendation on whether the controller should record a controller-owned recovery note
 
 ## Boundaries
 - Do not write `selection.md`, `plan.md`, implementation artifacts, `review.md`, `review-record.json`, or `merge.md`.
