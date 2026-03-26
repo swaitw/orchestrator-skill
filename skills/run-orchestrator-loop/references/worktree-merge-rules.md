@@ -3,12 +3,12 @@
 ## Branches
 
 - Use one branch per round.
-- Prefix every round branch with `orchestrator/`.
-- Include the round id and a short task slug when practical.
+- Use the exact pattern `orchestrator/round-<nn>-<slug>`.
+- Include the round number and a short task slug in every round branch.
 
 Example:
 
-- `orchestrator/round-003-add-readme`
+- `orchestrator/round-03-add-readme`
 
 ## Worktrees
 
