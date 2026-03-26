@@ -43,7 +43,8 @@ orchestrator/
 │   ├── planner.md
 │   ├── implementer.md
 │   ├── reviewer.md
-│   └── merger.md
+│   ├── merger.md
+│   └── recovery-investigator.md
 ├── rounds/
 ├── worktrees/
 └── roadmaps/
@@ -61,6 +62,10 @@ controller error instead of inventing role behavior.
 Per-round worktrees must live under `orchestrator/worktrees/` rather than
 `.worktrees/`.
 
+`recovery-investigator` is part of the canonical repo-local contract and must
+live at `orchestrator/roles/recovery-investigator.md`. It is not a shared
+skill-owned external recovery helper in the target design.
+
 ## Skill Changes
 
 ### `scaffold-orchestrator-loop`
@@ -72,13 +77,14 @@ The scaffold skill will:
 - stop mentioning `.codex/agents/` in descriptions, workflow steps, and
   resource references
 - stop making git-ignore exceptions for `.codex/`
-- ensure `orchestrator/worktrees/` is ignored if the repository tracks
-  generated worktree directories in git
+- ensure `orchestrator/worktrees/` is ignored by a tracked ignore rule unless
+  the repository already ignores it through a broader rule
 
 Asset changes:
 
 - remove `assets/.codex/agents/`
-- add role templates under `assets/orchestrator/roles/`
+- add role templates under `assets/orchestrator/roles/`, including
+  `recovery-investigator.md`
 
 ### `run-orchestrator-loop`
 
@@ -87,19 +93,20 @@ The runtime skill will:
 - load role definitions only from `orchestrator/roles/`
 - remove `.codex/agents/` lookup and fallback logic
 - keep the existing controller-only ownership model
-- preserve the existing recovery-investigator requirement
+- preserve the existing recovery-investigator requirement through the new
+  repo-local `orchestrator/roles/recovery-investigator.md` contract
 
 Reference changes:
 
 - rewrite any references that prefer `.codex/agents/`
 - rewrite any migration or compatibility text that treats
   `orchestrator/roles/` as secondary
+- rewrite recovery rules so `recovery-investigator` is resolved from
+  `orchestrator/roles/` like every other delegated role
 
 ## Naming and Branching
 
-The branch prefix should become platform-neutral.
-
-Recommended prefix:
+The branch prefix becomes platform-neutral and mandatory:
 
 - `orchestrator/round-<nn>-<slug>`
 
@@ -162,7 +169,8 @@ The rewrite must preserve the current controller guarantees:
 - no delegated work in the controller voice
 - no silent fallback to invented role behavior
 - no terminal stop for non-terminal delegated-stage failure until
-  `recovery-investigator` is attempted or deterministically unavailable
+  the repo-local `recovery-investigator` is attempted or deterministically
+  unavailable
 - no guessing when state or role definitions are missing
 
 ## Testing and Verification
