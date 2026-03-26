@@ -113,6 +113,7 @@ skills/
 Use project-local installs as the documented supported path.
 
 Live validation on 2026-03-26 confirmed project-local installs for `claude-code`, `cursor`, `codex`, `gemini-cli`, `github-copilot`, and `opencode`. Global commands are intentionally omitted because the current `skills` CLI reported non-Claude global installs as `not linked`, so project-local installation is the documented supported path.
+Run the `npx skills add ...` commands from the target repository root where these skills will be used.
 
 ### Claude Code
 
@@ -176,7 +177,7 @@ npx skills ls --agent opencode
 
 ## Contributor Appendix
 
-For local development, symlinks are still useful when you want a checked-out repo to act as the installed skill source. Keep this workflow as a contributor-only shortcut, not the primary install path.
+For local development, symlinks are still useful when you want a checked-out repo to act as the installed skill source. Keep this workflow as a contributor-only shortcut, not the primary install path. The block below is a host-specific Codex example using `~/.codex/skills`.
 
 ```bash
 ln -s /path/to/orchestratorpattern/skills/scaffold-orchestrator-loop ~/.codex/skills/scaffold-orchestrator-loop
@@ -187,7 +188,7 @@ If either path already exists in `~/.codex/skills`, move or remove the existing 
 
 ## Typical Usage
 
-1. Install these skills for your agent host with `npx skills add ... --agent <id>`.
+1. From the target repository root, install these skills into that repository for your agent host with `npx skills add ... --agent <id>`.
 2. In a target repository, invoke `scaffold-orchestrator-loop` with the high-level goal.
 3. Review the generated `orchestrator/` contract and initial checkpoint commit.
 4. Invoke `run-orchestrator-loop` to start or resume the delegated round loop.
@@ -204,5 +205,5 @@ If either path already exists in `~/.codex/skills`, move or remove the existing 
 
 The design and implementation plan used to build this repo are checked in under:
 
-- `docs/superpowers/specs/2026-03-13-orchestrator-loop-design.md`
-- `docs/superpowers/plans/2026-03-13-orchestrator-skill-set.md`
+- `docs/superpowers/specs/2026-03-26-platform-neutral-orchestrator-design.md`
+- `docs/superpowers/plans/2026-03-26-platform-neutral-orchestrator.md`
