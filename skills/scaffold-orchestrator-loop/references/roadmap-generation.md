@@ -25,12 +25,21 @@ Build the initial roadmap from the goal plus a fast repository survey.
 - Use an ordered list.
 - Give each item one clear deliverable.
 - Record status with `[pending]`, `[in-progress]`, or `[done]`.
-- Include `Depends on:` and `Completion notes:` lines for each item.
-- Avoid planning parallel rounds or speculative implementation detail far ahead.
+- Include `Item id:`, `Depends on:`, `Parallel safe:`, `Parallel group:`, `Merge after:`, and `Completion notes:` lines for each item.
+- Default items to serial execution unless the repo survey gives you strong, explicit evidence that two items are safe to run in parallel.
+- Avoid speculative implementation detail far ahead even when the roadmap allows later parallel rounds.
 - Prefer 3-7 initial items unless the goal is truly smaller.
 - Write the initial roadmap to `orchestrator/roadmaps/<roadmap_id>/rev-001/roadmap.md`.
 - Keep the descriptive slug stable once chosen; later revisions under the same roadmap family keep the same `roadmap_id`.
 - Keep a roadmap revision immutable once any round uses it; later semantic updates should create `rev-00N+1` under the same `roadmap_id`.
+
+Parallel metadata guidance:
+
+- `Parallel safe: no` is the default.
+- Use `Parallel safe: yes` only when the item's boundaries are clear and dependencies are already explicit.
+- Use `Parallel group: none` for serial items.
+- Use the same non-`none` `Parallel group:` only for items that may legally co-run.
+- Use `Merge after:` to force merge ordering when dependencies alone are not enough.
 
 ## First Item Quality Bar
 

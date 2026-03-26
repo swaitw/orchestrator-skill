@@ -7,7 +7,7 @@ description: Use when a repository needs a new repo-local orchestrator workflow 
 
 ## Overview
 
-Create the repository-local control plane for the orchestrator workflow. Review the goal and repository first, scaffold a tailored `orchestrator/` directory containing controller state, repo-local role files under `orchestrator/roles/`, the initial revisioned roadmap bundle under `orchestrator/roadmaps/`, round artifacts under `orchestrator/rounds/`, and per-round worktree preparation under `orchestrator/worktrees/`, then stop after the initial checkpoint commit.
+Create the repository-local control plane for the orchestrator workflow. Review the goal and repository first, scaffold a tailored `orchestrator/` directory containing controller state, repo-local role files under `orchestrator/roles/`, the initial revisioned roadmap bundle under `orchestrator/roadmaps/`, round artifacts under `orchestrator/rounds/`, and per-round worktree preparation under `orchestrator/worktrees/`, then stop after the initial checkpoint commit. The scaffolded contract must support explicit parallel-safe roadmap items, planner-authored worker fan-out, and safe serial defaults for repositories that never opt into concurrency.
 
 ## Workflow
 
@@ -29,7 +29,7 @@ If Git is missing, initialize it with `git init -b main`.
 
 ## Step 2: Build the Initial Roadmap
 
-Read [roadmap-generation.md](references/roadmap-generation.md), mint a stable `roadmap_id` in `YYYY-MM-DD-NN-<slug>` form, and draft the repo-specific ordered roadmap content for `orchestrator/roadmaps/<roadmap_id>/rev-001/roadmap.md`. Keep later items coarse and make the next item concrete.
+Read [roadmap-generation.md](references/roadmap-generation.md), mint a stable `roadmap_id` in `YYYY-MM-DD-NN-<slug>` form, and draft the repo-specific ordered roadmap content for `orchestrator/roadmaps/<roadmap_id>/rev-001/roadmap.md`. Keep later items coarse and make the next item concrete. Each item must include a stable `Item id:` plus explicit parallel metadata, even when the item remains serial.
 
 ## Step 3: Scaffold the Repo Contract
 
@@ -41,10 +41,11 @@ Then:
 - write the drafted roadmap into the scaffolded active roadmap bundle and tailor `verification.md` plus `retry-subloop.md` for the repo
 - replace template placeholders with repo-specific content
 - set `state.json` `roadmap_id`, `roadmap_revision`, and `roadmap_dir` to the initial active roadmap bundle
+- set `state.json` parallel-safe defaults such as `controller_stage`, `max_parallel_rounds`, `active_rounds`, and `pending_merge_rounds`
 - tune the repo-local role files under `orchestrator/roles/` if the goal or repo needs stronger guidance
 - ensure `orchestrator/worktrees/` is ignored by a tracked ignore rule so future rounds can use dedicated worktrees
 
-Keep `state.json` machine-oriented. Put reasoning and reviewable content in the human-facing files under the active roadmap bundle and round artifacts under `orchestrator/`.
+Keep `state.json` machine-oriented. Put reasoning and reviewable content in the human-facing files under the active roadmap bundle and round artifacts under `orchestrator/`. If worker fan-out is later used for a round, the planner must author machine-readable `worker-plan.json` beside the human-facing round artifacts rather than smuggling worker state into prose.
 
 ## Step 4: Create the Checkpoint Commit
 

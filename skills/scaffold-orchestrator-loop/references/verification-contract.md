@@ -24,8 +24,16 @@ The verification contract should also require reviewers to confirm that:
 
 - the round stayed within the active roadmap bundle recorded in `state.json`;
 - the round's recorded `roadmap_id` matches the active family's scaffolded `YYYY-MM-DD-NN-<slug>` identifier rather than a recomputed title-derived value;
-- `selection.md` records `roadmap_id`, `roadmap_revision`, and `roadmap_dir`; and
+- `selection.md` records `roadmap_id`, `roadmap_revision`, `roadmap_dir`, and `roadmap_item_id`; and
 - `review-record.json` records the same roadmap identity when the round finalizes.
+
+If the round used planner-authored worker fan-out, baseline checks should also
+require the reviewer to confirm that:
+
+- `worker-plan.json` exists and matches the integrated round scope;
+- worker ownership boundaries were respected; and
+- approval is based on the integrated round result rather than isolated worker
+  slices.
 
 ## Task-Specific Checks
 
@@ -44,6 +52,8 @@ Approval should require all of the following:
 - task-specific checks pass
 - reviewer records evidence in `review.md`
 - no unresolved blocking issue remains
+- any `pending-merge` refresh or re-review requirement has been satisfied before
+  the round is approved for merge
 
 ## Reviewer Record Format
 
