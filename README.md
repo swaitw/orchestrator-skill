@@ -114,13 +114,14 @@ Use project-local installs as the documented supported path.
 
 Live validation on 2026-03-26 confirmed project-local installs for `claude-code`, `cursor`, `codex`, `gemini-cli`, `github-copilot`, and `opencode`. Global commands are intentionally omitted because the current `skills` CLI reported non-Claude global installs as `not linked`, so project-local installation is the documented supported path.
 Run the `npx skills add ...` commands from the target repository root where these skills will be used.
+Run the verification command from that same repository root; success means both `scaffold-orchestrator-loop` and `run-orchestrator-loop` appear in the project skills list.
 
 ### Claude Code
 
 ```bash
 # project-local install
-npx skills add https://github.com/soulomoon/orchestrator-skill --agent claude-code --skill scaffold-orchestrator-loop
-npx skills add https://github.com/soulomoon/orchestrator-skill --agent claude-code --skill run-orchestrator-loop
+npx skills add https://github.com/soulomoon/orchestrator-skill --agent claude-code --skill scaffold-orchestrator-loop -y
+npx skills add https://github.com/soulomoon/orchestrator-skill --agent claude-code --skill run-orchestrator-loop -y
 # project-local verification
 npx skills ls --agent claude-code
 ```
@@ -129,8 +130,8 @@ npx skills ls --agent claude-code
 
 ```bash
 # project-local install
-npx skills add https://github.com/soulomoon/orchestrator-skill --agent cursor --skill scaffold-orchestrator-loop
-npx skills add https://github.com/soulomoon/orchestrator-skill --agent cursor --skill run-orchestrator-loop
+npx skills add https://github.com/soulomoon/orchestrator-skill --agent cursor --skill scaffold-orchestrator-loop -y
+npx skills add https://github.com/soulomoon/orchestrator-skill --agent cursor --skill run-orchestrator-loop -y
 # project-local verification
 npx skills ls --agent cursor
 ```
@@ -139,8 +140,8 @@ npx skills ls --agent cursor
 
 ```bash
 # project-local install
-npx skills add https://github.com/soulomoon/orchestrator-skill --agent codex --skill scaffold-orchestrator-loop
-npx skills add https://github.com/soulomoon/orchestrator-skill --agent codex --skill run-orchestrator-loop
+npx skills add https://github.com/soulomoon/orchestrator-skill --agent codex --skill scaffold-orchestrator-loop -y
+npx skills add https://github.com/soulomoon/orchestrator-skill --agent codex --skill run-orchestrator-loop -y
 # project-local verification
 npx skills ls --agent codex
 ```
@@ -149,8 +150,8 @@ npx skills ls --agent codex
 
 ```bash
 # project-local install
-npx skills add https://github.com/soulomoon/orchestrator-skill --agent gemini-cli --skill scaffold-orchestrator-loop
-npx skills add https://github.com/soulomoon/orchestrator-skill --agent gemini-cli --skill run-orchestrator-loop
+npx skills add https://github.com/soulomoon/orchestrator-skill --agent gemini-cli --skill scaffold-orchestrator-loop -y
+npx skills add https://github.com/soulomoon/orchestrator-skill --agent gemini-cli --skill run-orchestrator-loop -y
 # project-local verification
 npx skills ls --agent gemini-cli
 ```
@@ -159,8 +160,8 @@ npx skills ls --agent gemini-cli
 
 ```bash
 # project-local install
-npx skills add https://github.com/soulomoon/orchestrator-skill --agent github-copilot --skill scaffold-orchestrator-loop
-npx skills add https://github.com/soulomoon/orchestrator-skill --agent github-copilot --skill run-orchestrator-loop
+npx skills add https://github.com/soulomoon/orchestrator-skill --agent github-copilot --skill scaffold-orchestrator-loop -y
+npx skills add https://github.com/soulomoon/orchestrator-skill --agent github-copilot --skill run-orchestrator-loop -y
 # project-local verification
 npx skills ls --agent github-copilot
 ```
@@ -169,8 +170,8 @@ npx skills ls --agent github-copilot
 
 ```bash
 # project-local install
-npx skills add https://github.com/soulomoon/orchestrator-skill --agent opencode --skill scaffold-orchestrator-loop
-npx skills add https://github.com/soulomoon/orchestrator-skill --agent opencode --skill run-orchestrator-loop
+npx skills add https://github.com/soulomoon/orchestrator-skill --agent opencode --skill scaffold-orchestrator-loop -y
+npx skills add https://github.com/soulomoon/orchestrator-skill --agent opencode --skill run-orchestrator-loop -y
 # project-local verification
 npx skills ls --agent opencode
 ```
