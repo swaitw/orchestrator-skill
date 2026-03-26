@@ -205,5 +205,5 @@ If either path already exists in `~/.codex/skills`, move or remove the existing 
 
 The design and implementation plan used to build this repo are checked in under:
 
-- `docs/superpowers/specs/2026-03-26-platform-neutral-orchestrator-design.md`
-- `docs/superpowers/plans/2026-03-26-platform-neutral-orchestrator.md`
+- [docs/superpowers/specs/2026-03-26-platform-neutral-orchestrator-design.md](docs/superpowers/specs/2026-03-26-platform-neutral-orchestrator-design.md)
+- [docs/superpowers/plans/2026-03-26-platform-neutral-orchestrator.md](docs/superpowers/plans/2026-03-26-platform-neutral-orchestrator.md)
