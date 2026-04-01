@@ -1,7 +1,7 @@
 interface:
   display_name: "Scaffold Orchestrator Loop"
-  short_description: "Initialize an orchestrator control plane in a repository from a project goal."
-  default_prompt: "Use $scaffold-orchestrator-loop to scaffold an orchestrator loop for this repository from the current goal."
+  short_description: "Create an initial orchestrator control plane or open a fresh roadmap family inside a terminal one."
+  default_prompt: "Use $scaffold-orchestrator-loop to set up or continue a repo-local orchestrator control plane for this repository from the current goal."
   tags:
     - orchestration
     - scaffolding

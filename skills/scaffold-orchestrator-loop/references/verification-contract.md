@@ -24,8 +24,15 @@ The verification contract should also require reviewers to confirm that:
 
 - the round stayed within the active roadmap bundle recorded in `state.json`;
 - the round's recorded `roadmap_id` matches the active family's scaffolded `YYYY-MM-DD-NN-<slug>` identifier rather than a recomputed title-derived value;
-- `selection.md` records `roadmap_id`, `roadmap_revision`, `roadmap_dir`, and `roadmap_item_id`; and
-- `review-record.json` records the same roadmap identity when the round finalizes.
+- `selection.md` records `roadmap_id`, `roadmap_revision`, `roadmap_dir`, and `roadmap_item_id`;
+- `review-record.json` records the same roadmap identity when the round finalizes;
+- when `orchestrator/roadmap.md`, `orchestrator/verification.md`, or
+  `orchestrator/retry-subloop.md` exist, they match `roadmap_id`,
+  `roadmap_revision`, and `roadmap_dir` in `state.json`;
+- a `next-family` setup preserved prior roadmap families and revisions
+  unchanged; and
+- the setup change stopped after the checkpoint commit without starting runtime
+  rounds.
 
 If the round used planner-authored worker fan-out, baseline checks should also
 require the reviewer to confirm that:
@@ -52,6 +59,7 @@ Approval should require all of the following:
 - task-specific checks pass
 - reviewer records evidence in `review.md`
 - no unresolved blocking issue remains
+- any next-family pointer refresh or preserved-history check passes
 - any `pending-merge` refresh or re-review requirement has been satisfied before
   the round is approved for merge
 

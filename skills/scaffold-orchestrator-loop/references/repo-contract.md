@@ -1,6 +1,31 @@
 # Repo Contract
 
-Scaffold a visible top-level `orchestrator/` directory in the target repository. The required repo contract lives under `orchestrator/`, including role definitions and worktree preparation.
+Scaffold or advance a visible top-level `orchestrator/` directory in the target
+repository. The required repo contract lives under `orchestrator/`, including
+role definitions and worktree preparation.
+
+## Setup Modes
+
+`bootstrap` creates the initial repo-local control plane by copying the full
+scaffold tree into a repository that does not yet have top-level
+`orchestrator/`.
+
+`next-family` reuses an existing terminal control plane. It must:
+
+- reuse existing `orchestrator/roles/`, `orchestrator/rounds/`, and
+  `orchestrator/worktrees/`
+- scaffold only missing shared control-plane files if the contract is
+  incomplete
+- create a fresh active bundle under
+  `orchestrator/roadmaps/<roadmap_id>/rev-001/`
+- preserve prior families, prior revisions, and prior round artifacts as
+  immutable history
+- refresh `orchestrator/roadmap.md`, `orchestrator/verification.md`, and
+  `orchestrator/retry-subloop.md` when those top-level pointer stubs already
+  exist
+
+Do not use `next-family` when the existing control plane is still live or the
+active roadmap bundle still contains `[pending]` or `[in-progress]` items.
 
 ## Required Files
 
@@ -16,6 +41,16 @@ Scaffold a visible top-level `orchestrator/` directory in the target repository.
 - `orchestrator/roles/recovery-investigator.md`
 - `orchestrator/rounds/`
 - `orchestrator/worktrees/`
+
+Optional compatibility files:
+
+- `orchestrator/roadmap.md`
+- `orchestrator/verification.md`
+- `orchestrator/retry-subloop.md`
+
+When those pointer files exist, refresh them to match `state.json`. They are
+non-authoritative convenience pointers only; runtime resolves the live bundle
+from `roadmap_id`, `roadmap_revision`, and `roadmap_dir` in `state.json`.
 
 ## `state.json` Schema
 
@@ -49,6 +84,7 @@ explicit parallel execution.
 | `last_completed_round` | string or null | Most recently accepted round |
 | `resume_error` | string or null | Last recoverable controller error |
 | `resume_errors` | object | Structured controller and per-round recoverable errors |
+| `retry` | object or null | Controller-owned retry subloop state; `null` when no retry is active |
 
 Each `active_rounds[]` record should carry the machine-owned fields needed to
 resume a round safely:
@@ -82,6 +118,18 @@ Legacy compatibility rules:
   revision-local internal ids such as `legacy-item-<ordered-number>` until a
   later roadmap revision is authored with explicit item ids.
 
+`next-family` reset rules:
+
+- preserve `base_branch`
+- preserve `last_completed_round`
+- set the new `roadmap_id`, `roadmap_revision`, and `roadmap_dir`
+- set `stage` to `select-task`
+- set `controller_stage` to `dispatch-rounds`
+- clear `active_round_id`, `active_rounds`, and `pending_merge_rounds`
+- clear legacy mirror fields such as `current_task`, `branch`,
+  `worktree_path`, `active_round_dir`, and `round_artifacts`
+- clear `resume_error`, `resume_errors`, and `retry`
+
 ## File Ownership
 
 - The orchestrator may update `orchestrator/state.json` and round bookkeeping only.
@@ -89,6 +137,8 @@ Legacy compatibility rules:
 - Delegated role agents author roadmap bundle content, round artifacts, review records, and merge notes.
 - The guider owns task selection and roadmap updates.
 - Once any round has used a roadmap revision, keep that revision immutable. Publish a new revision directory instead of rewriting a used revision.
+- Do not widen a `next-family` setup into a full shared-contract refresh unless
+  the user explicitly asks for that broader change.
 
 ## Round Artifacts
 

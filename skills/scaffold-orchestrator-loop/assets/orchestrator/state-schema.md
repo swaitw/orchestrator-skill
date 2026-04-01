@@ -24,6 +24,7 @@ This document describes the fields in `orchestrator/state.json`.
 | `last_completed_round` | string or null | Most recently merged round id |
 | `resume_error` | string or null | Controller-level recoverable error for legacy readers |
 | `resume_errors` | object | Structured controller and per-round recoverable errors |
+| `retry` | object or null | Controller-owned retry subloop state; `null` when no retry is active |
 
 ## Round Record Fields (each entry in `active_rounds`)
 

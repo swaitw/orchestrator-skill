@@ -16,5 +16,6 @@
   "round_artifacts": {},
   "last_completed_round": null,
   "resume_error": null,
-  "resume_errors": {}
+  "resume_errors": {},
+  "retry": null
 }
