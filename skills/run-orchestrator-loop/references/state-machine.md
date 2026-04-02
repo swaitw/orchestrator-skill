@@ -32,12 +32,12 @@ one strict legal stage order.
 
 ## Controller Legal Transitions
 
-- `done` -> `dispatch-rounds` when unfinished roadmap items remain
+- `done` -> `dispatch-rounds` when unfinished roadmap milestones remain
 - `dispatch-rounds` -> `update-roadmap` after any successful round merge
-- `update-roadmap` -> `dispatch-rounds` when unfinished items or live rounds
-  remain
+- `update-roadmap` -> `dispatch-rounds` when unfinished roadmap milestones or
+  live rounds remain
 - `update-roadmap` -> `done` only when the active roadmap bundle has no
-  unfinished items and there are no live rounds
+  unfinished milestones and there are no live rounds
 
 ## Round Legal Transitions
 
@@ -73,9 +73,9 @@ artifacts do not authorize.
 stateDiagram-v2
     [*] --> dispatch_rounds
     dispatch_rounds --> update_roadmap: round merged
-    update_roadmap --> dispatch_rounds: unfinished items remain
-    update_roadmap --> done: all items done, no live rounds
-    done --> dispatch_rounds: unfinished items remain
+    update_roadmap --> dispatch_rounds: unfinished milestones remain
+    update_roadmap --> done: all milestones done, no live rounds
+    done --> dispatch_rounds: unfinished milestones remain
     done --> [*]: terminal
 ```
 

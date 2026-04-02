@@ -6,36 +6,81 @@
 - `in-progress`
 - `done`
 
-## Items
+## Goal
 
-1. [pending] Replace this example with the first concrete roadmap item
-   Item id: item-001-example
-   Depends on:
-   Parallel safe: no
-   Parallel group: none
-   Merge after: none
-   Completion notes:
+Replace this example with the overall outcome for the roadmap family.
 
-2. [pending] Replace this example with a dependent second item
-   Item id: item-002-example
-   Depends on: item-001-example
-   Parallel safe: no
-   Parallel group: none
-   Merge after: item-001-example
-   Completion notes:
+## Outcome Boundaries
 
-3. [pending] Replace this example with an independent item that can run in parallel
-   Item id: item-003-example
-   Depends on:
-   Parallel safe: yes
-   Parallel group: group-a
-   Merge after: none
-   Completion notes:
+- In scope: Replace this example with the delivery fronts this roadmap owns.
+- Out of scope: Replace this example with adjacent work that should stay outside
+  this roadmap family.
 
-4. [pending] Replace this example with another parallel-safe item in the same group
-   Item id: item-004-example
-   Depends on:
-   Parallel safe: yes
-   Parallel group: group-a
-   Merge after: none
-   Completion notes:
+## Global Sequencing Rules
+
+- Replace this example with cross-cutting ordering or merge constraints.
+
+## Parallel Lanes
+
+- `lane-core`: Replace this example with the first obvious concurrent delivery
+  lane.
+
+## Milestones
+
+### [pending] Milestone 1: Replace this example with the first coordination milestone
+Milestone id: milestone-001-example
+Depends on:
+Intent: Establish the first coherent delivery front for this roadmap family.
+Completion signal: The first delivery front is complete and no longer needs new
+extracted rounds.
+Parallel lane: lane-core
+Coordination notes: Keep extracted rounds small enough that multiple teams can
+work without overlapping scope.
+
+Candidate directions:
+- Direction id: direction-001-example
+  Summary: Extract the first bounded round from this milestone.
+  Why it matters now: This is the most direct way to start the milestone.
+  Preconditions:
+  Parallel hints: Serial by default; may co-run only with explicitly lane-safe
+    work.
+  Boundary notes: Keep the extraction focused on one reviewable outcome.
+  Extraction notes: Preserve milestone intent while narrowing to one
+    round-sized slice.
+
+- Direction id: direction-002-example
+  Summary: Replace this example with a second candidate direction in the same
+    milestone.
+  Why it matters now: Use this when a different bounded slice should move
+    before or alongside the first extraction.
+  Preconditions:
+  Parallel hints: May run with other lane-core extractions only when ownership
+    boundaries are explicit.
+  Boundary notes: Keep shared interfaces or merge ordering explicit in the
+    extracted round.
+  Extraction notes: Record why this direction was chosen over the other ready
+    options.
+
+### [pending] Milestone 2: Replace this example with a dependent follow-up milestone
+Milestone id: milestone-002-example
+Depends on: milestone-001-example
+Intent: Build on the earlier delivery front without precommitting the exact
+round sequence.
+Completion signal: Follow-up capability is integrated and no further extraction
+from this milestone is required.
+Parallel lane: lane-expansion
+Coordination notes: Do not start extraction until the first milestone exposes
+the needed boundaries or shared interfaces.
+
+Candidate directions:
+- Direction id: direction-003-example
+  Summary: Replace this example with the first follow-up direction.
+  Why it matters now: This becomes ready after the preceding milestone creates
+    the necessary base.
+  Preconditions: milestone-001-example complete
+  Parallel hints: Start serially unless the guider can show clear ownership
+    separation from other ready work.
+  Boundary notes: Keep this focused on the new delivery front rather than
+    reopening earlier milestone scope.
+  Extraction notes: If this changes future coordination, publish a new roadmap
+    revision instead of hiding the change only in `selection.md`.

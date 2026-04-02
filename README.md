@@ -44,7 +44,8 @@ It is responsible for:
 The runtime loop is strict about ownership:
 
 - The orchestrator is a controller, not an implementer.
-- Serial execution is the default unless roadmap metadata explicitly marks items as parallel-safe.
+- Serial execution is the default unless roadmap lanes, candidate-direction
+  hints, and extracted-scope boundaries explicitly allow concurrency.
 - Each live round uses one canonical branch plus one canonical worktree.
 - Different rounds may be active at the same time when the roadmap and controller state authorize it.
 - Review rejection or drift can send a round back to `plan`, `implement`, or `review` again.
@@ -95,8 +96,12 @@ Key ideas behind that contract:
 
 - `state.json` stays machine-oriented and tracks controller state, `active_rounds`, `pending_merge_rounds`, legacy mirrors for serial compatibility, and resume errors.
 - Human-facing reasoning stays in the active roadmap bundle `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/roadmap.md`, repo-local role definitions, and round artifacts.
-- Roadmap items carry explicit `Item id:`, `Parallel safe:`, `Parallel group:`, and `Merge after:` metadata.
+- Roadmaps use milestones plus candidate directions; the guider extracts
+  round-sized work from dependency-ready directions and may select concurrent
+  slices when roadmap lanes and boundaries make that safe.
 - Each round folder stores delegated artifacts such as `selection.md`, `plan.md`, `implementation-notes.md`, `review.md`, and `merge.md`.
+- Round artifacts record extraction lineage so planner, reviewer, and merger
+  work stays traceable back to the active roadmap bundle.
 - Worker fan-out adds controller-readable `worker-plan.json` plus worker handoff artifacts, but approval and merge stay canonical at the round level.
 - The runtime skill loads role instructions from `orchestrator/roles/*.md`.
 
@@ -164,8 +169,8 @@ If either path already exists in `~/.codex/skills`, move or remove the existing 
 2. In a target repository, invoke `scaffold-orchestrator-loop` with the high-level goal.
 3. Review the generated `orchestrator/` contract and initial checkpoint commit.
 4. Invoke `run-orchestrator-loop` to start or resume the delegated round loop.
-5. Let the runtime skill continue until roadmap items are complete or a recorded controller error blocks progress.
-6. If the roadmap explicitly marks independent items as parallel-safe, expect multiple round branches and worktrees to run concurrently.
+5. Let the runtime skill continue until roadmap milestones are complete or a recorded controller error blocks progress.
+6. If the roadmap exposes independent lanes or clearly separable candidate directions, expect multiple round branches and worktrees to run concurrently.
 
 ## Development Notes
 

@@ -9,7 +9,8 @@ instead of deleting the file.
 ## Scope
 
 - State whether same-round retry is allowed.
-- If retry is allowed, name which roadmap items or stage outcomes may retry.
+- If retry is allowed, name which extracted round items or stage outcomes may
+  retry.
 - State whether worker-slice retry is allowed when a plan uses `worker-plan.json`.
 - State when a reviewed round may pause in `pending-merge` before merge.
 

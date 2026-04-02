@@ -12,9 +12,9 @@ workflow. Review the goal and repository first, then either bootstrap a
 tailored top-level `orchestrator/` contract from assets or open a fresh
 roadmap family inside an existing terminal control plane. In both modes, stop
 after the setup checkpoint commit. Do not start runtime rounds. The contract
-must support explicit parallel-safe roadmap items, planner-authored worker
-fan-out, and safe serial defaults for repositories that never opt into
-concurrency.
+must support milestone-level roadmap strategy, guider-extracted round work,
+planner-authored worker fan-out, and safe serial defaults for repositories
+that never opt into concurrency.
 
 ## Workflow
 
@@ -73,12 +73,12 @@ not silently open a new family on top of unfinished prior work.
 
 Read [roadmap-generation.md](references/roadmap-generation.md), mint a fresh
 stable `roadmap_id` in `YYYY-MM-DD-NN-<slug>` form, and draft the repo-specific
-ordered roadmap content for
-`orchestrator/roadmaps/<roadmap_id>/rev-001/roadmap.md`. Keep later items
-coarse and make the next item concrete. Each item must include a stable
-`Item id:` plus explicit parallel metadata, even when the item remains serial.
-Never reopen an older roadmap family by appending items or reusing a used
-revision.
+strategy-backlog roadmap content for
+`orchestrator/roadmaps/<roadmap_id>/rev-001/roadmap.md`. Make milestones larger
+than a round, include candidate directions for guider extraction, and keep the
+roadmap strategic rather than implementation-sized. Use stable milestone and
+direction ids plus explicit coordination and parallel-lane guidance. Never
+reopen an older roadmap family by appending items or reusing a used revision.
 
 ## Step 3: Bootstrap Or Update the Repo Contract
 

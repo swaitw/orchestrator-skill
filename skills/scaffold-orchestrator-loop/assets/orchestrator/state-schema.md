@@ -31,17 +31,20 @@ This document describes the fields in `orchestrator/state.json`.
 | Key | Type | Description |
 |-----|------|-------------|
 | `round_id` | string | Stable round identifier |
-| `roadmap_item_id` | string | Stable selected roadmap item id |
+| `milestone_id` | string | Selected milestone that supplied the extracted work |
+| `direction_id` | string | Candidate direction chosen by the guider |
+| `extracted_item_id` | string | Stable id for the concrete round item derived from the selected direction |
+| `roadmap_item_id` | string or null | Compatibility mirror for legacy flat-roadmap revisions |
 | `selected_roadmap_revision` | string | Revision the round was selected from |
 | `selected_roadmap_dir` | string | Bundle path the round was selected from |
-| `current_task` | string | Human-readable selected task summary |
+| `current_task` | string | Human-readable summary of the extracted round scope |
 | `stage` | string | One of: `select-task`, `plan`, `implement`, `review`, `pending-merge`, `merge`, `done`, `blocked` |
 | `branch` | string | Canonical round branch |
 | `worktree_path` | string | Canonical round worktree |
 | `active_round_dir` | string | Canonical round artifact directory |
 | `round_artifacts` | object | Canonical round artifact path map |
 | `depends_on_round_ids` | array | Round ids that must merge before this round may merge |
-| `merge_after_item_ids` | array | Item ids that must merge before this round may merge |
+| `merge_after_item_ids` | array | Extracted item ids that must merge before this round may merge |
 | `parallel_group` | string or null | Co-scheduling group for this round |
 | `worker_mode` | string | `none`, `fanout`, or `integrate` |
 | `worker_records` | object | Worker state keyed by worker id |
@@ -59,3 +62,8 @@ When `active_rounds` has more than one entry, legacy fields must be cleared
 to avoid ambiguity.
 
 When `active_rounds` is empty, all legacy round fields should be null or empty.
+
+For strategy-backlog roadmap revisions, round lineage should come from
+`milestone_id`, `direction_id`, and `extracted_item_id`. Use
+`roadmap_item_id` only as a compatibility bridge for older flat roadmap
+revisions or older runtime readers.

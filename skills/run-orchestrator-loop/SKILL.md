@@ -68,7 +68,8 @@ Controller-global stages:
 
 - `dispatch-rounds` schedules or resumes live rounds.
 - `update-roadmap` belongs to the guider.
-- `done` is terminal only when there are no unfinished items and no live rounds.
+- `done` is terminal only when there are no unfinished milestones and no live
+  rounds.
 
 Do not simulate these roles in your own voice.
 
@@ -87,11 +88,11 @@ Do not simulate these roles in your own voice.
   `orchestrator/retry-subloop.md` as runtime sources.
 - After `update-roadmap`, re-read `orchestrator/state.json`, resolve the active
   roadmap bundle again from `roadmap_dir`, and immediately start the next round
-  when unfinished `[pending]` or `[in-progress]` items remain and the
+  when unfinished `[pending]` or `[in-progress]` milestones remain and the
   concurrency cap allows it.
 - Treat controller `done` as terminal only when the roadmap has no unfinished
-  items, there are no live rounds, or a recorded controller blockage or user
-  interruption lawfully stops progress.
+  milestones, there are no live rounds, or a recorded controller blockage or
+  user interruption lawfully stops progress.
 - If the guider authored a new roadmap revision during `update-roadmap`,
   activate it by updating `state.json` `roadmap_id`, `roadmap_revision`, and
   `roadmap_dir` before the next roadmap re-check.
@@ -117,10 +118,10 @@ Do not simulate these roles in your own voice.
 
 ## Completion
 
-Continue until every roadmap item in the active bundle is complete or a
+Continue until every roadmap milestone in the active bundle is complete or a
 recorded controller error lawfully blocks safe progress. Do not stop just
 because one round reaches `done`; terminal completion requires a roadmap
-re-check confirming no unfinished items and no live rounds, or a lawful
+re-check confirming no unfinished milestones and no live rounds, or a lawful
 recorded blockage or explicit user interruption. For non-terminal
 delegated-stage failures, stop only after `recovery-investigator` has been
 attempted or deterministically ruled out. For corrupt or missing state, exhaust
@@ -139,7 +140,7 @@ lawful recovery paths before recording the exact problem in `state.json`.
 
 Before sending a final response, verify ALL of these:
 - `state.json` `active_rounds` is empty
-- Active roadmap bundle has no `[pending]` or `[in-progress]` items
+- Active roadmap bundle has no `[pending]` or `[in-progress]` milestones
 - No unresolved `resume_error` or `resume_errors` entries remain
 - If stopping due to blockage: precise error recorded in `state.json`
 - If stopping due to user interruption: state is consistent and saved
@@ -148,8 +149,6 @@ Before sending a final response, verify ALL of these:
 
 - Maximum 3 consecutive retry attempts per round before recording blockage
 - Maximum 50 tool calls per delegated stage before pausing for assessment
-- If total completed rounds exceed 2x the roadmap item count, pause and
-  reassess with the user
 - If a single round has cycled through review -> plan -> implement -> review
   more than 3 times, record the pattern and ask the user
 

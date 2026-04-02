@@ -28,13 +28,16 @@ resume review outcomes.
 6. If `active_rounds` is empty and `controller_stage` is `done`, inspect the
    active roadmap bundle `roadmap.md` before stopping or replying.
 7. If `active_rounds` is empty, `controller_stage` is `done`, and the active
-   roadmap bundle still has unfinished `[pending]` or `[in-progress]` items,
+   roadmap bundle still has unfinished `[pending]` or `[in-progress]`
+   milestones,
    treat that as a stale non-terminal `done` state and resume at
    `dispatch-rounds`.
 8. If `active_rounds` is empty, `controller_stage` is `done`, and the active
-   roadmap bundle has no unfinished items, the controller may stop.
-9. If live rounds exist, reopen each recorded branch and worktree and resume
-   the recorded round stage.
+   roadmap bundle has no unfinished milestones, the controller may stop.
+9. If live rounds exist, reopen each recorded branch and worktree, resume the
+   recorded round stage, and recover round lineage from `milestone_id`,
+   `direction_id`, and `extracted_item_id`. Use `roadmap_item_id` only when
+   the active roadmap revision is still a legacy flat roadmap.
 10. If repo-local machine state includes retry bookkeeping, resume the exact
     recorded attempt instead of guessing a new one.
 
@@ -53,7 +56,9 @@ resume review outcomes.
 ## Pending-Merge Rounds
 
 - If a round is in `pending-merge`, re-check `merge_after_item_ids`, dependency
-  rounds, and base freshness before advancing.
+  rounds, and base freshness before advancing. Interpret
+  `merge_after_item_ids` as extracted round ordering for strategy-backlog
+  revisions.
 - If drift requires substantive code refresh, return the round to `implement`.
 - The whole-round implementer owns refresh when `worker_mode` is `none`.
 - The integration implementer owns refresh when `worker_mode` is `fanout` or

@@ -16,7 +16,9 @@ Every check runs, every conclusion is evidence-backed, and every decision is exp
 - Compare the diff against the round plan.
 - Write `review.md` with commands, evidence, and an explicit approve or reject decision.
 - Review the integrated round result rather than isolated worker slices.
-- When the round finalizes, write `review-record.json` with the active `roadmap_id`, `roadmap_revision`, `roadmap_dir`, and `roadmap_item_id`.
+- When the round finalizes, write `review-record.json` with the active
+  `roadmap_id`, `roadmap_revision`, `roadmap_dir`, `milestone_id`,
+  `direction_id`, and `extracted_item_id`.
 
 ## Boundaries
 - Do not fix implementation directly.
@@ -48,7 +50,10 @@ When the round finalizes, also write `review-record.json`:
   "roadmap_id": "<from selection>",
   "roadmap_revision": "<from selection>",
   "roadmap_dir": "<from selection>",
-  "roadmap_item_id": "<from selection>",
+  "milestone_id": "<from selection>",
+  "direction_id": "<from selection>",
+  "extracted_item_id": "<from selection>",
+  "roadmap_item_id": "<legacy mirror when applicable>",
   "decision": "approved",
   "evidence_summary": "<brief>"
 }
