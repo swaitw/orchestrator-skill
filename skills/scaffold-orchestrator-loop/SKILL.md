@@ -12,9 +12,9 @@ workflow. Review the goal and repository first, then either bootstrap a
 tailored top-level `orchestrator/` contract from assets or open a fresh
 roadmap family inside an existing terminal control plane. In both modes, stop
 after the setup checkpoint commit. Do not start runtime rounds. The contract
-must support explicit parallel-safe roadmap items, planner-authored worker
-fan-out, and safe serial defaults for repositories that never opt into
-concurrency.
+must support milestone-level roadmap strategy, guider-extracted round work,
+planner-authored worker fan-out, and safe serial defaults for repositories
+that never opt into concurrency.
 
 ## Workflow
 
