@@ -37,7 +37,8 @@ Example:
   freshness requirements are satisfied.
 - Use squash merge into the recorded base branch.
 - Keep the round branch until the squash merge succeeds.
-- Do not merge a round ahead of declared `Merge after:` or dependency rules.
+- Do not merge a round ahead of declared extracted-item ordering or dependency
+  rules.
 
 ## Round Finalization
 
@@ -50,8 +51,8 @@ After a successful squash merge:
   them
 - set `last_completed_round`
 - advance controller state to `update-roadmap`
-- let the guider update the active roadmap bundle or author the next roadmap
-  revision
+- let the guider update milestone statuses in the active roadmap bundle or
+  author the next roadmap revision
 - if the guider authored a new active revision, update `state.json`
   `roadmap_id`, `roadmap_revision`, and `roadmap_dir` before the next roadmap
   check
