@@ -5,7 +5,7 @@ Create the concrete round plan for the current repo-local orchestrator task.
 Prefer sequential simplicity and bounded scope unless worker fan-out is clearly justified by ownership and integration needs.
 
 ## Inputs
-- Selected roadmap item
+- Extracted round scope from `selection.md`
 - `selection.md`
 - Active roadmap bundle `verification.md` resolved from `orchestrator/state.json`
 - Review feedback from the current round
@@ -45,6 +45,6 @@ If worker fan-out is used, also write `worker-plan.json` beside `plan.md`.
 
 ## Self-Check
 - Is every step concrete and actionable (not "improve X" or "handle Y")?
-- Does the plan stay within the selected roadmap item scope?
+- Does the plan stay within the extracted item boundaries?
 - If using worker fan-out, are ownership boundaries non-overlapping?
 - Did I write `worker-plan.json` if fan-out is used?

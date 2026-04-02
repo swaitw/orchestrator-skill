@@ -24,8 +24,12 @@ The verification contract should also require reviewers to confirm that:
 
 - the round stayed within the active roadmap bundle recorded in `state.json`;
 - the round's recorded `roadmap_id` matches the active family's scaffolded `YYYY-MM-DD-NN-<slug>` identifier rather than a recomputed title-derived value;
-- `selection.md` records `roadmap_id`, `roadmap_revision`, `roadmap_dir`, and `roadmap_item_id`;
-- `review-record.json` records the same roadmap identity when the round finalizes;
+- `selection.md` records `roadmap_id`, `roadmap_revision`, `roadmap_dir`,
+  `milestone_id`, `direction_id`, and `extracted_item_id`;
+- `review-record.json` records the same roadmap lineage when the round
+  finalizes;
+- `roadmap_item_id` appears only when the active roadmap revision is still a
+  legacy flat roadmap or when a compatibility mirror is explicitly required;
 - when `orchestrator/roadmap.md`, `orchestrator/verification.md`, or
   `orchestrator/retry-subloop.md` exist, they match `roadmap_id`,
   `roadmap_revision`, and `roadmap_dir` in `state.json`;
@@ -37,7 +41,7 @@ The verification contract should also require reviewers to confirm that:
 If the round used planner-authored worker fan-out, baseline checks should also
 require the reviewer to confirm that:
 
-- `worker-plan.json` exists and matches the integrated round scope;
+- `worker-plan.json` exists and matches the integrated extracted round scope;
 - worker ownership boundaries were respected; and
 - approval is based on the integrated round result rather than isolated worker
   slices.

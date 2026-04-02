@@ -92,17 +92,20 @@ resume a round safely:
 | Key | Type | Meaning |
 | --- | --- | --- |
 | `round_id` | string | Stable round identifier |
-| `roadmap_item_id` | string | Stable selected roadmap item id |
+| `milestone_id` | string | Selected milestone that supplied the extracted work |
+| `direction_id` | string | Candidate direction chosen by the guider |
+| `extracted_item_id` | string | Stable id for the concrete round item derived from the selected direction |
+| `roadmap_item_id` | string or null | Compatibility mirror for legacy flat-roadmap revisions |
 | `selected_roadmap_revision` | string | Revision the round was selected from |
 | `selected_roadmap_dir` | string | Roadmap bundle path the round was selected from |
-| `current_task` | string | Human-readable selected task summary |
+| `current_task` | string | Human-readable summary of the extracted round scope |
 | `stage` | string | `select-task`, `plan`, `implement`, `review`, `pending-merge`, `merge`, `done`, or `blocked` |
 | `branch` | string | Canonical round branch |
 | `worktree_path` | string | Canonical round worktree |
 | `active_round_dir` | string | Canonical round artifact directory |
 | `round_artifacts` | object | Canonical round artifact path map |
 | `depends_on_round_ids` | array | Round ids that must merge first |
-| `merge_after_item_ids` | array | Item ids that must merge first |
+| `merge_after_item_ids` | array | Extracted item ids that must merge first |
 | `parallel_group` | string or null | Co-scheduling group for the round |
 | `worker_mode` | string | `none`, `fanout`, or `integrate` |
 | `worker_records` | object | Worker branch, worktree, artifact, and status map |
@@ -114,9 +117,12 @@ Legacy compatibility rules:
 - Old serial repositories remain valid.
 - If parallel fields are missing, runtime should normalize them to safe serial
   defaults instead of treating them as fatal corruption.
-- A legacy roadmap revision without explicit `Item id:` fields may derive
+- A legacy flat roadmap revision without explicit `Item id:` fields may derive
   revision-local internal ids such as `legacy-item-<ordered-number>` until a
   later roadmap revision is authored with explicit item ids.
+- New strategy-backlog roadmap revisions should populate `milestone_id`,
+  `direction_id`, and `extracted_item_id` directly, and use `roadmap_item_id`
+  only when a compatibility mirror is needed.
 
 `next-family` reset rules:
 
@@ -154,8 +160,11 @@ Each round folder should contain delegated artifacts only. Start with these name
 Add more files only when a round needs them.
 
 Every round must record the active `roadmap_id`, `roadmap_revision`,
-`roadmap_dir`, and `roadmap_item_id` in `selection.md` and `review-record.json`
-so archived packets remain self-contained.
+`roadmap_dir`, `milestone_id`, `direction_id`, and `extracted_item_id` in
+`selection.md` and `review-record.json` so archived packets remain
+self-contained. Include `roadmap_item_id` only when the active roadmap
+revision is still a legacy flat roadmap or when a compatibility mirror is
+required for older runtime readers.
 
 When planner-authored worker fan-out is active, the round should also contain:
 
