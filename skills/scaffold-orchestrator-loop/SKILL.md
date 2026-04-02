@@ -73,12 +73,12 @@ not silently open a new family on top of unfinished prior work.
 
 Read [roadmap-generation.md](references/roadmap-generation.md), mint a fresh
 stable `roadmap_id` in `YYYY-MM-DD-NN-<slug>` form, and draft the repo-specific
-ordered roadmap content for
-`orchestrator/roadmaps/<roadmap_id>/rev-001/roadmap.md`. Keep later items
-coarse and make the next item concrete. Each item must include a stable
-`Item id:` plus explicit parallel metadata, even when the item remains serial.
-Never reopen an older roadmap family by appending items or reusing a used
-revision.
+strategy-backlog roadmap content for
+`orchestrator/roadmaps/<roadmap_id>/rev-001/roadmap.md`. Make milestones larger
+than a round, include candidate directions for guider extraction, and keep the
+roadmap strategic rather than implementation-sized. Use stable milestone and
+direction ids plus explicit coordination and parallel-lane guidance. Never
+reopen an older roadmap family by appending items or reusing a used revision.
 
 ## Step 3: Bootstrap Or Update the Repo Contract
 
