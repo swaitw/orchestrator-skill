@@ -45,7 +45,8 @@ repository survey.
 - For existing `legacy-flat` repos, preserve the flat roadmap style during
   `next-family` unless the user explicitly asked for migration. A migration
   must write the new `roadmap_style` to `state.json` and record the decision in
-  the new roadmap family.
+  the new roadmap family. Preserved legacy flat roadmaps must follow
+  `orchestrator/legacy-flat-roadmap.md`.
 - Record milestone status with `[pending]`, `[in-progress]`, or `[done]`.
 - Make each milestone a coordination unit that is larger than a round and
   shaped around one delivery front or shared objective.

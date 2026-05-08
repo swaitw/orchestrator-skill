@@ -52,10 +52,21 @@ review expectations in shared role or setup-contract text, including:
 For planner-authored worker fan-out, shared review expectations should also
 cover:
 
-- `worker-plan.json` exists and matches the integrated extracted round scope;
+- `worker-plan.json` exists, conforms to `orchestrator/worker-plan-schema.md`,
+  and matches the integrated extracted round scope;
 - worker ownership boundaries were respected; and
 - approval is based on the integrated round result rather than isolated worker
   slices.
+
+For roadmap updates, shared review expectations should cover:
+
+- `roadmap-update.md` exists under `orchestrator/roadmap-updates/`;
+- the update is justified by the merged round evidence;
+- used roadmap revisions remain immutable unless a new revision is authored;
+- `state.json.roadmap_update` points at the active update branch, worktree, and
+  artifacts while the update is in progress; and
+- new `roadmap_id`, `roadmap_revision`, or `roadmap_dir` metadata is activated
+  only after `roadmap-update-review.md` approves the change.
 
 ## Task-Specific Checks
 

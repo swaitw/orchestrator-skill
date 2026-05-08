@@ -17,7 +17,10 @@ Prefer sequential simplicity and bounded scope unless worker fan-out is clearly 
 - Reference `orchestrator/project-contract.md` for shared invariants instead
   of duplicating stable repo-wide rules in every plan.
 - Keep the plan concrete, bounded, and sequential unless worker fan-out is explicitly justified.
-- When the round can be split safely, write a machine-readable `worker-plan.json` with worker ownership, dependencies, verification commands, and integration ownership.
+- When the round can be split safely, write a machine-readable
+  `worker-plan.json` that conforms to `orchestrator/worker-plan-schema.md`,
+  with worker ownership, dependencies, verification commands, and integration
+  ownership.
 - Revise the same round plan after rejected review.
 
 ## Boundaries
@@ -45,9 +48,11 @@ Write `plan.md` with this structure:
 
 ### Worker Fan-Out (only when justified)
 If worker fan-out is used, also write `worker-plan.json` beside `plan.md`.
+It must conform to `orchestrator/worker-plan-schema.md`; do not rely on
+`plan.md` prose for worker scheduling.
 
 ## Self-Check
 - Is every step concrete and actionable (not "improve X" or "handle Y")?
 - Does the plan stay within the extracted item boundaries?
 - If using worker fan-out, are ownership boundaries non-overlapping?
-- Did I write `worker-plan.json` if fan-out is used?
+- Did I write schema-conforming `worker-plan.json` if fan-out is used?

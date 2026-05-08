@@ -51,6 +51,7 @@ recovery ladder, blockage rules, and role boundaries.
 ## Load Per Stage
 
 - `select-task` / `update-roadmap`: `orchestrator/roles/guider.md`
+- `update-roadmap` review: `orchestrator/roles/reviewer.md`
 - `plan`: `orchestrator/roles/planner.md`
 - `implement`: `orchestrator/roles/implementer.md`
 - `review`: `orchestrator/roles/reviewer.md`, active roadmap bundle
@@ -58,6 +59,7 @@ recovery ladder, blockage rules, and role boundaries.
 - `merge`: `orchestrator/roles/merger.md`
 - Recovery: `orchestrator/roles/recovery-investigator.md` and
   [recovery-investigator.md](references/recovery-investigator.md)
+- Worker fan-out: `orchestrator/worker-plan-schema.md`
 - Worktree/merge operations:
   [worktree-merge-rules.md](references/worktree-merge-rules.md) and
   [delegation-boundaries.md](references/delegation-boundaries.md)
@@ -75,9 +77,11 @@ Round stages:
 Controller-global stages:
 
 - `dispatch-rounds` schedules or resumes live rounds.
-- `update-roadmap` belongs to the guider.
-- `done` is terminal only when there are no unfinished milestones and no live
-  rounds.
+- `update-roadmap` authoring belongs to the guider and must produce
+  `orchestrator/roadmap-updates/<round-id>-roadmap-update.md`; approval belongs
+  to the reviewer and must produce the matching `roadmap-update-review.md`.
+- `done` is terminal only when the active roadmap parser finds no unfinished
+  work and there are no live rounds.
 
 Do not simulate these roles in your own voice.
 
@@ -99,14 +103,14 @@ Do not simulate these roles in your own voice.
   are read from the recorded round `worktree_path` while the round is live.
 - After `update-roadmap`, re-read `orchestrator/state.json`, resolve the active
   roadmap bundle again from `roadmap_dir`, and immediately start the next round
-  when unfinished `[pending]` or `[in-progress]` milestones remain and the
+  when unfinished work remains under the roadmap style-specific parser and the
   concurrency cap allows it.
 - Treat controller `done` as terminal only when the roadmap has no unfinished
-  milestones, there are no live rounds, or user interruption lawfully stops
-  progress.
+  work under its active style, there are no live rounds, or user interruption
+  lawfully stops progress.
 - If the guider authored a new roadmap revision during `update-roadmap`,
   activate it by updating `state.json` `roadmap_id`, `roadmap_revision`, and
-  `roadmap_dir` before the next roadmap re-check.
+  `roadmap_dir` only after the roadmap update reviewer approves it.
 - See [delegation-boundaries.md](references/delegation-boundaries.md) and
   [state-machine.md](references/state-machine.md) for complete rules.
 
@@ -126,12 +130,13 @@ roles in the controller.
 
 ## Completion
 
-Continue until every roadmap milestone in the active bundle is complete or a
+Continue until every roadmap unit in the active bundle is complete or a
 recorded controller error lawfully blocks safe progress. Do not stop just
 because one round reaches `done`; terminal completion requires a roadmap
-re-check confirming no unfinished milestones and no live rounds, or explicit
-user interruption. A recorded blockage by itself is not terminal; it must follow
-the recovery and stop rules in [resume-rules.md](references/resume-rules.md).
+re-check confirming no unfinished work under the active roadmap style and no
+live rounds, or explicit user interruption. A recorded blockage by itself is not
+terminal; it must follow the recovery and stop rules in
+[resume-rules.md](references/resume-rules.md).
 
 ## Common Mistakes
 
@@ -143,12 +148,14 @@ the recovery and stop rules in [resume-rules.md](references/resume-rules.md).
 - Guessing missing state by inferring `roadmap_id` from directory names.
 - Treating `pending-merge` as done and proceeding before merge-order is satisfied.
 - Authoring delegated artifacts by writing `implementation-notes.md` or `merge.md` yourself.
+- Mutating roadmap status or activating a new revision without delegated
+  `roadmap-update.md` and approved `roadmap-update-review.md`.
 
 ## Pre-Completion Self-Check
 
 Before sending a final response, verify ALL of these:
 - `state.json` `active_rounds` is empty
-- Active roadmap bundle has no `[pending]` or `[in-progress]` milestones
+- Active roadmap bundle has no unfinished work under its style-specific parser
 - No unresolved `resume_error` or `resume_errors` entries remain
 - If stopping due to blockage: precise error recorded in `state.json`
 - If stopping due to user interruption: state is consistent and saved

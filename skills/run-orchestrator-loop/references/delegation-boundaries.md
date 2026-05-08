@@ -12,8 +12,9 @@ Runtime role loading happens only from `orchestrator/roles/`.
 - create round branches and round worktrees
 - create worker branches and worker worktrees when `worker-plan.json` requires
   them
+- create roadmap-update branches and worktrees after successful round merges
 - update `orchestrator/state.json`, including active roadmap metadata when a
-  reviewed `update-roadmap` stage lawfully activates a new revision
+  reviewed and approved `update-roadmap` stage lawfully activates a new revision
 - record artifact paths, retry-state fields, pending-merge fields, worker state
   fields, and stage markers exactly as the repo-local contract requires
 - resolve live round artifact paths against the recorded round
@@ -42,6 +43,7 @@ Runtime role loading happens only from `orchestrator/roles/`.
 
 - task selection
 - roadmap bundle edits
+- roadmap update review
 - round planning
 - worker planning via `worker-plan.json`
 - implementation
@@ -60,8 +62,14 @@ Runtime role loading happens only from `orchestrator/roles/`.
   `orchestrator/roles/recovery-investigator.md`.
 - The `recovery-investigator` may not act as the substantive stage reviewer.
 - Never interrupt a live subagent.
-- Never set a timeout on a live subagent.
+- Never set a cancellation timeout on a live subagent. Non-interrupting
+  observation intervals are allowed for liveness checks.
 - Wait for the subagent to finish before continuing.
+- If a live subagent becomes non-observable, do not hang forever and do not
+  interrupt it. Re-read controller-visible artifacts, check any host-provided
+  non-interrupting status surface, and enter the recovery ladder when three
+  consecutive observations show no status change, no artifact progress, and no
+  trustworthy liveness signal.
 - Do not convert a failed role-stage launch directly into terminal blockage
   unless `recovery-investigator` has been attempted or deterministically ruled
   out, and no same-round recovery, re-observation, or different-mechanism
@@ -72,7 +80,8 @@ Runtime role loading happens only from `orchestrator/roles/`.
 ## The Orchestrator May Not Do
 
 - author `selection.md`, `plan.md`, `worker-plan.json`, `implementation-notes.md`,
-  `review.md`, `review-record.json`, or `merge.md`
+  `review.md`, `review-record.json`, `merge.md`, `roadmap-update.md`, or
+  `roadmap-update-review.md`
 - choose worker ownership boundaries on its own
 - perform substantive code integration or refresh itself
 - approve work without a round-level reviewer

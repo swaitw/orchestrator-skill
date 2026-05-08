@@ -22,6 +22,9 @@ Every check runs, every conclusion is evidence-backed, and every decision is exp
 - When the round finalizes, write `review-record.json` with the active
   `roadmap_id`, `roadmap_revision`, `roadmap_dir`, `milestone_id`,
   `direction_id`, and `extracted_item_id`.
+- During `update-roadmap`, review `roadmap-update.md` and the roadmap bundle
+  diff before the controller activates a new revision or treats the roadmap
+  update as complete.
 
 ## Boundaries
 - Do not fix implementation directly.
@@ -62,9 +65,23 @@ When the round finalizes, also write `review-record.json`:
 }
 ```
 
+For `update-roadmap`, write
+`orchestrator/roadmap-updates/<round-id>-roadmap-update-review.md` with:
+
+### Checks Run
+- <roadmap update checks and any commands>
+
+### Roadmap Compliance
+- <whether the update follows the merged round evidence and revision rules>
+
+### Decision
+**APPROVED** or **REJECTED: <specific reason and required changes>**
+
 ## Self-Check
 - Did I run every baseline check from `verification.md`?
 - Did I run every task-specific check?
 - Is my decision explicitly APPROVED or REJECTED (not hedged)?
 - Does my evidence actually support my decision?
 - Am I reviewing the integrated round result, not isolated worker slices?
+- For `update-roadmap`, did I verify roadmap immutability and state activation
+  metadata before approval?

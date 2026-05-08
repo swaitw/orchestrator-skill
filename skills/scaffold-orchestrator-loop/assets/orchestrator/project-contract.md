@@ -6,22 +6,22 @@ stable contracts instead of restating them in every role or roadmap file.
 
 ## Stable Interfaces
 
-- Event schemas:
-- Golden logs and fixtures:
-- Dry-run or command-rendering output:
-- Package and module boundaries:
-- Public compatibility facades:
+- Event schemas: none discovered yet
+- Golden logs and fixtures: none discovered yet
+- Dry-run or command-rendering output: none discovered yet
+- Package and module boundaries: none discovered yet
+- Public compatibility facades: none discovered yet
 
 ## Alignment Invariants
 
-- Human-approved architecture constraints:
-- Compatibility promises:
-- Explicit non-goals that should not be reopened without a new roadmap family:
+- Human-approved architecture constraints: none discovered yet
+- Compatibility promises: none discovered yet
+- Explicit non-goals that should not be reopened without a new roadmap family: none discovered yet
 
 ## Verification Anchors
 
-- Invariants every reviewer should consider when touched:
-- Baseline commands that protect shared contracts:
+- Invariants every reviewer should consider when touched: none discovered yet
+- Baseline commands that protect shared contracts: none discovered yet
 
 ## Update Rule
 

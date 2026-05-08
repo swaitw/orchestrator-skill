@@ -30,12 +30,12 @@ resume review outcomes.
 6. If `active_rounds` is empty and `controller_stage` is `done`, inspect the
    active roadmap bundle `roadmap.md` before stopping or replying.
 7. If `active_rounds` is empty, `controller_stage` is `done`, and the active
-   roadmap bundle still has unfinished `[pending]` or `[in-progress]`
-   milestones,
+   roadmap bundle is unfinished under its style-specific parser,
    treat that as a stale non-terminal `done` state and resume at
    `dispatch-rounds`.
 8. If `active_rounds` is empty, `controller_stage` is `done`, and the active
-   roadmap bundle has no unfinished milestones, the controller may stop.
+   roadmap bundle has no unfinished work under its style-specific parser, the
+   controller may stop.
 9. If `controller_stage` is `blocked`, if any live round stage is `blocked`, or
    if any `resume_error` / `resume_errors` entry exists for a live round,
    resume into automatic recovery on that same recorded round/stage instead of
@@ -57,6 +57,8 @@ resume review outcomes.
   is already absolute.
 - While a round is live, resolve repo-relative artifact paths against that
   round record's `worktree_path`, not the parent checkout.
+- While a round is live, resolve repo-relative `active_round_dir` the same way:
+  against that round record's `worktree_path`.
 - If the top-level legacy `worktree_path` mirror disagrees with the matching
   `active_rounds[]` record, prefer the round record.
 - The parent checkout copy is archival after merge. Its absence while a round is
@@ -93,8 +95,35 @@ resume review outcomes.
   worker or integration phase recorded in `worker_records`.
 - Use `worker-plan.json` plus `worker_records` as the controller-readable source
   of truth for worker scheduling and resume.
+- Validate `worker-plan.json` against `orchestrator/worker-plan-schema.md`
+  before launching or resuming workers.
 - Do not infer worker ownership or dependency order from `plan.md` prose during
   resume.
+
+## Roadmap Terminal Detection
+
+- `strategy-backlog`: parse milestone headings under `## Milestones`; any
+  `### [pending]` or `### [in-progress]` milestone is unfinished.
+- `legacy-flat`: parse item headings under `## Items`; any `### [pending]` or
+  `### [in-progress]` item is unfinished.
+- Unknown status strings, missing required status markers, or unknown
+  `roadmap_style` are parse errors. Record the exact controller error in
+  `state.json` instead of treating the roadmap as terminal.
+
+## Roadmap Update Resume
+
+- If `controller_stage` is `update-roadmap`, read `state.json.roadmap_update`
+  and reopen the recorded
+  roadmap-update branch/worktree when present, or recreate them from the base
+  branch after the merged round when lawful.
+- Observe `orchestrator/roadmap-updates/<round-id>-roadmap-update.md` and the
+  matching review artifact before deciding whether the update is complete.
+- Do not activate a new `roadmap_revision` or treat the roadmap update as done
+  until `roadmap-update-review.md` explicitly approves it.
+- If the update artifact exists but review is missing, dispatch the reviewer
+  instead of mutating state directly.
+- After approved roadmap-update merge and state activation, clear
+  `state.json.roadmap_update`.
 
 ## Non-Observable Stages
 
@@ -112,6 +141,10 @@ resume review outcomes.
   `orchestrator/roles/recovery-investigator.md` before treating the stop as
   terminal, unless it can record a deterministic reason why no available
   delegation mechanism can launch one at all.
+- A live delegated agent that becomes non-observable is a recovery trigger, not
+  permission to wait forever. After three consecutive non-interrupting
+  observations with no status change, no artifact progress, and no trustworthy
+  liveness signal, enter this recovery ladder.
 - Recovery follows this ladder before any stop decision:
   1. re-read `state.json`, the active roadmap bundle, and the recorded branch /
      worktree;

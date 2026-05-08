@@ -32,6 +32,22 @@ Example:
 - Keep worker writes inside the assigned worker branch/worktree.
 - Keep the canonical round branch/worktree reserved for integrated round state.
 
+## Roadmap Update Branches And Worktrees
+
+- After a successful round merge, use one roadmap-update branch:
+  `orchestrator/roadmap-update-<round-id>-<slug>`.
+- Use one roadmap-update worktree:
+  `orchestrator/worktrees/roadmap-update-<round-id>`.
+- The guider authors
+  `orchestrator/roadmap-updates/<round-id>-roadmap-update.md` and any roadmap
+  bundle edits in that worktree.
+- The reviewer authors
+  `orchestrator/roadmap-updates/<round-id>-roadmap-update-review.md`.
+- Merge the roadmap-update branch only after explicit reviewer approval.
+- Record the active roadmap-update branch, worktree, artifacts, revisions, and
+  status in `state.json.roadmap_update` until the update is approved, merged,
+  and cleared.
+
 ## Merge Rules
 
 - Merge only after reviewer approval that finalizes the round under the
@@ -54,8 +70,10 @@ After a successful squash merge:
   them
 - set `last_completed_round`
 - advance controller state to `update-roadmap`
-- let the guider update milestone statuses in the active roadmap bundle or
-  author the next roadmap revision
-- if the guider authored a new active revision, update `state.json`
-  `roadmap_id`, `roadmap_revision`, and `roadmap_dir` before the next roadmap
-  check
+- dispatch the guider on the roadmap-update branch/worktree to update milestone
+  statuses in the active roadmap bundle or author the next roadmap revision
+- dispatch the reviewer to approve or reject the roadmap update artifact and
+  diff
+- after approval and merge of the roadmap-update branch, update `state.json`
+  `roadmap_id`, `roadmap_revision`, and `roadmap_dir` when the approved update
+  activates a new revision

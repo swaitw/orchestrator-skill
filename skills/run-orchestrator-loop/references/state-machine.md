@@ -33,16 +33,18 @@ the recorded blockage note.
 - `implement`: implementer
 - `review`: reviewer
 - `merge`: merger prepares notes, orchestrator performs bookkeeping
-- `update-roadmap`: guider
+- `update-roadmap`: guider authors `roadmap-update.md`; reviewer approves
+  `roadmap-update-review.md`
 
 ## Controller Legal Transitions
 
-- `done` -> `dispatch-rounds` when unfinished roadmap milestones remain
+- `done` -> `dispatch-rounds` when unfinished roadmap work remains under the
+  active style parser
 - `dispatch-rounds` -> `update-roadmap` after any successful round merge
-- `update-roadmap` -> `dispatch-rounds` when unfinished roadmap milestones or
-  live rounds remain
+- `update-roadmap` -> `dispatch-rounds` after approved roadmap update when
+  unfinished roadmap work or live rounds remain
 - `update-roadmap` -> `done` only when the active roadmap bundle has no
-  unfinished milestones and there are no live rounds
+  unfinished work under its style-specific parser and there are no live rounds
 - `blocked` -> `dispatch-rounds` when automatic recovery can resume from the
   same recorded round/stage or from stale blockage bookkeeping
 
@@ -69,8 +71,8 @@ the recorded blockage note.
   or `merge` when recovery re-establishes controller-visible evidence for that
   same round/stage or the repo-local retry contract lawfully steps the round
 
-If `update-roadmap` activates a new roadmap revision, the controller must
-update `state.json` roadmap metadata before evaluating those transitions.
+If approved `update-roadmap` activates a new roadmap revision, the controller
+must update `state.json` roadmap metadata before evaluating those transitions.
 
 Do not skip forward and do not invent parallelism that the roadmap or planner
 artifacts do not authorize.
@@ -84,9 +86,9 @@ stateDiagram-v2
     [*] --> dispatch_rounds
     dispatch_rounds --> update_roadmap: round merged
     blocked --> dispatch_rounds: recovery resumes
-    update_roadmap --> dispatch_rounds: unfinished milestones remain
-    update_roadmap --> done: all milestones done, no live rounds
-    done --> dispatch_rounds: unfinished milestones remain
+    update_roadmap --> dispatch_rounds: approved update, unfinished work remains
+    update_roadmap --> done: approved update, all work done
+    done --> dispatch_rounds: stale done, unfinished work remains
     done --> [*]: terminal
 ```
 
