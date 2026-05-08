@@ -22,7 +22,7 @@ orchestrator files.
 1. Explore the repo enough to understand current architecture, tests, risks,
    and existing workflow conventions.
 2. Check whether the user goal already answers the core alignment questions.
-3. Ask only the missing high-signal questions, one at a time.
+3. Ask only the missing high-signal questions through the decision loop below.
 4. If the goal is too large for one roadmap family, decompose it first and ask
    which family should be scaffolded now.
 5. Propose 2-3 roadmap strategies with tradeoffs and a recommendation.
@@ -51,9 +51,44 @@ follow-up questions:
 - What tradeoffs does the user prefer when speed, scope, and design quality
   conflict?
 
-Ask one question at a time when conversational alignment is needed. Prefer
-multiple-choice questions when the decision is constrained and open-ended
-questions when the missing context is conceptual.
+Ask one question at a time through the decision loop when conversational
+alignment is needed.
+
+## Decision Loop
+
+For each unresolved alignment decision:
+
+1. Ask exactly one question.
+2. Prefer 2-4 labeled options when the decision can be bounded.
+3. Put the recommended option first and say why it fits the repo and goal.
+4. State the tradeoff for each option.
+5. Wait for the user's answer before asking the next question.
+6. Record the selected answer in the alignment decision ledger.
+
+Use this shape for bounded decisions:
+
+```md
+### Alignment Decision: <short topic>
+
+Recommended: A
+
+A. <option title>
+Impact: <what this chooses>
+Tradeoff: <what this costs or defers>
+
+B. <option title>
+Impact: <what this chooses>
+Tradeoff: <what this costs or defers>
+
+C. <option title>
+Impact: <what this chooses>
+Tradeoff: <what this costs or defers>
+
+Which direction should this roadmap use?
+```
+
+Use an open-ended question only when the missing context cannot be honestly
+bounded into useful options. Do not batch several decisions into one question.
 
 ## Strategy Options
 
@@ -69,10 +104,28 @@ name:
 Lead with the recommended option and explain why it fits the repo and user
 goal. Keep options short enough for the user to compare directly.
 
+## Alignment Decision Ledger
+
+Before drafting the roadmap, summarize the selected answers:
+
+- Outcome:
+- Non-goals:
+- Architecture posture:
+- Compatibility promises:
+- Verification standard:
+- Sequencing strategy:
+- Concurrency posture:
+- Risk posture:
+- Deferred alternatives:
+
+Ask the user to approve this ledger before writing scaffold files. If the user
+corrects the ledger, update it and ask again. The approved ledger is the source
+for `Alignment Summary`, `project-contract.md`, and `verification.md`.
+
 ## Approval Gate
 
-Before writing scaffold files, get explicit approval of the strategy. A useful
-approval prompt states:
+Before writing scaffold files, get explicit approval of the decision ledger and
+strategy. A useful approval prompt states:
 
 ```text
 I will scaffold the roadmap around <recommended strategy>. It will treat

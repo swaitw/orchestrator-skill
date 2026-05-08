@@ -93,13 +93,15 @@ The alignment phase must:
 
 - clarify outcome, non-goals, success criteria, constraints, risk, sequencing,
   and concurrency posture;
-- ask only missing high-signal questions, one at a time;
+- ask only missing high-signal questions through one-at-a-time option-picking
+  decisions;
 - propose 2-3 roadmap strategies with tradeoffs and a recommendation;
-- get explicit user approval of the chosen strategy; and
+- summarize selected answers in an alignment decision ledger;
+- get explicit user approval of the ledger and chosen strategy;
 - carry the approved alignment into `roadmap.md`, `project-contract.md`, and
-  `verification.md`.
+  `verification.md`; and
 - ensure every `project-contract.md` section has concrete entries or the exact
-  phrase `none discovered yet`;
+  phrase `none discovered yet`.
 
 If the user already supplied a complete approved strategy, restate the durable
 alignment you will scaffold and proceed only if that direction is explicit
