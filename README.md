@@ -21,6 +21,8 @@ Use this skill when a repository does not yet have an `orchestrator/` directory.
 It is responsible for:
 
 - surveying the repository and current goal
+- running a deep alignment brainstorm before roadmap generation
+- getting explicit approval of the roadmap strategy
 - generating the first roadmap
 - scaffolding revisioned roadmap bundle files (for example `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/roadmap.md`, `.../verification.md`, and `.../retry-subloop.md`, which stays present even when same-round retry is disabled), `orchestrator/state.json`, repo-local role definitions under `orchestrator/roles/`, and `orchestrator/worktrees/`
 - preparing the repository for per-round worktrees
@@ -167,10 +169,11 @@ If either path already exists in `~/.codex/skills`, move or remove the existing 
 
 1. From the target repository root, install these skills into that repository for your agent host with `npx skills add ... --agent <id>`.
 2. In a target repository, invoke `scaffold-orchestrator-loop` with the high-level goal.
-3. Review the generated `orchestrator/` contract and initial checkpoint commit.
-4. Invoke `run-orchestrator-loop` to start or resume the delegated round loop.
-5. Let the runtime skill continue until roadmap milestones are complete or a recorded controller error blocks progress.
-6. If the roadmap exposes independent lanes or clearly separable candidate directions, expect multiple round branches and worktrees to run concurrently.
+3. Answer the alignment questions, compare the proposed roadmap strategies, and approve the direction.
+4. Review the generated `orchestrator/` contract and initial checkpoint commit.
+5. Invoke `run-orchestrator-loop` to start or resume the delegated round loop.
+6. Let the runtime skill continue until roadmap milestones are complete or a recorded controller error blocks progress.
+7. If the roadmap exposes independent lanes or clearly separable candidate directions, expect multiple round branches and worktrees to run concurrently.
 
 ## Development Notes
 

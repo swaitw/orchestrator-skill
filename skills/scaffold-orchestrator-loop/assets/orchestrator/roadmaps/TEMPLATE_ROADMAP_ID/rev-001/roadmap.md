@@ -10,11 +10,29 @@
 
 Replace this example with the overall outcome for the roadmap family.
 
+## Alignment Summary
+
+- Approved thesis: Replace this example with the human-approved strategy this
+  roadmap family will follow.
+- Success criteria: Replace this example with the concrete signals that make
+  the roadmap meaningfully complete.
+- Non-goals: Replace this example with adjacent work the scaffold alignment
+  intentionally excluded.
+- Chosen strategy: Replace this example with the approved roadmap approach and
+  why it was chosen over the alternatives.
+- Deferred alternatives: Replace this example with options considered during
+  alignment but not selected for this family.
+
 ## Outcome Boundaries
 
 - In scope: Replace this example with the delivery fronts this roadmap owns.
 - Out of scope: Replace this example with adjacent work that should stay outside
   this roadmap family.
+- Repo-wide invariants: see `orchestrator/project-contract.md`; this roadmap
+  should record only roadmap-specific overrides.
+- Completed history: keep compact notes in
+  `orchestrator/roadmaps/TEMPLATE_ROADMAP_ID/roadmap-history.md` instead of
+  copying completed item bodies into new active revisions.
 
 ## Global Sequencing Rules
 

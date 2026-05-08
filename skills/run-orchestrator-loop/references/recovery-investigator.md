@@ -1,59 +1,61 @@
-# Recovery Investigator
+# Recovery Investigator Controller Use
 
-This reference is supporting documentation for the recovery role contract used
-to seed and scaffold `orchestrator/roles/recovery-investigator.md`.
+Runtime role loading happens only from
+`orchestrator/roles/recovery-investigator.md`. This reference is for the
+controller: when to launch that role, what context to provide, and how to use
+its answer.
 
-Runtime loading happens only from `orchestrator/roles/recovery-investigator.md`.
-The controller does not load this reference as a runtime role or as runtime
-authority.
+## Launch Conditions
 
-## Purpose
+Launch a qualifying recovery investigator when a delegated stage is
+non-terminal and any of these are true:
 
-Diagnose delegated-stage failures and recommend recovery steps when a stage
-becomes non-observable, leaves an untrustworthy artifact, or otherwise stops
-without a terminal result.
+- expected stage artifacts are missing, partial, stale, or untrustworthy;
+- a subagent stopped without a controller-visible terminal result;
+- persisted `blocked`, `resume_error`, or `resume_errors` state needs fresh
+  recovery evaluation;
+- the controller cannot tell whether existing worktree outputs already prove a
+  lawful next stage.
 
-## Inputs
+Skip this launch only after recording a deterministic reason that no available
+delegation mechanism can launch a qualifying recovery investigator.
 
-- Current `orchestrator/state.json`
-- Current round directory contents
-- Branch and worktree status
-- Repo-local role definitions from `orchestrator/roles/`
-- Prior wait and retry observations
-- Controller-visible failure evidence
-- Repo-local recovery rules
+## Context To Provide
 
-## Duties
+Give the investigator the minimum evidence needed to diagnose the active
+round/stage:
 
-- Serve as the default first recovery action for delegated-stage failures when
-  a qualifying recovery investigator can be launched.
-- The controller may skip launching `recovery-investigator` only when it
-  records a deterministic reason that no available delegation mechanism can
-  launch a qualifying recovery investigator.
-- Produce a diagnosis and recommend a recovery action.
-- Recommend whether to retry with the same or a different delegation mechanism.
-- Recommend whether the controller can safely continue.
-- Optionally recommend whether the controller should record a controller-owned
-  recovery note.
+- current `orchestrator/state.json`;
+- active roadmap bundle identity and retry policy;
+- current round id, stage, branch, worktree, and round artifact paths;
+- expected artifacts for the stage;
+- observed artifact contents or absence;
+- branch/worktree status;
+- prior wait, retry, and blockage observations.
 
-## Outputs
+## Requested Output
 
-- Diagnosis
-- Recommended recovery action
-- Recommendation on same-vs-different delegation mechanism
-- Recommendation on whether the controller can safely continue
-- Optional recommendation on whether the controller should record a
-  controller-owned recovery note
+Ask for:
+
+- diagnosis grounded in observable evidence;
+- whether existing stage outputs are salvageable and which stage they prove;
+- recommended recovery action;
+- whether to retry through the same or a different delegation mechanism;
+- whether the controller can safely continue;
+- optional controller-owned recovery note text.
+
+## Consumption Rules
+
+The controller may use the recommendation to clear stale blockage bookkeeping,
+refresh artifact-path bookkeeping, recreate missing worktrees, or re-dispatch a
+stage. The investigator does not make those state changes itself.
+
+The investigator recommendation is advisory. The controller still applies the
+state machine, retry policy, and delegation boundaries before changing state,
+stepping a round backward, or recording blockage.
 
 ## Boundaries
 
-- Do not write `selection.md`, `plan.md`, implementation artifacts, `review.md`,
-  `review-record.json`, or `merge.md`.
-- Do not write `orchestrator/state.json`.
-- Do not perform guider, planner, implementer, reviewer, or merger substantive
-  work.
-- Do not act as the stage reviewer during review-stage failures.
-- Do not author the controller-owned recovery note.
-- Do not perform repo or worktree repair actions.
-- Do not make roadmap decisions.
-- Do not merge or finalize rounds.
+The recovery investigator must not be asked to author delegated stage artifacts,
+write `orchestrator/state.json`, perform implementation work, approve review
+results, update the roadmap, merge, or finalize rounds.

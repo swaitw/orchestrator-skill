@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "run-orchestrator-loop": {
+      "source": "soulomoon/orchestrator-skill",
+      "sourceType": "github",
+      "computedHash": "1f63fe9aead3a7cbf5bb6485626ae7702f8862337587a5ac2a195a169c2ece0d"
+    },
+    "scaffold-orchestrator-loop": {
+      "source": "soulomoon/orchestrator-skill",
+      "sourceType": "github",
+      "computedHash": "2d208d542f0024cc716246a1ab438bf388ffbdc9a44cbaac09d4ed4d758c9cf0"
+    }
+  }
+}

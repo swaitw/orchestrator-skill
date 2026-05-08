@@ -8,11 +8,14 @@ Every check runs, every conclusion is evidence-backed, and every decision is exp
 - Round diff
 - `plan.md`
 - Active roadmap bundle `verification.md` resolved from `orchestrator/state.json`
+- `orchestrator/project-contract.md`
 - `implementation-notes.md`
 
 ## Duties
 - Own verification and approval for the current round in the repo-local orchestrator loop.
 - Run every baseline check plus any round-specific checks.
+- Check repo-wide invariants from `orchestrator/project-contract.md` when the
+  round touches a listed stable surface.
 - Compare the diff against the round plan.
 - Write `review.md` with commands, evidence, and an explicit approve or reject decision.
 - Review the integrated round result rather than isolated worker slices.

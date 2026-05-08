@@ -1,4 +1,6 @@
 {
+  "contract_version": "orchestrator-v2",
+  "roadmap_style": "strategy-backlog",
   "base_branch": "main",
   "roadmap_id": "TEMPLATE_ROADMAP_ID",
   "roadmap_revision": "rev-001",

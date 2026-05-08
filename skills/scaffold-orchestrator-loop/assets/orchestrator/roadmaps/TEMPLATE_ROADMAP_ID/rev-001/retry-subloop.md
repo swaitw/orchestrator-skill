@@ -1,41 +1,37 @@
-# Retry Subloop Contract
+# Retry Subloop Policy
 
-Tailor this file for the active roadmap revision at
-`orchestrator/roadmaps/TEMPLATE_ROADMAP_ID/rev-001/`.
+Active bundle: `orchestrator/roadmaps/TEMPLATE_ROADMAP_ID/rev-001/`. Tailor
+this policy during setup.
 
-If this repo does not use same-round retry yet, keep that rule explicit here
-instead of deleting the file.
+This file records only repo- and roadmap-specific retry policy. Keep shared
+runtime mechanics in the runtime skill references and controller state schema.
 
-## Scope
+## Same-Round Retry
 
-- State whether same-round retry is allowed.
-- If retry is allowed, name which extracted round items or stage outcomes may
-  retry.
-- State whether worker-slice retry is allowed when a plan uses `worker-plan.json`.
-- State when a reviewed round may pause in `pending-merge` before merge.
+- Default: disabled.
+- Enabled extracted items:
+  - none
+- Enabled review outcomes:
+  - none
+- Worker-slice retry:
+  - disabled unless `worker-plan.json` explicitly enables it for the current
+    round.
 
-## Machine State
+## Pending-Merge Policy
 
-- Document any retry-specific fields required in `orchestrator/state.json`.
-- Document any worker record or `pending_merge_rounds` fields the controller
-  must track.
-
-## Review Output
-
-- State which review outcomes return the same round to `plan`.
-- State which review outcomes return the same round to `implement`.
-- State which review outcomes return the same round to `review`.
-- State which review outcomes finalize and allow `merge`.
+- A reviewed round may pause in `pending-merge` only for declared dependency
+  ordering, extracted-item ordering, or base-branch freshness.
+- If a `pending-merge` round needs substantive code refresh, return it to the
+  owner named by the current round state: whole-round implementer when
+  `worker_mode` is `none`, integration implementer when worker fan-out is
+  active.
 
 ## Roadmap Revision Rule
 
-- If an accepted `update-roadmap` stage changes the roadmap contract
-  semantically, author a new roadmap revision directory instead of rewriting a
+- If `update-roadmap` changes future coordination, sequencing, boundaries, or
+  retry meaning, publish a new roadmap revision directory instead of rewriting a
   used revision.
 
-## Pending-Merge Refresh
+## Roadmap Overrides
 
-- State when base-branch drift or dependency merges send a round from
-  `pending-merge` back to `implement`, `review`, or `plan`.
-- State whether the whole-round implementer or the integration implementer owns
-  the refresh when worker fan-out is active.
+- none

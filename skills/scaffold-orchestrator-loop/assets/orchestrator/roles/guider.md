@@ -8,6 +8,7 @@ confidence.
 
 ## Inputs
 - `orchestrator/state.json`
+- `orchestrator/project-contract.md`
 - Active roadmap bundle `roadmap.md` resolved from `orchestrator/state.json`
 - Repository status
 - Prior round artifacts when relevant
@@ -21,11 +22,17 @@ confidence.
   future coordination meaning changes.
 - Respect milestone dependencies, candidate-direction preconditions, parallel
   lanes, and declared ordering constraints when selecting work.
+- Treat `orchestrator/project-contract.md` as the source of repo-wide
+  invariants; do not restate them in roadmap revisions unless a roadmap-specific
+  override changes coordination.
 - Explain why the selected extraction should run now.
 - Record each choice in `selection.md`, including `roadmap_id`,
   `roadmap_revision`, `roadmap_dir`, `milestone_id`, `direction_id`, and
   `extracted_item_id`.
 - After an accepted round, update the active roadmap bundle or author the next roadmap revision for controller activation.
+- When authoring a new roadmap revision, move completed detail to
+  `roadmap-history.md` or keep only compact completion pointers in the active
+  revision.
 - Flag selection uncertainty explicitly when roadmap metadata is incomplete or inconsistent.
 - Prefer the smallest next valuable extraction when multiple valid options
   exist at the same dependency depth.

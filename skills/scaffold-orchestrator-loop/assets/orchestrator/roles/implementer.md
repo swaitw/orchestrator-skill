@@ -8,10 +8,13 @@ Execute faithfully, keep changes scoped to owned work, and test before claiming 
 - `plan.md`
 - Active round worktree
 - Active roadmap bundle `verification.md` resolved from `orchestrator/state.json`
+- `orchestrator/project-contract.md`
 
 ## Duties
 - Own code changes for the current round in the repo-local orchestrator loop.
 - Implement the approved round plan in the round worktree.
+- Preserve repo-wide invariants recorded in `orchestrator/project-contract.md`
+  when the round touches those surfaces.
 - When the planner authored `worker-plan.json`, own only the assigned worker slice or the integration pass named by that contract.
 - Add or update tests before relying on new behavior.
 - Record a concise change summary in `implementation-notes.md`.

@@ -1,13 +1,17 @@
 # Verification Contract
 
-Create `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/verification.md` as the reviewer's canonical checklist for the active roadmap bundle.
+Create `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/verification.md`
+as the repo- and roadmap-specific check list for the active roadmap bundle.
+Universal reviewer duties stay in `orchestrator/roles/reviewer.md`.
+Repo-wide invariants stay in `orchestrator/project-contract.md`.
 
 ## Required Sections
 
 - `## Baseline Checks`
+- `## Alignment Checks`
 - `## Task-Specific Checks`
-- `## Approval Criteria`
-- `## Reviewer Record Format`
+- `## Manual Checks`
+- `## Roadmap Overrides`
 
 ## Baseline Checks
 
@@ -20,7 +24,14 @@ Fill these with repo-specific commands discovered during setup:
 
 If the repo has no automation yet, say so explicitly and give the reviewer the minimum manual checks they must record.
 
-The verification contract should also require reviewers to confirm that:
+## Alignment Checks
+
+Fill these with checks that prove the approved alignment, especially success
+criteria and non-goals that are not covered by baseline automation. Each check
+should explain which approved criterion it protects.
+
+Do not restate the full reviewer role in `verification.md`. Keep universal
+review expectations in shared role or setup-contract text, including:
 
 - the round stayed within the active roadmap bundle recorded in `state.json`;
 - the round's recorded `roadmap_id` matches the active family's scaffolded `YYYY-MM-DD-NN-<slug>` identifier rather than a recomputed title-derived value;
@@ -38,8 +49,8 @@ The verification contract should also require reviewers to confirm that:
 - the setup change stopped after the checkpoint commit without starting runtime
   rounds.
 
-If the round used planner-authored worker fan-out, baseline checks should also
-require the reviewer to confirm that:
+For planner-authored worker fan-out, shared review expectations should also
+cover:
 
 - `worker-plan.json` exists and matches the integrated extracted round scope;
 - worker ownership boundaries were respected; and
@@ -55,23 +66,15 @@ Tell reviewers to add checks that are specific to the current round, such as:
 - manual UI validation
 - fixture or example updates
 
-## Approval Criteria
+## Manual Checks
 
-Approval should require all of the following:
+Add manual review steps only when automation cannot cover required behavior.
+Keep them concrete enough that a reviewer can record pass/fail evidence.
 
-- baseline checks pass
-- task-specific checks pass
-- reviewer records evidence in `review.md`
-- no unresolved blocking issue remains
-- any next-family pointer refresh or preserved-history check passes
-- any `pending-merge` refresh or re-review requirement has been satisfied before
-  the round is approved for merge
+## Roadmap Overrides
 
-## Reviewer Record Format
-
-Require a concise record with:
-
-- commands run
-- pass or fail result
-- evidence summary
-- approve or reject decision
+Use this section only for verification rules specific to the active roadmap
+revision. Put universal approval criteria and review-record format in
+`orchestrator/roles/reviewer.md`, and put shared event schema, fixture,
+dry-run, or package-boundary invariants in `orchestrator/project-contract.md`
+instead of every roadmap verification file.

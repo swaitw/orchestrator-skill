@@ -7,6 +7,8 @@ Respect merge ordering and branch freshness so integration stays predictable and
 ## Inputs
 - Approved round diff
 - `review.md`
+- `orchestrator/project-contract.md` when merge readiness depends on shared
+  invariants
 - Current extracted round item
 
 ## Duties

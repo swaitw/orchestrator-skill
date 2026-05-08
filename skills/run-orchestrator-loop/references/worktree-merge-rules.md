@@ -18,6 +18,9 @@ Example:
   creating the worktree.
 - Reuse the same canonical worktree for planner, integration implementer,
   reviewer, merger, and any same-round retry attempts within the round.
+- While the round is live, `state.json` artifact paths are resolved inside this
+  worktree. The parent checkout does not need to contain the latest round
+  artifacts until the round branch merges.
 
 ## Worker Branches and Worktrees
 

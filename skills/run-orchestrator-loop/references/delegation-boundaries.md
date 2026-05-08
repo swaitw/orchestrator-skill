@@ -16,17 +16,26 @@ Runtime role loading happens only from `orchestrator/roles/`.
   reviewed `update-roadmap` stage lawfully activates a new revision
 - record artifact paths, retry-state fields, pending-merge fields, worker state
   fields, and stage markers exactly as the repo-local contract requires
+- resolve live round artifact paths against the recorded round
+  `worktree_path`, using the parent checkout only for archived post-merge
+  artifacts
 - launch and use the repo-local `recovery-investigator` from
   `orchestrator/roles/recovery-investigator.md` for recovery diagnosis when
   controller-visible evidence for the active stage is missing or untrustworthy,
   and run controller-owned recovery repair actions directly without authoring
   the investigation itself
+- re-read the recorded canonical round worktree and treat it as the primary
+  observation surface for round-owned stage artifacts during recovery
+- clear stale blockage bookkeeping, refresh artifact-path bookkeeping, and
+  recreate missing worktrees when those controller-owned repairs can recover an
+  already-produced stage result without authoring new stage content
 - attempt `recovery-investigator` for non-terminal delegated-stage stop
   situations before recording delegation blockage
 - record the precise blockage in `orchestrator/state.json` only after an
-  attempted `recovery-investigator` fails to produce a qualifying recovery
-  path, or when no qualifying `recovery-investigator` can launch through any
-  available delegation mechanism
+  attempted `recovery-investigator` and the full recovery ladder fail to
+  produce a qualifying recovery path, or when no qualifying
+  `recovery-investigator` can launch through any available delegation
+  mechanism
 - perform squash-merge bookkeeping after approval
 
 ## The Orchestrator Must Delegate
@@ -55,7 +64,8 @@ Runtime role loading happens only from `orchestrator/roles/`.
 - Wait for the subagent to finish before continuing.
 - Do not convert a failed role-stage launch directly into terminal blockage
   unless `recovery-investigator` has been attempted or deterministically ruled
-  out.
+  out, and no same-round recovery, re-observation, or different-mechanism
+  re-dispatch remains lawful.
 - If a required `orchestrator/roles/<role>.md` file is missing, stop and record
   the exact controller error instead of inventing one.
 

@@ -21,6 +21,11 @@ one strict legal stage order.
 7. `done`
 8. `blocked`
 
+`blocked` is a persisted recovery-needed snapshot, not a terminal success or
+failure state. On the same controller pass or the next resume, the controller
+must attempt to leave `blocked` through recovery work instead of stopping at
+the recorded blockage note.
+
 ## Ownership
 
 - `select-task`: guider
@@ -38,6 +43,8 @@ one strict legal stage order.
   live rounds remain
 - `update-roadmap` -> `done` only when the active roadmap bundle has no
   unfinished milestones and there are no live rounds
+- `blocked` -> `dispatch-rounds` when automatic recovery can resume from the
+  same recorded round/stage or from stale blockage bookkeeping
 
 ## Round Legal Transitions
 
@@ -58,6 +65,9 @@ one strict legal stage order.
 - `pending-merge` -> `merge` when blockers clear and the round remains
   review-valid
 - `merge` -> `done`
+- `blocked` -> `select-task`, `plan`, `implement`, `review`, `pending-merge`,
+  or `merge` when recovery re-establishes controller-visible evidence for that
+  same round/stage or the repo-local retry contract lawfully steps the round
 
 If `update-roadmap` activates a new roadmap revision, the controller must
 update `state.json` roadmap metadata before evaluating those transitions.
@@ -73,6 +83,7 @@ artifacts do not authorize.
 stateDiagram-v2
     [*] --> dispatch_rounds
     dispatch_rounds --> update_roadmap: round merged
+    blocked --> dispatch_rounds: recovery resumes
     update_roadmap --> dispatch_rounds: unfinished milestones remain
     update_roadmap --> done: all milestones done, no live rounds
     done --> dispatch_rounds: unfinished milestones remain
@@ -94,6 +105,11 @@ stateDiagram-v2
     pending_merge --> review: needs re-review
     pending_merge --> plan: needs replan
     pending_merge --> merge: blockers cleared
+    blocked --> plan: retry contract steps back
+    blocked --> implement: recovery resumes implement
+    blocked --> review: recovery resumes review
+    blocked --> pending_merge: recovery resumes pending-merge
+    blocked --> merge: recovery resumes merge
     merge --> done
     done --> [*]
 ```

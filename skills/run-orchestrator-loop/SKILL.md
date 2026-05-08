@@ -18,23 +18,31 @@ normalize to safe serial defaults instead of treating that as corruption.
 Parallel rounds and worker fan-out are allowed only when repo-local artifacts
 explicitly authorize them.
 
-For incidental delegated-stage failure, attempt a qualifying
-`recovery-investigator` before stopping. Record blockage in `state.json` only
-after recovery is exhausted or deterministically unavailable.
+Blocked state is recovery input, not permission to stop. Follow
+[resume-rules.md](references/resume-rules.md) and
+[delegation-boundaries.md](references/delegation-boundaries.md) for the
+recovery ladder, blockage rules, and role boundaries.
 
 ## Workflow
 
 1. Load state and references.
-2. Normalize legacy serial state into safe controller defaults.
-3. Resume live rounds from `active_rounds[]` or dispatch new rounds up to `max_parallel_rounds`.
-4. Use one `orchestrator/round-<nn>-<slug>` branch and one `orchestrator/worktrees/<round-id>` worktree per round.
-5. If a round plan authors `worker-plan.json`, launch worker implementers and an integration implementer exactly as required.
-6. Move reviewed rounds through `pending-merge`, `merge`, and `update-roadmap` only when merge-order and base-branch rules allow it.
-7. Re-read `state.json` plus the active roadmap bundle before deciding whether another round must start immediately.
+2. Apply [resume-rules.md](references/resume-rules.md), including legacy state
+   normalization and recovery for persisted `blocked` / `resume_error` state.
+3. Use one `orchestrator/round-<nn>-<slug>` branch and one
+   `orchestrator/worktrees/<round-id>` worktree per round.
+4. Resume live rounds from `active_rounds[]` or dispatch new rounds up to
+   `max_parallel_rounds`.
+5. If a round plan authors `worker-plan.json`, launch worker implementers and
+   an integration implementer exactly as required.
+6. Move reviewed rounds through `pending-merge`, `merge`, and
+   `update-roadmap` only when merge-order and base-branch rules allow it.
+7. Re-read `state.json` plus the active roadmap bundle before deciding whether
+   another round must start immediately.
 
 ## Load at Startup
 
 - `orchestrator/state.json`
+- `orchestrator/project-contract.md` when present
 - Active roadmap bundle `roadmap.md` resolved from `state.json.roadmap_dir`
 - Active roadmap bundle `retry-subloop.md` resolved from `state.json.roadmap_dir`
 - [state-machine.md](references/state-machine.md)
@@ -86,13 +94,16 @@ Do not simulate these roles in your own voice.
 - Resolve live roadmap files only from `state.json.roadmap_dir`; do not use
   top-level `orchestrator/roadmap.md`, `orchestrator/verification.md`, or
   `orchestrator/retry-subloop.md` as runtime sources.
+- Resolve live round artifact paths according to
+  [resume-rules.md](references/resume-rules.md): repo-relative artifact paths
+  are read from the recorded round `worktree_path` while the round is live.
 - After `update-roadmap`, re-read `orchestrator/state.json`, resolve the active
   roadmap bundle again from `roadmap_dir`, and immediately start the next round
   when unfinished `[pending]` or `[in-progress]` milestones remain and the
   concurrency cap allows it.
 - Treat controller `done` as terminal only when the roadmap has no unfinished
-  milestones, there are no live rounds, or a recorded controller blockage or
-  user interruption lawfully stops progress.
+  milestones, there are no live rounds, or user interruption lawfully stops
+  progress.
 - If the guider authored a new roadmap revision during `update-roadmap`,
   activate it by updating `state.json` `roadmap_id`, `roadmap_revision`, and
   `roadmap_dir` before the next roadmap re-check.
@@ -101,36 +112,33 @@ Do not simulate these roles in your own voice.
 
 ## Recovery Rules
 
-- For any non-terminal delegated-stage failure, attempt a qualifying
-  `recovery-investigator` before recording blockage in `orchestrator/state.json`.
-- Record direct blockage only after `recovery-investigator` has been attempted
-  and failed to produce a qualifying recovery path, or after recording a
-  deterministic reason no available delegation mechanism can launch one.
-- See [recovery-investigator.md](references/recovery-investigator.md) and [resume-rules.md](references/resume-rules.md) for complete recovery procedures.
+Use [resume-rules.md](references/resume-rules.md) as the complete recovery
+procedure. In short: re-observe the recorded round worktree, preserve the same
+round/stage while lawful, launch the repo-local `recovery-investigator` unless
+deterministically impossible, and record blockage only after no lawful recovery
+action remains.
 
 ## Subagent Rules
 
-- Use a fresh real subagent for each delegated stage or worker.
-- Never interrupt a live subagent.
-- Never set a timeout on a live subagent.
-- Wait for the active subagent to finish before continuing.
-- Do not do the delegated work yourself while a role agent should own it.
+Follow [delegation-boundaries.md](references/delegation-boundaries.md) for
+subagent launch, waiting, and role-ownership rules. Do not simulate delegated
+roles in the controller.
 
 ## Completion
 
 Continue until every roadmap milestone in the active bundle is complete or a
 recorded controller error lawfully blocks safe progress. Do not stop just
 because one round reaches `done`; terminal completion requires a roadmap
-re-check confirming no unfinished milestones and no live rounds, or a lawful
-recorded blockage or explicit user interruption. For non-terminal
-delegated-stage failures, stop only after `recovery-investigator` has been
-attempted or deterministically ruled out. For corrupt or missing state, exhaust
-lawful recovery paths before recording the exact problem in `state.json`.
+re-check confirming no unfinished milestones and no live rounds, or explicit
+user interruption. A recorded blockage by itself is not terminal; it must follow
+the recovery and stop rules in [resume-rules.md](references/resume-rules.md).
 
 ## Common Mistakes
 
 - Simulating roles by writing `selection.md`, `plan.md`, or `review.md` yourself.
 - Skipping `recovery-investigator` and recording blockage after one delegation failure.
+- Treating `blocked` or `resume_error` as a terminal stop instead of an
+  automatic recovery entry.
 - Inventing parallelism by launching rounds without roadmap metadata authorization.
 - Guessing missing state by inferring `roadmap_id` from directory names.
 - Treating `pending-merge` as done and proceeding before merge-order is satisfied.
@@ -147,10 +155,13 @@ Before sending a final response, verify ALL of these:
 
 ## Operational Limits
 
-- Maximum 3 consecutive retry attempts per round before recording blockage
+- Maximum 3 consecutive same-mechanism retry attempts per round before
+  escalating to a different lawful recovery action; do not stop on
+  same-mechanism exhaustion alone
 - Maximum 50 tool calls per delegated stage before pausing for assessment
 - If a single round has cycled through review -> plan -> implement -> review
-  more than 3 times, record the pattern and ask the user
+  more than 3 times, record the pattern and ask the user only after the
+  recovery ladder cannot narrow the problem further
 
 ## Resources
 

@@ -1,39 +1,51 @@
 # Roadmap Generation
 
-Build a fresh active roadmap family from the goal plus a fast repository
-survey.
+Build a fresh active roadmap family from the approved alignment plus a fast
+repository survey.
 
 ## Inputs
 
 - User goal
+- Approved alignment strategy from
+  [alignment-brainstorm.md](alignment-brainstorm.md)
 - Existing code, docs, tests, and config
 - Current branch status
 - Constraints discovered in the repo
 - For `next-family`, `orchestrator/state.json`
 - For `next-family`, the active roadmap bundle resolved from `roadmap_dir`
 - For `next-family`, existing family ids under `orchestrator/roadmaps/`
+- Existing `orchestrator/project-contract.md` when present
 
 ## Process
 
 1. Survey the repository before drafting tasks.
-2. If `orchestrator/` already exists, confirm the prior family is finished and
-   record any constraints inherited from the live control plane.
-3. Choose a stable descriptive slug that names the control-plane family rather
+2. Complete the alignment brainstorm and use the approved strategy as the
+   roadmap source of truth.
+3. If `orchestrator/` already exists, confirm the prior family is finished,
+   detect `contract_version` and `roadmap_style`, and record any constraints
+   inherited from the live control plane.
+4. Choose a stable descriptive slug that names the control-plane family rather
    than one transient round.
-4. Mint `roadmap_id` as `YYYY-MM-DD-NN-<slug>`, where `YYYY-MM-DD` is the
+5. Mint `roadmap_id` as `YYYY-MM-DD-NN-<slug>`, where `YYYY-MM-DD` is the
    scaffold date in the repo-local controller context and `NN` is that day's
    next unused zero-based roadmap-family ordinal (`00`, `01`, ...).
-5. Initialize the fresh family at `rev-001`.
-6. Identify the smallest meaningful milestones that move the goal forward.
-7. Sequence milestones so each one leaves the repo in a coherent state.
-8. Record dependencies only when they change ordering.
-9. Keep later milestones coarse while still giving the guider enough direction
+6. Initialize the fresh family at `rev-001`.
+7. Identify the smallest meaningful milestones that move the approved strategy
+   forward.
+8. Sequence milestones so each one leaves the repo in a coherent state.
+9. Record dependencies only when they change ordering.
+10. Keep later milestones coarse while still giving the guider enough direction
    to extract concrete round work.
 
 ## Roadmap Rules
 
-- Use a layered strategy-backlog document with `Goal`, `Outcome boundaries`,
-  `Global sequencing rules`, `Parallel lanes`, and `Milestones`.
+- For new `strategy-backlog` families, use a layered document with `Goal`,
+  `Alignment Summary`, `Outcome boundaries`, `Global sequencing rules`,
+  `Parallel lanes`, and `Milestones`.
+- For existing `legacy-flat` repos, preserve the flat roadmap style during
+  `next-family` unless the user explicitly asked for migration. A migration
+  must write the new `roadmap_style` to `state.json` and record the decision in
+  the new roadmap family.
 - Record milestone status with `[pending]`, `[in-progress]`, or `[done]`.
 - Make each milestone a coordination unit that is larger than a round and
   shaped around one delivery front or shared objective.
@@ -49,6 +61,11 @@ survey.
   advance together.
 - Keep the roadmap strategic. Do not pre-write step-by-step implementation
   plans into the roadmap.
+- Persist the approved alignment in `Alignment Summary`: thesis, success
+  criteria, non-goals, chosen strategy, and deferred alternatives.
+- Point to `orchestrator/project-contract.md` for repo-wide invariants instead
+  of copying stable event schema, golden log, dry-run output, or package
+  boundary rules into every roadmap revision.
 - Prefer 3-7 initial milestones unless the goal is truly smaller.
 - Write the new active roadmap to `orchestrator/roadmaps/<roadmap_id>/rev-001/roadmap.md`.
 - Keep the descriptive slug stable once chosen; later revisions under the same roadmap family keep the same `roadmap_id`.
@@ -73,6 +90,7 @@ Parallel metadata guidance:
 The first milestone and its candidate directions should be concrete enough that
 a guider can extract lawful round work without guessing:
 
+- explicit connection to the approved alignment
 - clear outcome
 - obvious completion signal
 - bounded extraction boundaries
@@ -84,3 +102,10 @@ to guide execution, but lightweight enough that the guider can update it
 without rewriting the whole file. Publish a new revision when a refinement
 changes future coordination, sequencing, boundaries, or shared interpretation.
 Used older families and revisions remain immutable history.
+
+Active revisions should describe live and future coordination only. Do not copy
+all completed milestones, directions, or extracted items forward into every new
+revision. Move completed detail into
+`orchestrator/roadmaps/<roadmap_id>/roadmap-history.md`, or keep only compact
+completion pointers in the active revision when the pointer changes sequencing
+for remaining work.

@@ -1,11 +1,25 @@
 # State Schema
 
-This document describes the fields in `orchestrator/state.json`.
+This document is the canonical field reference for `orchestrator/state.json`.
+Other control-plane documents may point here, but should not duplicate the full
+schema table.
+
+Use a small machine-oriented state file that supports safe serial defaults plus
+explicit parallel execution.
+
+`roadmap_id` naming rule:
+
+- `YYYY-MM-DD` is the roadmap family's creation date in the repo-local controller context.
+- `NN` is the zero-based roadmap-family ordinal for that day: `00`, `01`, `02`, and so on.
+- `<slug>` is the stable descriptive control-plane family slug.
+- Runtime should preserve this value verbatim once scaffolded; do not recompute it from the roadmap title later.
 
 ## Top-Level Fields
 
 | Key | Type | Description |
 |-----|------|-------------|
+| `contract_version` | string | Control-plane contract version. New scaffolds use `orchestrator-v2`; missing means legacy compatibility mode |
+| `roadmap_style` | string | Roadmap shape for the active family: `strategy-backlog` or `legacy-flat`; missing means `legacy-flat` |
 | `base_branch` | string | Branch that accepted rounds merge into |
 | `roadmap_id` | string | Stable family identifier for the active roadmap, normally `YYYY-MM-DD-NN-<slug>` |
 | `roadmap_revision` | string | Active roadmap revision (e.g. `rev-001`) |
@@ -52,6 +66,15 @@ This document describes the fields in `orchestrator/state.json`.
 | `resume_error` | string or null | Per-round recoverable error |
 
 ## Legacy Compatibility
+
+If `contract_version` is missing, runtime must treat the repo as an older
+control plane and normalize only the fields documented here.
+
+If `roadmap_style` is missing, runtime must classify the active family as
+`legacy-flat`. Do not rewrite legacy roadmap structure during resume. A
+scaffolded `next-family` may preserve `legacy-flat` or perform an explicit
+migration to `strategy-backlog`, but it must not silently reinterpret old flat
+items as milestone/direction records.
 
 When `active_rounds` has exactly one entry, the top-level legacy fields
 (`stage`, `active_round_id`, `current_task`, `branch`, `worktree_path`,
