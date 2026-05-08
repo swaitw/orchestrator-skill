@@ -93,8 +93,10 @@ The alignment phase must:
 
 - clarify outcome, non-goals, success criteria, constraints, risk, sequencing,
   and concurrency posture;
-- ask only missing high-signal questions through one-at-a-time option-picking
-  decisions;
+- ask only missing high-signal questions as one-question-at-a-time
+  multiple-choice decisions, using Codex `request_user_input` or an equivalent
+  host structured choice UI when it is available in the current mode, and text
+  options only as a fallback;
 - propose 2-3 roadmap strategies with tradeoffs and a recommendation;
 - summarize selected answers in an alignment decision ledger;
 - get explicit user approval of the ledger and chosen strategy;

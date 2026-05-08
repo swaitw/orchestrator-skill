@@ -52,18 +52,49 @@ follow-up questions:
   conflict?
 
 Ask one question at a time through the decision loop when conversational
-alignment is needed.
+alignment is needed. Use multiple choice by default; open-ended questions are
+only for missing context that cannot be honestly bounded into useful options.
 
 ## Decision Loop
 
 For each unresolved alignment decision:
 
 1. Ask exactly one question.
-2. Prefer 2-4 labeled options when the decision can be bounded.
+2. Provide 2-3 labeled options whenever the decision can be bounded.
 3. Put the recommended option first and say why it fits the repo and goal.
 4. State the tradeoff for each option.
 5. Wait for the user's answer before asking the next question.
 6. Record the selected answer in the alignment decision ledger.
+
+If an open-ended question is unavoidable, ask exactly one open-ended question
+and do not include any other decision in the same message.
+
+## Structured Choice UI
+
+When the host exposes a structured choice prompt, use it for every bounded
+alignment decision instead of plain text options. In Codex, this means calling
+`request_user_input` when the current collaboration mode exposes it. Do not
+simulate a clickable picker with Markdown; either call the host tool or use the
+explicit text fallback below.
+
+Codex runs where `request_user_input` is unavailable cannot guarantee clickable
+choices from skill text alone. In that case, say that the structured picker is
+not available in the current mode, then ask the same one-question decision with
+text `A` / `B` / `C` options. Do not tell the user they can click unless a real
+host picker or a real browser companion has been launched.
+
+Structured choice prompts must:
+
+- ask exactly one decision question;
+- provide 2-3 mutually exclusive choices;
+- put the recommended choice first and mark it as recommended in the label;
+- describe the impact or tradeoff of each choice in one sentence;
+- allow the host's free-form fallback only for genuinely unlisted answers; and
+- wait for the user's selection before continuing.
+
+Use text `A` / `B` / `C` options only when structured choice UI is unavailable
+or the decision cannot be honestly bounded. Do not skip the choice step by
+presenting a strategy summary as if it were already approved.
 
 Use this shape for bounded decisions:
 
