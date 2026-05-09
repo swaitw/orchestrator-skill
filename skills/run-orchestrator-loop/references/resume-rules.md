@@ -50,6 +50,9 @@ resume review outcomes.
     `review.md`, `review-record.json`, and `merge.md`.
 12. If repo-local machine state includes retry bookkeeping, resume the exact
     recorded attempt instead of guessing a new one.
+13. If the host exposes prior subagent handles for the recorded role/stage,
+    prefer the compatible prior subagent under
+    `delegation-boundaries.md` before launching a new one.
 
 ## Round Artifact Path Resolution
 
@@ -72,6 +75,10 @@ resume review outcomes.
 - Keep the same branch and worktree for the round.
 - Return from `review` to `plan`, `implement`, or `review` exactly as the
   repo-local review contract requests.
+- When a retry returns to `plan`, `implement`, or `review`, prefer the prior
+  compatible planner, implementer, worker/integration implementer, or reviewer
+  for that same round/branch/worktree. Use a fresh role subagent only when no
+  compatible prior subagent is resumable or safely usable.
 - Treat accepted-but-not-mergeable review outcomes as `pending-merge` for
   controller purposes: do not merge, do not advance the roadmap, and do not
   create a new round.
@@ -156,9 +163,11 @@ resume review outcomes.
      any controller-owned repair that makes already-produced outputs
      observable without authoring new stage content;
   5. re-dispatch the same stage on the same round / branch / worktree with
-     explicit controller-visible output expectations;
-  6. if the same mechanism remains non-observable, re-dispatch via a different
-     lawful delegation mechanism;
+     explicit controller-visible output expectations, preferring the prior
+     compatible role subagent when it is resumable or idle;
+  6. if the prior compatible subagent remains non-observable or unusable,
+     re-dispatch via a fresh role subagent or another lawful delegation
+     mechanism;
   7. only step back a stage when recovered evidence or the repo-local retry
      contract lawfully requires it.
 - Direct blockage is allowed only when the full recovery ladder yields no

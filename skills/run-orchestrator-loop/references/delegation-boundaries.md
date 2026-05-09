@@ -57,7 +57,23 @@ Runtime role loading happens only from `orchestrator/roles/`.
 
 - Use real subagents, not simulated roles.
 - Load each runtime role only from `orchestrator/roles/<role>.md`.
-- Use a fresh subagent for each delegated stage or worker.
+- Prefer reusing or resuming an existing compatible subagent before spawning a
+  fresh one. A compatible subagent has the same runtime role, same round id or
+  roadmap-update id, same branch/worktree, same selected lineage, and no
+  unresolved instruction conflict with the current stage.
+- Same-round retry should first go back to the prior compatible role subagent:
+  planner retries to the planner, whole-round implementation retries to the
+  implementer, integration retries to the integration implementer, worker
+  retries to the named worker, review-only retries to the reviewer, and merge
+  note retries to the merger.
+- Resume a closed but resumable compatible subagent when the host supports it;
+  otherwise send the next task to an idle compatible subagent. If no compatible
+  prior subagent exists, if the prior subagent is non-observable, stale,
+  role-mismatched, or unavailable, use a fresh subagent.
+- Do not reuse a subagent across role boundaries. In particular, a reviewer may
+  not implement fixes from its own review, an implementer may not review its
+  own work, and a recovery investigator may not become the substantive stage
+  author or reviewer.
 - The `recovery-investigator` runtime role is
   `orchestrator/roles/recovery-investigator.md`.
 - The `recovery-investigator` may not act as the substantive stage reviewer.
