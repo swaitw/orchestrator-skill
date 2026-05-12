@@ -8,7 +8,6 @@ Runtime role loading happens only from `orchestrator/roles/`.
 - read repo and orchestrator state
 - read the active roadmap bundle and repo-local retry contract docs resolved
   from `state.json.roadmap_dir`
-- normalize legacy serial state into the current machine schema
 - create round branches and round worktrees
 - create worker branches and worker worktrees when `worker-plan.json` requires
   them

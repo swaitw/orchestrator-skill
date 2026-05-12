@@ -18,39 +18,29 @@ resume review outcomes.
    `YYYY-MM-DD-NN-<slug>` form; preserve it verbatim and do not recompute it
    from roadmap titles or directory names.
 4. Resolve the active roadmap bundle from `roadmap_dir`.
-5. Normalize legacy serial state before scheduling:
-   - if additive parallel fields are missing, create them with safe serial
-     defaults;
-   - if legacy `active_round_id` is non-null, create one `active_rounds[]`
-     record from the legacy round fields;
-   - set `controller_stage` to `done`, `dispatch-rounds`, or `blocked` from the
-     normalized state;
-   - treat normalized `blocked`, `resume_error`, and `resume_errors` as
-     recovery bookkeeping, not a terminal answer.
-6. If `active_rounds` is empty and `controller_stage` is `done`, inspect the
+5. If `active_rounds` is empty and `controller_stage` is `done`, inspect the
    active roadmap bundle `roadmap.md` before stopping or replying.
-7. If `active_rounds` is empty, `controller_stage` is `done`, and the active
-   roadmap bundle is unfinished under its style-specific parser,
+6. If `active_rounds` is empty, `controller_stage` is `done`, and the active
+   roadmap bundle has unfinished milestones,
    treat that as a stale non-terminal `done` state and resume at
    `dispatch-rounds`.
-8. If `active_rounds` is empty, `controller_stage` is `done`, and the active
-   roadmap bundle has no unfinished work under its style-specific parser, the
+7. If `active_rounds` is empty, `controller_stage` is `done`, and the active
+   roadmap bundle has no unfinished milestones, the
    controller may stop.
-9. If `controller_stage` is `blocked`, if any live round stage is `blocked`, or
+8. If `controller_stage` is `blocked`, if any live round stage is `blocked`, or
    if any `resume_error` / `resume_errors` entry exists for a live round,
    resume into automatic recovery on that same recorded round/stage instead of
    stopping at the prior blockage note.
-10. If live rounds exist, reopen each recorded branch and worktree, resume the
+9. If live rounds exist, reopen each recorded branch and worktree, resume the
    recorded round stage, and recover round lineage from `milestone_id`,
-   `direction_id`, and `extracted_item_id`. Use `roadmap_item_id` only when
-   the active roadmap revision is still a legacy flat roadmap.
-11. Before deciding a round-owned stage artifact is missing, inspect the
+   `direction_id`, and `extracted_item_id`.
+10. Before deciding a round-owned stage artifact is missing, inspect the
     recorded canonical round worktree and treat that worktree as the primary
     observation surface for `selection.md`, `plan.md`, `implementation-notes.md`,
     `review.md`, `review-record.json`, and `merge.md`.
-12. If repo-local machine state includes retry bookkeeping, resume the exact
+11. If repo-local machine state includes retry bookkeeping, resume the exact
     recorded attempt instead of guessing a new one.
-13. If the host exposes prior subagent handles for the recorded role/stage,
+12. If the host exposes prior subagent handles for the recorded role/stage,
     prefer the compatible prior subagent under
     `delegation-boundaries.md` before launching a new one.
 
@@ -62,8 +52,6 @@ resume review outcomes.
   round record's `worktree_path`, not the parent checkout.
 - While a round is live, resolve repo-relative `active_round_dir` the same way:
   against that round record's `worktree_path`.
-- If the top-level legacy `worktree_path` mirror disagrees with the matching
-  `active_rounds[]` record, prefer the round record.
 - The parent checkout copy is archival after merge. Its absence while a round is
   live is not evidence that a delegated stage failed.
 - After a successful merge, resolve archived artifacts from the parent checkout
@@ -109,13 +97,11 @@ resume review outcomes.
 
 ## Roadmap Terminal Detection
 
-- `strategy-backlog`: parse milestone headings under `## Milestones`; any
-  `### [pending]` or `### [in-progress]` milestone is unfinished.
-- `legacy-flat`: parse item headings under `## Items`; any `### [pending]` or
-  `### [in-progress]` item is unfinished.
-- Unknown status strings, missing required status markers, or unknown
-  `roadmap_style` are parse errors. Record the exact controller error in
-  `state.json` instead of treating the roadmap as terminal.
+- Parse milestone headings under `## Milestones`; any `### [pending]` or
+  `### [in-progress]` milestone is unfinished.
+- Unknown status strings or missing required status markers are parse errors.
+  Record the exact controller error in `state.json` instead of treating the
+  roadmap as terminal.
 
 ## Roadmap Update Resume
 
@@ -140,9 +126,8 @@ resume review outcomes.
 - While recovering, the controller keeps the same round, same branch, same
   worktree, and same stage until controller-visible evidence or repo-local
   state lawfully changes them.
-- The controller also preserves `current_task` and the retry attempt unless the
-  missing stage or repo-local retry state is the thing that legitimately
-  changes them.
+- The controller also preserves the retry attempt unless the missing stage or
+  repo-local retry state is the thing that legitimately changes it.
 - For any non-terminal delegated-stage stop, the controller must attempt a
   qualifying repo-local `recovery-investigator` from
   `orchestrator/roles/recovery-investigator.md` before treating the stop as
@@ -192,7 +177,7 @@ resume review outcomes.
 
 ## Corrupt State
 
-- Do not invent missing fields beyond the documented legacy normalization.
+- Do not invent missing fields.
 - Record the controller error.
 - Ask the user for help only after you have captured the precise problem in
   state.

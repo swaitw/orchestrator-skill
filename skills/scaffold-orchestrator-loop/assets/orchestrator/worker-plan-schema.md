@@ -36,9 +36,6 @@ worker ownership or dependency order from `plan.md` prose.
 }
 ```
 
-Use `null` for `milestone_id` and `direction_id` only when the active roadmap
-style is `legacy-flat`.
-
 ## Worker Record State
 
 Controller-owned `state.json.worker_records` entries use this shape:

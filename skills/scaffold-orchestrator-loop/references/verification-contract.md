@@ -39,8 +39,6 @@ review expectations in shared role or setup-contract text, including:
   `milestone_id`, `direction_id`, and `extracted_item_id`;
 - `review-record.json` records the same roadmap lineage when the round
   finalizes;
-- `roadmap_item_id` appears only when the active roadmap revision is still a
-  legacy flat roadmap or when a compatibility mirror is explicitly required;
 - when `orchestrator/roadmap.md`, `orchestrator/verification.md`, or
   `orchestrator/retry-subloop.md` exist, they match `roadmap_id`,
   `roadmap_revision`, and `roadmap_dir` in `state.json`;

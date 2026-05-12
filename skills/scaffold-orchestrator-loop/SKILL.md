@@ -56,32 +56,18 @@ Determine mode from repository state instead of asking the user for a flag.
 
 1. If no top-level `orchestrator/` exists, use `bootstrap`.
 2. If `orchestrator/` exists, parse `orchestrator/state.json`.
-3. Classify the existing roadmap style before deciding `next-family` behavior:
-   - `roadmap_style == "strategy-backlog"` uses the current milestone /
-     direction / extraction contract.
-   - `roadmap_style == "legacy-flat"` stays flat unless this setup records an
-     explicit migration.
-   - missing `roadmap_style` is `legacy-flat` compatibility.
-4. Enter `next-family` only when all of the following are true:
-   - legacy `stage` is `null` or `"done"`
+3. Enter `next-family` only when all of the following are true:
    - `controller_stage == "done"`
    - `active_round_id == null`
    - `active_rounds == []`
    - `pending_merge_rounds == []`
    - `retry == null`
    - the active roadmap bundle named by `roadmap_id`, `roadmap_revision`, and
-     `roadmap_dir` is terminal under its style-specific parser
-5. If `orchestrator/` exists but any of those checks fail, stop with a precise
+     `roadmap_dir` has no unfinished milestones
+4. If `orchestrator/` exists but any of those checks fail, stop with a precise
    refusal explaining that the existing control plane is still live or
    unfinished and must be resumed through `$run-orchestrator-loop` or repaired
    directly before a new family can be scaffolded.
-
-Style-specific terminal checks are required: `strategy-backlog` parses
-milestone status headings, `legacy-flat` follows
-the scaffolded `orchestrator/legacy-flat-roadmap.md` contract, and unknown
-status shapes are non-terminal parse errors. Do not guess. The roadmap-content
-check is required so stale machine state does not silently open a new family on
-top of unfinished prior work.
 
 ## Step 2: Alignment Brainstorm
 
@@ -94,9 +80,8 @@ The alignment phase must:
 - clarify outcome, non-goals, success criteria, constraints, risk, sequencing,
   and concurrency posture;
 - ask only missing high-signal questions as one-question-at-a-time
-  multiple-choice decisions, using Codex `request_user_input` or an equivalent
-  host structured choice UI when it is available in the current mode, and text
-  options only as a fallback;
+  multiple-choice decisions, using a host structured choice UI/tool when it is
+  available in the current mode, and text options only as a fallback;
 - propose 2-3 roadmap strategies with tradeoffs and a recommendation;
 - summarize selected answers in an alignment decision ledger;
 - get explicit user approval of the ledger and chosen strategy;
@@ -114,11 +99,8 @@ enough to persist without guessing.
 Read [roadmap-generation.md](references/roadmap-generation.md), mint a fresh
 stable `roadmap_id` in `YYYY-MM-DD-NN-<slug>` form, and draft the repo-specific
 roadmap content from the approved alignment for
-`orchestrator/roadmaps/<roadmap_id>/rev-001/roadmap.md`. Use
-`strategy-backlog` for new scaffolds. In `next-family`, preserve an existing
-`legacy-flat` style unless this setup is explicitly migrating the control
-plane, and record any migration in `state.json` plus the new roadmap family.
-For strategy-backlog roadmaps, make milestones larger than a round, include
+`orchestrator/roadmaps/<roadmap_id>/rev-001/roadmap.md`. Make milestones larger
+than a round, include
 candidate directions for guider extraction, and keep the roadmap strategic
 rather than implementation-sized. Use stable milestone and direction ids plus
 explicit coordination and parallel-lane guidance. Never reopen an older roadmap
@@ -202,8 +184,5 @@ Do not start implementation rounds. Runtime orchestration belongs to `$run-orche
   scaffold-time alignment and approval gate
 - [repo-contract.md](references/repo-contract.md): required file layout, reset rules, and ownership rules
 - [roadmap-generation.md](references/roadmap-generation.md): how to derive the initial roadmap from the goal and repo
-- [assets/orchestrator/legacy-flat-roadmap.md](assets/orchestrator/legacy-flat-roadmap.md):
-  compatibility contract copied into repos that preserve legacy flat roadmap
-  families
 - [verification-contract.md](references/verification-contract.md): how to tailor the active roadmap bundle's `verification.md`
 - [assets/orchestrator](assets/orchestrator): templates for the scaffolded controller state, role files, round artifacts, and worktree directory

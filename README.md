@@ -35,9 +35,8 @@ Use this skill after setup, when the repository already has an initialized `orch
 It is responsible for:
 
 - loading persisted orchestration state
-- normalizing older serial state into safe defaults when needed
 - resuming current live rounds or starting new ones up to the configured cap
-- delegating `select-task`, `plan`, `implement`, `review`, and `merge` stages to fresh subagents that load their runtime instructions from `orchestrator/roles/`
+- delegating `select-task`, `plan`, `implement`, `review`, and `merge` stages to role subagents that load their runtime instructions from `orchestrator/roles/`, reusing compatible prior handles when available
 - updating only controller-owned state
 - squash-merging approved rounds, handling `pending-merge`, and advancing the
   roadmap through a reviewable `update-roadmap` artifact
@@ -81,7 +80,6 @@ orchestrator/
 ├── state.json
 ├── state-schema.md
 ├── project-contract.md
-├── legacy-flat-roadmap.md
 ├── worker-plan-schema.md
 ├── roles/
 │   ├── guider.md
@@ -104,8 +102,7 @@ orchestrator/
 Key ideas behind that contract:
 
 - `state.json` stays machine-oriented and tracks controller state,
-  `active_rounds`, `pending_merge_rounds`, `roadmap_update`, legacy mirrors for
-  serial compatibility, and resume errors.
+  `active_rounds`, `pending_merge_rounds`, `roadmap_update`, and resume errors.
 - Human-facing reasoning stays in the active roadmap bundle `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/roadmap.md`, repo-local role definitions, and round artifacts.
 - Roadmaps use milestones plus candidate directions; the guider extracts
   round-sized work from dependency-ready directions and may select concurrent
@@ -167,14 +164,18 @@ appear in the project skills list.
 
 ## Contributor Appendix
 
-For local development, symlinks are still useful when you want a checked-out repo to act as the installed skill source. Keep this workflow as a contributor-only shortcut, not the primary install path. The block below is a host-specific Codex example using `~/.codex/skills`.
+For local development, symlinks are useful when you want a checked-out repo to
+act as the installed skill source. Keep this workflow as a contributor-only
+shortcut, not the primary install path. Replace `<skill-dir>` with your host
+agent's skill directory.
 
 ```bash
-ln -s /path/to/orchestratorpattern/skills/scaffold-orchestrator-loop ~/.codex/skills/scaffold-orchestrator-loop
-ln -s /path/to/orchestratorpattern/skills/run-orchestrator-loop ~/.codex/skills/run-orchestrator-loop
+ln -s /path/to/orchestratorpattern/skills/scaffold-orchestrator-loop <skill-dir>/scaffold-orchestrator-loop
+ln -s /path/to/orchestratorpattern/skills/run-orchestrator-loop <skill-dir>/run-orchestrator-loop
 ```
 
-If either path already exists in `~/.codex/skills`, move or remove the existing entry before creating the symlink. Copying the directories into `~/.codex/skills` also works, but it creates a second independent copy that can drift and must be resynced manually.
+If either path already exists, move or remove the existing entry before creating
+the symlink.
 
 ## Typical Usage
 
@@ -193,14 +194,3 @@ If either path already exists in `~/.codex/skills`, move or remove the existing 
 - Worker fan-out uses planner-authored `worker-plan.json` and worker worktrees beneath `orchestrator/worktrees/`.
 - Reviewer approval is required before merge.
 - Merge strategy is squash merge into the recorded base branch.
-
-## Source Documents
-
-The original design rationale and implementation plans are checked in under
-`docs/superpowers/`. These explain why decisions were made and are useful
-context for contributors:
-
-- [docs/superpowers/specs/2026-03-26-platform-neutral-orchestrator-design.md](docs/superpowers/specs/2026-03-26-platform-neutral-orchestrator-design.md)
-- [docs/superpowers/specs/2026-03-27-parallel-orchestrator-design.md](docs/superpowers/specs/2026-03-27-parallel-orchestrator-design.md)
-- [docs/superpowers/plans/2026-03-26-platform-neutral-orchestrator.md](docs/superpowers/plans/2026-03-26-platform-neutral-orchestrator.md)
-- [docs/superpowers/plans/2026-03-27-parallel-orchestrator.md](docs/superpowers/plans/2026-03-27-parallel-orchestrator.md)

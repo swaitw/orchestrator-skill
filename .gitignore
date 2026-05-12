@@ -1,5 +1,7 @@
 # Orchestrator worktrees in target repos are gitignored by those repos,
 # not by this skill repository.
+.DS_Store
 docs/superpowers/
 .agents
+.claude/
 .worktrees/

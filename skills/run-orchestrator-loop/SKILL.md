@@ -10,11 +10,13 @@ description: Use when `orchestrator/` and `orchestrator/state.json` exist in a r
 Act as a pure controller over the persisted repo-local orchestrator contract:
 read `orchestrator/state.json`, resolve the active roadmap bundle from
 `roadmap_id`, `roadmap_revision`, and `roadmap_dir`, load runtime roles from
-`orchestrator/roles/`, delegate substantive work to fresh real subagents, and
-update only machine-control state.
+`orchestrator/roles/`, delegate substantive work to role subagents, reuse
+compatible prior handles when available, and update only machine-control state.
 
-Serial repositories remain valid. If additive parallel fields are missing,
-normalize to safe serial defaults instead of treating that as corruption.
+Serial execution remains valid through `max_parallel_rounds: 1`, but runtime
+requires the current `orchestrator-v2` strategy-backlog state shape. Missing
+required state fields are migration-needed corrupt state; record a controller
+error instead of synthesizing fields.
 Parallel rounds and worker fan-out are allowed only when repo-local artifacts
 explicitly authorize them.
 
@@ -26,8 +28,8 @@ recovery ladder, blockage rules, and role boundaries.
 ## Workflow
 
 1. Load state and references.
-2. Apply [resume-rules.md](references/resume-rules.md), including legacy state
-   normalization and recovery for persisted `blocked` / `resume_error` state.
+2. Apply [resume-rules.md](references/resume-rules.md), including recovery
+   for persisted `blocked` / `resume_error` state.
 3. Use one `orchestrator/round-<nn>-<slug>` branch and one
    `orchestrator/worktrees/<round-id>` worktree per round.
 4. Resume live rounds from `active_rounds[]` or dispatch new rounds up to
@@ -88,7 +90,6 @@ Do not simulate these roles in your own voice.
 ## Controller Rules
 
 - Update only machine-control state directly.
-- Normalize old serial state into the current schema before scheduling.
 - Require `roadmap_id`, `roadmap_revision`, and `roadmap_dir` in
   `orchestrator/state.json`; if any are missing or unusable, stop and record
   the exact controller error instead of guessing.
@@ -103,11 +104,10 @@ Do not simulate these roles in your own voice.
   are read from the recorded round `worktree_path` while the round is live.
 - After `update-roadmap`, re-read `orchestrator/state.json`, resolve the active
   roadmap bundle again from `roadmap_dir`, and immediately start the next round
-  when unfinished work remains under the roadmap style-specific parser and the
-  concurrency cap allows it.
+  when unfinished milestones remain and the concurrency cap allows it.
 - Treat controller `done` as terminal only when the roadmap has no unfinished
-  work under its active style, there are no live rounds, or user interruption
-  lawfully stops progress.
+  milestones, there are no live rounds, or user interruption lawfully stops
+  progress.
 - If the guider authored a new roadmap revision during `update-roadmap`,
   activate it by updating `state.json` `roadmap_id`, `roadmap_revision`, and
   `roadmap_dir` only after the roadmap update reviewer approves it.
@@ -130,11 +130,11 @@ roles in the controller.
 
 ## Completion
 
-Continue until every roadmap unit in the active bundle is complete or a
+Continue until every roadmap milestone in the active bundle is complete or a
 recorded controller error lawfully blocks safe progress. Do not stop just
 because one round reaches `done`; terminal completion requires a roadmap
-re-check confirming no unfinished work under the active roadmap style and no
-live rounds, or explicit user interruption. A recorded blockage by itself is not
+re-check confirming no unfinished milestones and no live rounds, or explicit
+user interruption. A recorded blockage by itself is not
 terminal; it must follow the recovery and stop rules in
 [resume-rules.md](references/resume-rules.md).
 
@@ -155,7 +155,7 @@ terminal; it must follow the recovery and stop rules in
 
 Before sending a final response, verify ALL of these:
 - `state.json` `active_rounds` is empty
-- Active roadmap bundle has no unfinished work under its style-specific parser
+- Active roadmap bundle has no unfinished milestones
 - No unresolved `resume_error` or `resume_errors` entries remain
 - If stopping due to blockage: precise error recorded in `state.json`
 - If stopping due to user interruption: state is consistent and saved

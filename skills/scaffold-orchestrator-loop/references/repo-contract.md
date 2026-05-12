@@ -19,9 +19,6 @@ scaffold tree into a repository that does not yet have top-level
   incomplete
 - create a fresh active bundle under
   `orchestrator/roadmaps/<roadmap_id>/rev-001/`
-- preserve `legacy-flat` roadmap structure unless the setup explicitly records
-  a migration to `strategy-backlog`; preserved legacy flat roadmaps must follow
-  `orchestrator/legacy-flat-roadmap.md`
 - preserve prior families, prior revisions, and prior round artifacts as
   immutable history
 - refresh `orchestrator/roadmap.md`, `orchestrator/verification.md`, and
@@ -29,14 +26,13 @@ scaffold tree into a repository that does not yet have top-level
   exist
 
 Do not use `next-family` when the existing control plane is still live or the
-active roadmap bundle is unfinished under its style-specific parser.
+active roadmap bundle has unfinished milestones.
 
 ## Required Files
 
 - `orchestrator/state.json`
 - `orchestrator/state-schema.md`
 - `orchestrator/project-contract.md`
-- `orchestrator/legacy-flat-roadmap.md`
 - `orchestrator/worker-plan-schema.md`
 - `orchestrator/roadmaps/<roadmap_id>/roadmap-history.md`
 - `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/roadmap.md`
@@ -64,28 +60,21 @@ from `roadmap_id`, `roadmap_revision`, and `roadmap_dir` in `state.json`.
 
 ## `state.json` Schema
 
-Use `orchestrator/state-schema.md` as the canonical field list and legacy
-compatibility reference for `orchestrator/state.json`. Do not restate the schema
+Use `orchestrator/state-schema.md` as the canonical field reference for
+`orchestrator/state.json`. Do not restate the schema
 table in roadmap bundle files or role prompts.
 
 New scaffolds should write `contract_version: "orchestrator-v2"` and
-`roadmap_style: "strategy-backlog"`. Missing `contract_version` means legacy
-contract compatibility. Missing `roadmap_style` means the repo is a legacy flat
-roadmap repo unless an explicit migration records otherwise.
+`roadmap_style: "strategy-backlog"`.
 
 `next-family` reset rules:
 
 - preserve `base_branch`
 - preserve `last_completed_round`
-- preserve the existing `roadmap_style` when it is `legacy-flat`, unless the
-  setup is explicitly performing a recorded migration to `strategy-backlog`
 - set the new `roadmap_id`, `roadmap_revision`, and `roadmap_dir`
-- set legacy `stage` to `null` because no single round is active yet
 - set `controller_stage` to `dispatch-rounds`
 - clear `active_round_id`, `active_rounds`, and `pending_merge_rounds`
 - clear `roadmap_update`
-- clear legacy mirror fields such as `current_task`, `branch`,
-  `worktree_path`, `active_round_dir`, and `round_artifacts`
 - clear `resume_error`, `resume_errors`, and `retry`
 
 ## File Ownership
@@ -127,9 +116,7 @@ Add more files only when a round needs them.
 Every round must record the active `roadmap_id`, `roadmap_revision`,
 `roadmap_dir`, `milestone_id`, `direction_id`, and `extracted_item_id` in
 `selection.md` and `review-record.json` so archived packets remain
-self-contained. Include `roadmap_item_id` only when the active roadmap
-revision is still a legacy flat roadmap or when a compatibility mirror is
-required for older runtime readers.
+self-contained.
 
 For live rounds, artifact paths recorded in `state.json` are repo-relative
 paths resolved inside that round's `worktree_path`. The parent checkout sees

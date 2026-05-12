@@ -59,7 +59,6 @@ When the round finalizes, also write `review-record.json`:
   "milestone_id": "<from selection>",
   "direction_id": "<from selection>",
   "extracted_item_id": "<from selection>",
-  "roadmap_item_id": "<legacy mirror when applicable>",
   "decision": "approved",
   "evidence_summary": "<brief>"
 }

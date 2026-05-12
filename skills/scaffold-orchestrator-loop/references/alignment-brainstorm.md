@@ -71,17 +71,14 @@ and do not include any other decision in the same message.
 
 ## Structured Choice UI
 
-When the host exposes a structured choice prompt, use it for every bounded
-alignment decision instead of plain text options. In Codex, this means calling
-`request_user_input` when the current collaboration mode exposes it. Do not
-simulate a clickable picker with Markdown; either call the host tool or use the
-explicit text fallback below.
+When the host exposes a structured choice tool, use it for every bounded
+alignment decision instead of plain text options. Either call the host tool or
+use the explicit text fallback below. Do not simulate a clickable picker with
+Markdown.
 
-Codex runs where `request_user_input` is unavailable cannot guarantee clickable
-choices from skill text alone. In that case, say that the structured picker is
-not available in the current mode, then ask the same one-question decision with
-text `A` / `B` / `C` options. Do not tell the user they can click unless a real
-host picker or a real browser companion has been launched.
+If the host does not expose a structured choice tool in the current mode, say
+so, then ask the same one-question decision with text `A` / `B` / `C` options.
+Do not tell the user they can click unless a real host picker has been launched.
 
 Structured choice prompts must:
 

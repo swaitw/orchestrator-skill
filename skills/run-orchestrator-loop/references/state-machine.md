@@ -38,13 +38,13 @@ the recorded blockage note.
 
 ## Controller Legal Transitions
 
-- `done` -> `dispatch-rounds` when unfinished roadmap work remains under the
-  active style parser
+- `done` -> `dispatch-rounds` when unfinished milestones remain in the active
+  roadmap bundle
 - `dispatch-rounds` -> `update-roadmap` after any successful round merge
 - `update-roadmap` -> `dispatch-rounds` after approved roadmap update when
-  unfinished roadmap work or live rounds remain
+  unfinished milestones or live rounds remain
 - `update-roadmap` -> `done` only when the active roadmap bundle has no
-  unfinished work under its style-specific parser and there are no live rounds
+  unfinished milestones and there are no live rounds
 - `blocked` -> `dispatch-rounds` when automatic recovery can resume from the
   same recorded round/stage or from stale blockage bookkeeping
 
