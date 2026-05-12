@@ -12,8 +12,8 @@ non-terminal and any of these are true:
 
 - expected stage artifacts are missing, partial, stale, or untrustworthy;
 - a subagent stopped without a controller-visible terminal result;
-- persisted `blocked`, `resume_error`, or `resume_errors` state needs fresh
-  recovery evaluation;
+- persisted `blocked`, owned-record `resume_error`, or controller
+  `resume_errors` state needs fresh recovery evaluation;
 - the controller cannot tell whether existing worktree outputs already prove a
   lawful next stage.
 

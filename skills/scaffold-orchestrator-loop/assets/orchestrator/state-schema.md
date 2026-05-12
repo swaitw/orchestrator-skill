@@ -26,13 +26,10 @@ explicit parallel execution.
 | `roadmap_dir` | string | Path to the active roadmap bundle directory |
 | `controller_stage` | string | Controller stage: `dispatch-rounds`, `update-roadmap`, `done`, or `blocked`; new scaffolds with unfinished roadmap work start at `dispatch-rounds` |
 | `max_parallel_rounds` | number | Hard cap on concurrent live rounds (default `1` for serial) |
-| `active_round_id` | string or null | Convenience pointer to the preferred next round to resume |
 | `active_rounds` | array | Canonical live round records (see below) |
-| `pending_merge_rounds` | array | Round ids currently blocked at `pending-merge` |
 | `roadmap_update` | object or null | Active `update-roadmap` branch/worktree/artifact state, or `null` when no roadmap update is in progress |
 | `last_completed_round` | string or null | Most recently merged round id |
-| `resume_error` | string or null | Controller-level recoverable error |
-| `resume_errors` | object | Structured controller and per-round recoverable errors |
+| `resume_errors` | object | Structured controller recoverable errors, including `controller` for controller-level blockage |
 | `retry` | object or null | Controller-owned retry subloop state; `null` when no retry is active |
 
 ## Round Record Fields (each entry in `active_rounds`)
@@ -75,8 +72,9 @@ explicit parallel execution.
 
 ## Invariants
 
-When `active_rounds` is empty, `pending_merge_rounds` should be empty.
 When no roadmap update is in progress, `roadmap_update` should be `null`.
+Pending-merge queues are derived from live round records whose `stage` is
+`pending-merge`.
 
 Round lineage comes from `milestone_id`, `direction_id`, and
 `extracted_item_id`.

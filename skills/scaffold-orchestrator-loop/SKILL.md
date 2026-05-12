@@ -58,9 +58,7 @@ Determine mode from repository state instead of asking the user for a flag.
 2. If `orchestrator/` exists, parse `orchestrator/state.json`.
 3. Enter `next-family` only when all of the following are true:
    - `controller_stage == "done"`
-   - `active_round_id == null`
    - `active_rounds == []`
-   - `pending_merge_rounds == []`
    - `retry == null`
    - the active roadmap bundle named by `roadmap_id`, `roadmap_revision`, and
      `roadmap_dir` has no unfinished milestones
@@ -123,7 +121,7 @@ Read [repo-contract.md](references/repo-contract.md) and [verification-contract.
   initial active roadmap bundle
 - set `state.json` `contract_version` and `roadmap_style`
 - set `state.json` parallel-safe defaults such as `controller_stage`,
-  `max_parallel_rounds`, `active_rounds`, `pending_merge_rounds`, and `retry`
+  `max_parallel_rounds`, `active_rounds`, `resume_errors`, and `retry`
 - tailor `orchestrator/project-contract.md` for repo-wide invariants and keep
   roadmap revisions pointed at it instead of copying shared invariants forward
 - tune the repo-local role files under `orchestrator/roles/` if the goal or

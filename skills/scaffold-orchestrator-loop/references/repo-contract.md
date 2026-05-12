@@ -73,9 +73,9 @@ New scaffolds should write `contract_version: "orchestrator-v2"` and
 - preserve `last_completed_round`
 - set the new `roadmap_id`, `roadmap_revision`, and `roadmap_dir`
 - set `controller_stage` to `dispatch-rounds`
-- clear `active_round_id`, `active_rounds`, and `pending_merge_rounds`
+- clear `active_rounds`
 - clear `roadmap_update`
-- clear `resume_error`, `resume_errors`, and `retry`
+- clear `resume_errors` and `retry`
 
 ## File Ownership
 

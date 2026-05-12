@@ -27,10 +27,11 @@ resume review outcomes.
 7. If `active_rounds` is empty, `controller_stage` is `done`, and the active
    roadmap bundle has no unfinished milestones, the
    controller may stop.
-8. If `controller_stage` is `blocked`, if any live round stage is `blocked`, or
-   if any `resume_error` / `resume_errors` entry exists for a live round,
-   resume into automatic recovery on that same recorded round/stage instead of
-   stopping at the prior blockage note.
+8. If `controller_stage` is `blocked`, if any live round stage is `blocked`, if
+   any controller `resume_errors` entry exists, or if any owned-record
+   `resume_error` exists for a live round or roadmap update,
+   resume into automatic recovery for the matching controller, round, or
+   roadmap-update context instead of stopping at the prior blockage note.
 9. If live rounds exist, reopen each recorded branch and worktree, resume the
    recorded round stage, and recover round lineage from `milestone_id`,
    `direction_id`, and `extracted_item_id`.
@@ -172,12 +173,12 @@ resume review outcomes.
 - If recreation succeeds, clear stale blockage bookkeeping and continue
   recovery from the same round/stage.
 - If the branch, worktree, or active roadmap bundle metadata is unusable after
-  lawful repair attempts, record a recoverable `resume_error` in `state.json`
-  and stop instead of guessing.
+  lawful repair attempts, record a recoverable controller blockage in
+  `state.json.resume_errors.controller` and stop instead of guessing.
 
 ## Corrupt State
 
 - Do not invent missing fields.
-- Record the controller error.
+- Record the controller error in `state.json.resume_errors.controller`.
 - Ask the user for help only after you have captured the precise problem in
   state.

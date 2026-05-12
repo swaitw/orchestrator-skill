@@ -18,7 +18,8 @@ Single-context repo (this repo):
 /
 ├── CONTEXT.md
 ├── docs/adr/
-│   └── 0001-drop-legacy-flat-and-mirror-fields.md
+│   ├── 0001-drop-legacy-flat-and-mirror-fields.md
+│   └── 0002-minimize-controller-state-shape.md
 └── skills/
 ```
 

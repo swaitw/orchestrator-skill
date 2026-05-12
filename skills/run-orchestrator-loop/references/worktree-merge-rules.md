@@ -64,7 +64,6 @@ Example:
 After a successful squash merge:
 
 - remove the merged round from `active_rounds`
-- remove the merged round id from `pending_merge_rounds`
 - clear retry-state fields in `state.json` when the repo-local contract uses
   them
 - set `last_completed_round`

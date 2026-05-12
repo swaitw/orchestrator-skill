@@ -29,7 +29,7 @@ recovery ladder, blockage rules, and role boundaries.
 
 1. Load state and references.
 2. Apply [resume-rules.md](references/resume-rules.md), including recovery
-   for persisted `blocked` / `resume_error` state.
+   for persisted `blocked` / `resume_errors` state.
 3. Use one `orchestrator/round-<nn>-<slug>` branch and one
    `orchestrator/worktrees/<round-id>` worktree per round.
 4. Resume live rounds from `active_rounds[]` or dispatch new rounds up to
@@ -142,7 +142,7 @@ terminal; it must follow the recovery and stop rules in
 
 - Simulating roles by writing `selection.md`, `plan.md`, or `review.md` yourself.
 - Skipping `recovery-investigator` and recording blockage after one delegation failure.
-- Treating `blocked` or `resume_error` as a terminal stop instead of an
+- Treating `blocked` or recoverable error state as a terminal stop instead of an
   automatic recovery entry.
 - Inventing parallelism by launching rounds without roadmap metadata authorization.
 - Guessing missing state by inferring `roadmap_id` from directory names.
@@ -154,9 +154,10 @@ terminal; it must follow the recovery and stop rules in
 ## Pre-Completion Self-Check
 
 Before sending a final response, verify ALL of these:
-- `state.json` `active_rounds` is empty
-- Active roadmap bundle has no unfinished milestones
-- No unresolved `resume_error` or `resume_errors` entries remain
+- If claiming terminal success: `state.json` `active_rounds` is empty
+- If claiming terminal success: active roadmap bundle has no unfinished milestones
+- If claiming terminal success: no unresolved `resume_errors` entries or
+  owned-record `resume_error` entries remain
 - If stopping due to blockage: precise error recorded in `state.json`
 - If stopping due to user interruption: state is consistent and saved
 

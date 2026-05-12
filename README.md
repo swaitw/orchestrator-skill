@@ -102,7 +102,7 @@ orchestrator/
 Key ideas behind that contract:
 
 - `state.json` stays machine-oriented and tracks controller state,
-  `active_rounds`, `pending_merge_rounds`, `roadmap_update`, and resume errors.
+  `active_rounds`, `roadmap_update`, and structured resume errors.
 - Human-facing reasoning stays in the active roadmap bundle `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/roadmap.md`, repo-local role definitions, and round artifacts.
 - Roadmaps use milestones plus candidate directions; the guider extracts
   round-sized work from dependency-ready directions and may select concurrent

@@ -14,7 +14,7 @@ Runtime role loading happens only from `orchestrator/roles/`.
 - create roadmap-update branches and worktrees after successful round merges
 - update `orchestrator/state.json`, including active roadmap metadata when a
   reviewed and approved `update-roadmap` stage lawfully activates a new revision
-- record artifact paths, retry-state fields, pending-merge fields, worker state
+- record artifact paths, retry-state fields, pending-merge stage, worker state
   fields, and stage markers exactly as the repo-local contract requires
 - resolve live round artifact paths against the recorded round
   `worktree_path`, using the parent checkout only for archived post-merge
