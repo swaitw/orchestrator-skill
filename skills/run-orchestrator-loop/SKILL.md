@@ -96,9 +96,7 @@ Do not simulate these roles in your own voice.
 - Treat `roadmap_id` as an opaque scaffolded identifier, usually
   `YYYY-MM-DD-NN-<slug>`; preserve it verbatim and never recompute it from
   titles, paths, or directory names.
-- Resolve live roadmap files only from `state.json.roadmap_dir`; do not use
-  top-level `orchestrator/roadmap.md`, `orchestrator/verification.md`, or
-  `orchestrator/retry-subloop.md` as runtime sources.
+- Resolve live roadmap files only from `state.json.roadmap_dir`.
 - Resolve live round artifact paths according to
   [resume-rules.md](references/resume-rules.md): repo-relative artifact paths
   are read from the recorded round `worktree_path` while the round is live.

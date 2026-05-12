@@ -21,9 +21,6 @@ scaffold tree into a repository that does not yet have top-level
   `orchestrator/roadmaps/<roadmap_id>/rev-001/`
 - preserve prior families, prior revisions, and prior round artifacts as
   immutable history
-- refresh `orchestrator/roadmap.md`, `orchestrator/verification.md`, and
-  `orchestrator/retry-subloop.md` when those top-level pointer stubs already
-  exist
 
 Do not use `next-family` when the existing control plane is still live or the
 active roadmap bundle has unfinished milestones.
@@ -47,16 +44,6 @@ active roadmap bundle has unfinished milestones.
 - `orchestrator/roles/recovery-investigator.md`
 - `orchestrator/rounds/`
 - `orchestrator/worktrees/`
-
-Optional compatibility files:
-
-- `orchestrator/roadmap.md`
-- `orchestrator/verification.md`
-- `orchestrator/retry-subloop.md`
-
-When those pointer files exist, refresh them to match `state.json`. They are
-non-authoritative convenience pointers only; runtime resolves the live bundle
-from `roadmap_id`, `roadmap_revision`, and `roadmap_dir` in `state.json`.
 
 ## `state.json` Schema
 

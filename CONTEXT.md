@@ -4,6 +4,7 @@
 
 - **Orchestrator control plane**: The repo-local `orchestrator/` directory that stores machine state, roadmap bundles, role prompts, round artifacts, and worktree paths for delegated execution.
 - **Strategy-backlog roadmap**: The only supported roadmap shape for current scaffolds. It organizes work into milestones, candidate directions, and extracted round items.
+- **Active roadmap bundle**: The revision directory named by `state.json.roadmap_dir`. It is the only source for live `roadmap.md`, `verification.md`, and `retry-subloop.md` content.
 - **Round**: A bounded unit of delegated work selected from the active roadmap bundle. Live rounds are tracked only in `state.json.active_rounds[]`; resume preference is derived from that list, not from a separate pointer.
 - **Pending-merge round**: A live round whose own `stage` is `pending-merge`. The control plane derives pending-merge queues from round records instead of persisting a separate top-level index.
 - **Controller state shape**: The minimal persisted `state.json` interface the orchestrator control plane treats as authoritative. It should avoid fields that can be derived from canonical round or roadmap-update records.

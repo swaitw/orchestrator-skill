@@ -39,9 +39,6 @@ review expectations in shared role or setup-contract text, including:
   `milestone_id`, `direction_id`, and `extracted_item_id`;
 - `review-record.json` records the same roadmap lineage when the round
   finalizes;
-- when `orchestrator/roadmap.md`, `orchestrator/verification.md`, or
-  `orchestrator/retry-subloop.md` exist, they match `roadmap_id`,
-  `roadmap_revision`, and `roadmap_dir` in `state.json`;
 - a `next-family` setup preserved prior roadmap families and revisions
   unchanged; and
 - the setup change stopped after the checkpoint commit without starting runtime

@@ -42,8 +42,6 @@ If `orchestrator/` already exists, also inspect:
 - `orchestrator/project-contract.md` when present
 - the active roadmap bundle resolved from `roadmap_id`, `roadmap_revision`, and
   `roadmap_dir`
-- `orchestrator/roadmap.md`, `orchestrator/verification.md`, and
-  `orchestrator/retry-subloop.md` when they exist
 - the current role files under `orchestrator/roles/`
 
 Confirm whether the existing control plane is terminal, whether prior work is
@@ -141,7 +139,6 @@ Do not recopy the full scaffold tree over the existing repo contract.
   with compact prior-family or migration notes when needed
 - preserve prior roadmap families, prior rounds, worktrees, and role files by
   default
-- refresh optional top-level pointer files only when they already exist
 
 For `next-family`, reset `state.json` to an idle-but-runnable state for the
 new family using the reset rules in [repo-contract.md](references/repo-contract.md).
