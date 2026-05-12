@@ -31,9 +31,10 @@ Runtime role loading happens only from `orchestrator/roles/`.
   already-produced stage result without authoring new stage content
 - attempt `recovery-investigator` for non-terminal delegated-stage stop
   situations before recording delegation blockage
-- record the precise blockage in `orchestrator/state.json` only after an
-  attempted `recovery-investigator` and the full recovery ladder fail to
-  produce a qualifying recovery path, or when no qualifying
+- record the precise blockage in
+  `orchestrator/state.json.resume_errors.controller` only after an attempted
+  `recovery-investigator` and the full recovery ladder fail to produce a
+  qualifying recovery path, or when no qualifying
   `recovery-investigator` can launch through any available delegation
   mechanism
 - perform squash-merge bookkeeping after approval
@@ -90,7 +91,8 @@ Runtime role loading happens only from `orchestrator/roles/`.
   out, and no same-round recovery, re-observation, or different-mechanism
   re-dispatch remains lawful.
 - If a required `orchestrator/roles/<role>.md` file is missing, stop and record
-  the exact controller error instead of inventing one.
+  the exact controller error in
+  `orchestrator/state.json.resume_errors.controller` instead of inventing one.
 
 ## The Orchestrator May Not Do
 
@@ -103,6 +105,6 @@ Runtime role loading happens only from `orchestrator/roles/`.
 
 ## If Real Subagents Are Unavailable
 
-Record the precise blockage in `orchestrator/state.json`, then tell the user
-the runtime skill cannot honor its delegation contract in the current
-environment.
+Record the precise blockage in
+`orchestrator/state.json.resume_errors.controller`, then tell the user the
+runtime skill cannot honor its delegation contract in the current environment.

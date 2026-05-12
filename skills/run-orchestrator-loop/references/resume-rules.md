@@ -13,7 +13,8 @@ resume review outcomes.
 
 1. Read `orchestrator/state.json`.
 2. If `roadmap_id`, `roadmap_revision`, or `roadmap_dir` is missing, record the
-   controller error in `state.json` and stop instead of guessing.
+   controller error in `state.json.resume_errors.controller` and stop instead
+   of guessing.
 3. Treat `roadmap_id` as the scaffolded family identifier, normally in
    `YYYY-MM-DD-NN-<slug>` form; preserve it verbatim and do not recompute it
    from roadmap titles or directory names.
@@ -101,8 +102,9 @@ resume review outcomes.
 - Parse milestone headings under `## Milestones`; any `### [pending]` or
   `### [in-progress]` milestone is unfinished.
 - Unknown status strings or missing required status markers are parse errors.
-  Record the exact controller error in `state.json` instead of treating the
-  roadmap as terminal.
+  Record the exact controller error in
+  `state.json.resume_errors.controller` instead of treating the roadmap as
+  terminal.
 
 ## Roadmap Update Resume
 
@@ -159,7 +161,8 @@ resume review outcomes.
 - Direct blockage is allowed only when the full recovery ladder yields no
   lawful next action, or when no qualifying `recovery-investigator` can launch
   through any available delegation mechanism, and the controller must record
-  the precise blockage in `state.json` before informing the user.
+  the precise blockage in `state.json.resume_errors.controller` before
+  informing the user.
 - A missing stage artifact by itself is not enough to justify stopping.
 - Leave recovery only after controller-visible evidence shows whether the
   controller can safely resume, retry, or record a precise blockage.

@@ -92,7 +92,8 @@ Do not simulate these roles in your own voice.
 - Update only machine-control state directly.
 - Require `roadmap_id`, `roadmap_revision`, and `roadmap_dir` in
   `orchestrator/state.json`; if any are missing or unusable, stop and record
-  the exact controller error instead of guessing.
+  the exact controller error in `state.json.resume_errors.controller` instead
+  of guessing.
 - Treat `roadmap_id` as an opaque scaffolded identifier, usually
   `YYYY-MM-DD-NN-<slug>`; preserve it verbatim and never recompute it from
   titles, paths, or directory names.
@@ -129,12 +130,12 @@ roles in the controller.
 ## Completion
 
 Continue until every roadmap milestone in the active bundle is complete or a
-recorded controller error lawfully blocks safe progress. Do not stop just
-because one round reaches `done`; terminal completion requires a roadmap
-re-check confirming no unfinished milestones and no live rounds, or explicit
-user interruption. A recorded blockage by itself is not
-terminal; it must follow the recovery and stop rules in
-[resume-rules.md](references/resume-rules.md).
+controller error recorded in `state.json.resume_errors.controller` lawfully
+blocks safe progress. Do not stop just because one round reaches `done`;
+terminal completion requires a roadmap re-check confirming no unfinished
+milestones and no live rounds, or explicit user interruption. A recorded
+blockage by itself is not terminal; it must follow the recovery and stop rules
+in [resume-rules.md](references/resume-rules.md).
 
 ## Common Mistakes
 
@@ -156,7 +157,8 @@ Before sending a final response, verify ALL of these:
 - If claiming terminal success: active roadmap bundle has no unfinished milestones
 - If claiming terminal success: no unresolved `resume_errors` entries or
   owned-record `resume_error` entries remain
-- If stopping due to blockage: precise error recorded in `state.json`
+- If stopping due to blockage: precise error recorded in
+  `state.json.resume_errors.controller`
 - If stopping due to user interruption: state is consistent and saved
 
 ## Operational Limits
