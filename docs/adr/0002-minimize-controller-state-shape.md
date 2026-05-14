@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Accepted, amended by ADR-0007
 
 ## Context
 
@@ -54,9 +54,9 @@ records:
   the updated runtime.
 
 **Neutral:**
-- This ADR does not change roadmap lineage fields, round artifact paths,
-  worker fan-out state, or roadmap-update state.
-- This ADR does not reopen ADR-0001's decision to keep `contract_version` and
-  `roadmap_style` as contract metadata.
-- `last_completed_round` remains as compact summary metadata; it is not a live
-  round authority and does not duplicate `active_rounds[]`.
+- This ADR did not change roadmap lineage fields, round artifact paths,
+  worker fan-out state, or roadmap-update state. ADR-0007 later moved those
+  remaining shallow surfaces into deeper repo-local contracts.
+- This ADR originally kept `last_completed_round` as compact summary metadata.
+  ADR-0007 later removed it because merged round artifacts and roadmap history
+  are the durable authorities.

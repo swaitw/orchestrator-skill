@@ -40,13 +40,13 @@ If `orchestrator/` already exists, also inspect:
 
 - `orchestrator/state.json`
 - `orchestrator/project-contract.md` when present
+- `orchestrator/active-roadmap-bundle.md` when present
 - the active roadmap bundle resolved from `roadmap_id`, `roadmap_revision`, and
   `roadmap_dir`
 - the current role files under `orchestrator/roles/`
 
 Confirm whether the existing control plane is terminal, whether prior work is
-finished, which roadmap style it uses, and whether any shared control-plane
-files are missing or stale.
+finished, and whether any shared control-plane files are missing or stale.
 
 ## Mode Resolution
 
@@ -57,9 +57,12 @@ Determine mode from repository state instead of asking the user for a flag.
 3. Enter `next-family` only when all of the following are true:
    - `controller_stage == "done"`
    - `active_rounds == []`
+   - `roadmap_update == null`
+   - `resume_errors == {}`
    - `retry == null`
-   - the active roadmap bundle named by `roadmap_id`, `roadmap_revision`, and
-     `roadmap_dir` has no unfinished milestones
+   - `orchestrator/active-roadmap-bundle.md` exists and the active roadmap
+     bundle named by `roadmap_id`, `roadmap_revision`, and `roadmap_dir` has no
+     unfinished milestones under that contract
 4. If `orchestrator/` exists but any of those checks fail, stop with a precise
    refusal explaining that the existing control plane is still live or
    unfinished and must be resumed through `$run-orchestrator-loop` or repaired
@@ -81,8 +84,8 @@ The alignment phase must:
 - propose 2-3 roadmap strategies with tradeoffs and a recommendation;
 - summarize selected answers in an alignment decision ledger;
 - get explicit user approval of the ledger and chosen strategy;
-- carry the approved alignment into `roadmap.md`, `project-contract.md`, and
-  `verification.md`; and
+- carry the approved alignment into `roadmap.md`, `roadmap-view.json`,
+  `project-contract.md`, and `verification.md`; and
 - ensure every `project-contract.md` section has concrete entries or the exact
   phrase `none discovered yet`.
 
@@ -110,14 +113,27 @@ Read [repo-contract.md](references/repo-contract.md) and [verification-contract.
 
 - copy the full [assets/orchestrator](assets/orchestrator) scaffold tree into
   the target repo root as `orchestrator/`
+- include `orchestrator/active-roadmap-bundle.md` as the repo-local contract for
+  reading roadmap bundles
+- include `orchestrator/artifact-manifest.md` as the canonical file layout and
+  artifact path contract
+- include `orchestrator/role-contract.md` as the shared role Interface
+- include `orchestrator/selection-record-schema.md` as the machine contract for
+  selected round lineage and scheduling
+- include `orchestrator/round-plan-record-schema.md` as the machine contract
+  for planner-authored round plans and optional worker fan-out
+- include `orchestrator/round-finalization-schema.md` as the machine contract
+  for reviewer approval and controller closeout evidence
+- include `orchestrator/roadmap-update-schema.md` as the machine contract for
+  semantic roadmap update records and artifacts
 - write the drafted roadmap into the new active roadmap bundle and tailor
-  `verification.md` plus `retry-subloop.md` for the repo
+  `roadmap-view.json` and `verification.md` for the repo
 - replace template placeholders with repo-specific content
 - persist the approved alignment summary, success criteria, non-goals, and
   chosen strategy in the active roadmap bundle
 - set `state.json` `roadmap_id`, `roadmap_revision`, and `roadmap_dir` to the
   initial active roadmap bundle
-- set `state.json` `contract_version` and `roadmap_style`
+- set `state.json` `contract_version`
 - set `state.json` parallel-safe defaults such as `controller_stage`,
   `max_parallel_rounds`, `active_rounds`, `resume_errors`, and `retry`
 - tailor `orchestrator/project-contract.md` for repo-wide invariants and keep
@@ -134,7 +150,8 @@ Do not recopy the full scaffold tree over the existing repo contract.
 - apply the `next-family` setup and reset rules from
   [repo-contract.md](references/repo-contract.md)
 - create only the new active roadmap bundle and any missing shared contract
-  files
+  files, except a missing `orchestrator/active-roadmap-bundle.md` which must be
+  handled as a migration-needed repair before `next-family`
 - create or update `orchestrator/roadmaps/<roadmap_id>/roadmap-history.md`
   with compact prior-family or migration notes when needed
 - preserve prior roadmap families, prior rounds, worktrees, and role files by
@@ -145,9 +162,10 @@ new family using the reset rules in [repo-contract.md](references/repo-contract.
 
 Keep `state.json` machine-oriented. Put reasoning and reviewable content in the
 human-facing files under the active roadmap bundle and round artifacts under
-`orchestrator/`. If worker fan-out is later used for a round, the planner must
-author machine-readable `worker-plan.json` beside the human-facing round
-artifacts rather than smuggling worker state into prose.
+`orchestrator/`. The planner must always author
+`round-plan-record.json`; when worker fan-out is used, that record carries
+worker scheduling rather than smuggling worker state into prose or
+`state.json`.
 
 ## Guardrails
 

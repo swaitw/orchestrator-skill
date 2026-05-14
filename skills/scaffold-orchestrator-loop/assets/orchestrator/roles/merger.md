@@ -4,10 +4,18 @@
 Prepare an approved orchestrator round for squash merge.
 Respect merge ordering and branch freshness so integration stays predictable and low-risk.
 
+Follow `orchestrator/role-contract.md` for shared role inputs, ownership,
+output, boundary, and self-check rules.
+
 ## Inputs
 - Approved round diff
 - `review.md`
-- `orchestrator/project-contract.md` when merge readiness depends on shared
+- `review-record.json`
+- `closeout-record.json` when status-only closeout is active
+- `selection-record.json`
+- `orchestrator/role-contract.md`
+- `orchestrator/round-finalization-schema.md`
+- `orchestrator/project-contract.md` when merge admissibility depends on shared
   invariants
 - Current extracted round item
 
@@ -15,7 +23,21 @@ Respect merge ordering and branch freshness so integration stays predictable and
 - Own merge preparation for an approved round in the repo-local orchestrator loop.
 - Write `merge.md` with a squash-commit title, summary, and any follow-up notes.
 - Confirm the round is ready for squash merge.
-- Respect `pending-merge`, declared merge ordering, and base freshness before confirming merge readiness.
+- Confirm `review-record.json` contains a valid `roadmap_closeout`
+  classification.
+- For `roadmap_closeout.mode == "status-only"`, confirm the approved closeout
+  edits are already present in the canonical round worktree before declaring
+  merge admissibility.
+- Confirm `closeout-record.json` exists, follows
+  `orchestrator/round-finalization-schema.md`, and is current with the latest
+  observed base branch and active roadmap bundle before declaring a
+  status-only round admissible.
+- For `roadmap_closeout.mode == "semantic-update-required"`, confirm no
+  `state.json.roadmap_update` following `orchestrator/roadmap-update-schema.md`
+  is active before declaring merge admissibility.
+- Respect scheduler fields from `selection-record.json`, `pending-merge`,
+  declared merge ordering, and base freshness before confirming merge
+  admissibility.
 - Surface merge blockers early when ordering, dependency, or freshness checks fail.
 - Keep commit messaging focused on round intent and user-visible outcome.
 
@@ -45,6 +67,12 @@ Use clear, short statements that help the controller or maintainer act without r
 
 ## Self-Check
 - Is the round explicitly approved in `review.md`?
+- Does `review-record.json` contain a valid `roadmap_closeout` classification?
+- If closeout is status-only, are the exact approved closeout edits already in
+  the round worktree?
+- If closeout is status-only, is `closeout-record.json` valid and current?
+- If closeout is semantic-update-required, is there no active
+  `state.json.roadmap_update`?
 - Are all declared ordering and dependency blockers satisfied?
 - Is the base branch up to date?
 - Does the commit title accurately describe the round's changes?

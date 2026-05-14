@@ -2,19 +2,30 @@
 
 ## Purpose
 Extract the next repo-local orchestrator round scope from the active roadmap
-bundle and keep that roadmap moving between rounds. Prioritize clear,
+bundle and author semantic roadmap updates when future coordination must change.
+Prioritize clear,
 dependency-aware choices over speed so downstream roles can execute with
 confidence.
+
+Follow `orchestrator/role-contract.md` for shared role inputs, ownership,
+output, boundary, and self-check rules.
 
 ## Inputs
 - `orchestrator/state.json`
 - `orchestrator/project-contract.md`
+- `orchestrator/active-roadmap-bundle.md`
+- `orchestrator/role-contract.md`
+- `orchestrator/selection-record-schema.md`
+- `orchestrator/roadmap-update-schema.md`
 - Active roadmap bundle `roadmap.md` resolved from `orchestrator/state.json`
+- Active roadmap bundle `roadmap-view.json` resolved from
+  `orchestrator/state.json`
 - Repository status
 - Prior round artifacts when relevant
 
 ## Duties
-- Own `select-task` and `update-roadmap` for the repo-local orchestrator loop.
+- Own `select-task` and semantic `update-roadmap` for the repo-local
+  orchestrator loop.
 - Select from any dependency-ready milestone and candidate direction in the
   active roadmap bundle.
 - Extract one concrete round item, or a lawful concurrent batch context, from
@@ -26,18 +37,27 @@ confidence.
   invariants; do not restate them in roadmap revisions unless a roadmap-specific
   override changes coordination.
 - Explain why the selected extraction should run now.
-- Record each choice in `selection.md`, including `roadmap_id`,
-  `roadmap_revision`, `roadmap_dir`, `milestone_id`, `direction_id`, and
-  `extracted_item_id`.
-- Record scheduler fields in `selection.md`: `depends_on_round_ids`,
-  `merge_after_item_ids`, `parallel_group`, and initial `merge_ready`.
-- After an accepted round, update the active roadmap bundle or author the next roadmap revision for controller activation.
-- When authoring a new roadmap revision, move completed detail to
+- Write `selection.md` as the human handoff.
+- Write `selection-record.json` following
+  `orchestrator/selection-record-schema.md` with `roadmap_id`,
+  `roadmap_revision`, `roadmap_dir`, `milestone_id`, `direction_id`,
+  `extracted_item_id`, and scheduler fields.
+- After an accepted round, do not handle status-only closeout; the controller
+  owns exact reviewer-approved status markers and compact completion pointers.
+- During semantic `update-roadmap`, write the update artifact defined by
+  `orchestrator/roadmap-update-schema.md` and author the next roadmap revision
+  for controller activation.
+- If `roadmap-update-review.md` rejects the update, revise the same
+  `roadmap-update.md` and proposed revision in the recorded roadmap-update
+  branch/worktree. Do not start a new roadmap-update branch unless the
+  controller records the prior branch/worktree as unusable.
+- Treat the controller's `state.json.roadmap_update.attempt`,
+  `last_rejection_artifact`, and `last_rejection_summary` as the retry context
+  for rejected semantic roadmap updates.
+- Follow `orchestrator/active-roadmap-bundle.md` when deciding whether a
+  semantic update must author a new roadmap revision. Move completed detail to
   `roadmap-history.md` or keep only compact completion pointers in the active
-  revision.
-- During `update-roadmap`, write `roadmap-update.md` under
-  `orchestrator/roadmap-updates/` and apply only roadmap bundle changes
-  justified by the merged round.
+  revision when the active bundle contract allows it.
 - Flag selection uncertainty explicitly when roadmap metadata is incomplete or inconsistent.
 - Prefer the smallest next valuable extraction when multiple valid options
   exist at the same dependency depth.
@@ -70,53 +90,28 @@ Write `selection.md` with this structure:
   lawful concurrent selections>
 
 ### Scheduler Fields
-```json
-{
-  "depends_on_round_ids": [],
-  "merge_after_item_ids": [],
-  "parallel_group": null,
-  "merge_ready": false
-}
-```
-
-Set `merge_ready` to `false` for newly selected work unless the repo-local
-contract explicitly allows a selection-only no-op round to merge after review.
-The controller may later set `merge_ready` after reviewer approval and merge
-ordering checks; it should not infer these scheduling fields from prose.
+See `selection-record.json`. Do not duplicate scheduler fields in prose.
 
 ### Rationale
 <Why this item should run now, including dependency and ordering reasoning>
 
-Keep this artifact concise, repository-specific, and easy for planner handoff without extra interpretation.
+Keep this artifact concise, repository-specific, and easy for planner handoff
+without extra interpretation.
+
+Also write `selection-record.json` following
+`orchestrator/selection-record-schema.md`.
+
+The controller derives merge admissibility later. Do not write or request a
+persisted `merge_ready` field.
 
 For `update-roadmap`, write
-`orchestrator/roadmap-updates/<round-id>-roadmap-update.md` with this
-structure:
-
-### Source Round
-- Round id: <merged round id>
-- Merged commit: <squash merge commit>
-- Evidence: <round artifacts or reviewer evidence used>
-
-### Roadmap Change
-- Roadmap id: <active roadmap id>
-- Prior revision: <active revision before update>
-- Proposed revision: <same revision for status-only updates, or new revision>
-- Files changed: <roadmap bundle files changed>
-
-### Rationale
-<Why the merged round changes milestone status, future sequencing, boundaries,
-or active revision metadata>
-
-### State Activation
-- Requires state.json roadmap metadata update: <yes/no>
-- New roadmap_dir when applicable: <path>
+the artifact required by `orchestrator/roadmap-update-schema.md`.
 
 ## Self-Check
-- Does `selection.md` record `roadmap_id`, `roadmap_revision`, `roadmap_dir`,
-  `milestone_id`, `direction_id`, and `extracted_item_id`?
-- Does `selection.md` include explicit scheduler fields instead of relying on
-  prose inference?
+- Does `selection-record.json` record `roadmap_id`, `roadmap_revision`,
+  `roadmap_dir`, `milestone_id`, `direction_id`, and `extracted_item_id`?
+- Does `selection-record.json` include explicit scheduler fields instead of
+  relying on prose inference?
 - Does the selected extraction have all milestone dependencies and direction
   preconditions satisfied?
 - Is the rationale specific to the current repository state, not generic?
@@ -125,3 +120,5 @@ or active revision metadata>
   relationship is explicit and lawful?
 - For `update-roadmap`, did I write `roadmap-update.md` and leave approval to
   the reviewer?
+- If this is a rejected roadmap update retry, did I revise the existing
+  roadmap-update branch/worktree instead of starting a new one?

@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Accepted, amended by ADR-0007
 
 ## Context
 
@@ -64,7 +64,7 @@ git history preserves the legacy-flat contract for reference during migration.
   fields or require migration.
 
 **Neutral:**
-- `contract_version` and `roadmap_style` fields remain in the schema.
-  `roadmap_style` is now always `strategy-backlog`. These fields are cheap
-  insurance if a future style variant is needed, and they still serve as a
-  contract version marker.
+- This ADR originally kept `roadmap_style` as cheap insurance. ADR-0007 later
+  removed it because Strategy-backlog remained the only adapter and
+  `contract_version` plus `orchestrator/active-roadmap-bundle.md` carry the
+  compatibility signal.

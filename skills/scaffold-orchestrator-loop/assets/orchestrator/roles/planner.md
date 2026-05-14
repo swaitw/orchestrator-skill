@@ -4,9 +4,16 @@
 Create the concrete round plan for the current repo-local orchestrator task.
 Prefer sequential simplicity and bounded scope unless worker fan-out is clearly justified by ownership and integration needs.
 
+Follow `orchestrator/role-contract.md` for shared role inputs, ownership,
+output, boundary, and self-check rules.
+
 ## Inputs
-- Extracted round scope from `selection.md`
+- Extracted round scope from `selection-record.json`
 - `selection.md`
+- `selection-record.json`
+- `orchestrator/role-contract.md`
+- `orchestrator/round-plan-record-schema.md`
+- `orchestrator/active-roadmap-bundle.md`
 - Active roadmap bundle `verification.md` resolved from `orchestrator/state.json`
 - `orchestrator/project-contract.md`
 - Review feedback from the current round
@@ -17,10 +24,13 @@ Prefer sequential simplicity and bounded scope unless worker fan-out is clearly 
 - Reference `orchestrator/project-contract.md` for shared invariants instead
   of duplicating stable repo-wide rules in every plan.
 - Keep the plan concrete, bounded, and sequential unless worker fan-out is explicitly justified.
-- When the round can be split safely, write a machine-readable
-  `worker-plan.json` that conforms to `orchestrator/worker-plan-schema.md`,
-  with worker ownership, dependencies, verification commands, and integration
-  ownership.
+- Treat `selection-record.json` as the machine authority for lineage,
+  scheduler fields, and extracted scope. Use `selection.md` only as the human
+  handoff.
+- Always write machine-readable `round-plan-record.json` following
+  `orchestrator/round-plan-record-schema.md`. When the round can be split
+  safely, include worker ownership, dependencies, verification commands, and
+  integration ownership in that record.
 - Revise the same round plan after rejected review.
 
 ## Boundaries
@@ -46,13 +56,13 @@ Write `plan.md` with this structure:
 ### Verification
 <How to verify the implementation is correct>
 
-### Worker Fan-Out (only when justified)
-If worker fan-out is used, also write `worker-plan.json` beside `plan.md`.
-It must conform to `orchestrator/worker-plan-schema.md`; do not rely on
-`plan.md` prose for worker scheduling.
+### Round Plan Record
+Also write `round-plan-record.json` beside `plan.md`. It must conform to
+`orchestrator/round-plan-record-schema.md`; do not rely on `plan.md` prose for
+worker scheduling.
 
 ## Self-Check
 - Is every step concrete and actionable (not "improve X" or "handle Y")?
 - Does the plan stay within the extracted item boundaries?
 - If using worker fan-out, are ownership boundaries non-overlapping?
-- Did I write schema-conforming `worker-plan.json` if fan-out is used?
+- Did I write schema-conforming `round-plan-record.json`?

@@ -6,15 +6,27 @@ Runtime role loading happens only from `orchestrator/roles/`.
 ## The Orchestrator May Do Directly
 
 - read repo and orchestrator state
-- read the active roadmap bundle and repo-local retry contract docs resolved
-  from `state.json.roadmap_dir`
+- read `orchestrator/artifact-manifest.md` before resolving artifact paths
+- read `orchestrator/active-roadmap-bundle.md` before interpreting the active
+  roadmap bundle
+- read the active roadmap bundle and any roadmap-specific retry overrides in
+  `verification.md`
 - create round branches and round worktrees
-- create worker branches and worker worktrees when `worker-plan.json` requires
-  them
+- create worker branches and worker worktrees when `round-plan-record.json`
+  requires them
 - create roadmap-update branches and worktrees after successful round merges
+  only when semantic roadmap updates are required
 - update `orchestrator/state.json`, including active roadmap metadata when a
   reviewed and approved `update-roadmap` stage lawfully activates a new revision
-- record artifact paths, retry-state fields, pending-merge stage, worker state
+- apply reviewer-approved status-only round closeout directly in the canonical
+  round worktree before merge, limited to the roadmap-view selectors, compact
+  completion pointers, and compact history entries recorded in
+  `review-record.json`
+- write and revalidate controller-owned `closeout-record.json` for status-only
+  round closeout
+- serialize semantic roadmap updates through the single
+  `state.json.roadmap_update` record
+- record artifact paths, retry-state fields, pending-merge stage, worker-mode
   fields, and stage markers exactly as the repo-local contract requires
 - resolve live round artifact paths against the recorded round
   `worktree_path`, using the parent checkout only for archived post-merge
@@ -42,10 +54,10 @@ Runtime role loading happens only from `orchestrator/roles/`.
 ## The Orchestrator Must Delegate
 
 - task selection
-- roadmap bundle edits
+- semantic roadmap bundle edits
 - roadmap update review
 - round planning
-- worker planning via `worker-plan.json`
+- worker planning via `round-plan-record.json`
 - implementation
 - integration implementation when worker fan-out is active
 - review decisions
@@ -96,9 +108,13 @@ Runtime role loading happens only from `orchestrator/roles/`.
 
 ## The Orchestrator May Not Do
 
-- author `selection.md`, `plan.md`, `worker-plan.json`, `implementation-notes.md`,
-  `review.md`, `review-record.json`, `merge.md`, `roadmap-update.md`, or
+- author `selection.md`, `selection-record.json`, `plan.md`,
+  `round-plan-record.json`, `implementation-notes.md`, `review.md`,
+  `review-record.json`, `merge.md`, `roadmap-update.md`, or
   `roadmap-update-review.md`
+- change future roadmap coordination, milestone or direction meaning,
+  sequencing, parallel lanes, extraction scope, verification meaning, or retry
+  policy without delegated `update-roadmap` and reviewer approval
 - choose worker ownership boundaries on its own
 - perform substantive code integration or refresh itself
 - approve work without a round-level reviewer

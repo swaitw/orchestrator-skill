@@ -12,7 +12,7 @@ scaffold tree into a repository that does not yet have top-level
 
 `next-family` reuses an existing terminal control plane. It must:
 
-- detect `contract_version` and `roadmap_style` before drafting the new family
+- detect `contract_version` before drafting the new family
 - reuse existing `orchestrator/roles/`, `orchestrator/rounds/`, and
   `orchestrator/worktrees/`
 - scaffold only missing shared control-plane files if the contract is
@@ -27,23 +27,11 @@ active roadmap bundle has unfinished milestones.
 
 ## Required Files
 
-- `orchestrator/state.json`
-- `orchestrator/state-schema.md`
-- `orchestrator/project-contract.md`
-- `orchestrator/worker-plan-schema.md`
-- `orchestrator/roadmaps/<roadmap_id>/roadmap-history.md`
-- `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/roadmap.md`
-- `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/retry-subloop.md`
-- `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/verification.md`
-- `orchestrator/roadmap-updates/`
-- `orchestrator/roles/guider.md`
-- `orchestrator/roles/planner.md`
-- `orchestrator/roles/implementer.md`
-- `orchestrator/roles/reviewer.md`
-- `orchestrator/roles/merger.md`
-- `orchestrator/roles/recovery-investigator.md`
-- `orchestrator/rounds/`
-- `orchestrator/worktrees/`
+Use `orchestrator/artifact-manifest.md` as the canonical required-file,
+artifact-key, and path-resolution contract. Bootstrap copies every shared file
+listed there. `next-family` creates only the new active roadmap bundle and any
+missing shared files listed there, except a missing
+`orchestrator/active-roadmap-bundle.md`, which is migration-needed repair.
 
 ## `state.json` Schema
 
@@ -51,13 +39,13 @@ Use `orchestrator/state-schema.md` as the canonical field reference for
 `orchestrator/state.json`. Do not restate the schema
 table in roadmap bundle files or role prompts.
 
-New scaffolds should write `contract_version: "orchestrator-v2"` and
-`roadmap_style: "strategy-backlog"`.
+New scaffolds should write `contract_version: "orchestrator-v2"`.
+Strategy-backlog is the only supported roadmap shape; do not persist a separate
+roadmap-shape field.
 
 `next-family` reset rules:
 
 - preserve `base_branch`
-- preserve `last_completed_round`
 - set the new `roadmap_id`, `roadmap_revision`, and `roadmap_dir`
 - set `controller_stage` to `dispatch-rounds`
 - clear `active_rounds`
@@ -74,12 +62,30 @@ New scaffolds should write `contract_version: "orchestrator-v2"` and
 - Repo-wide invariants live in `orchestrator/project-contract.md`. Roadmaps and
   role files should point to that file instead of repeating shared event,
   fixture, dry-run, or package-boundary rules.
+- Active roadmap bundle semantics live in
+  `orchestrator/active-roadmap-bundle.md`. Runtime and role files should point
+  there instead of repeating roadmap parsing, terminal detection, required
+  bundle files, status-only closeout rules, or revision rules.
+- File layout, artifact keys, and path-resolution rules live in
+  `orchestrator/artifact-manifest.md`. Runtime and role files should point
+  there instead of repeating artifact names.
+- Shared role inputs, boundaries, output rules, and self-checks live in
+  `orchestrator/role-contract.md`. Role files should contain only
+  role-specific behavior and artifact formats.
+- Semantic roadmap-update state, branch/worktree conventions, artifact formats,
+  rejection handling, and activation rules live in
+  `orchestrator/roadmap-update-schema.md`.
 - Each `project-contract.md` section must contain concrete repo-specific
   entries or the exact phrase `none discovered yet`; blank headings are not a
   valid setup result.
-- Delegated role agents author roadmap bundle content, round artifacts, review records, and merge notes.
-- The guider owns task selection and roadmap updates.
-- Once any round has used a roadmap revision, keep that revision immutable. Publish a new revision directory instead of rewriting a used revision.
+- Delegated role agents author roadmap bundle content, round artifacts, review
+  records, and merge notes.
+- The controller may apply only reviewer-approved status-only round closeout to
+  the active roadmap revision.
+- The guider owns task selection and semantic roadmap updates.
+- Once any round has used a roadmap revision, follow
+  `orchestrator/active-roadmap-bundle.md` for status-only round closeout versus
+  semantic new revision publication.
 - Keep completed roadmap history in
   `orchestrator/roadmaps/<roadmap_id>/roadmap-history.md` or as compact
   completion pointers. Active revisions should not copy all completed item
@@ -89,70 +95,85 @@ New scaffolds should write `contract_version: "orchestrator-v2"` and
 
 ## Round Artifacts
 
-Each round folder should contain delegated artifacts only. Start with these names:
+Each round folder should contain delegated artifacts only. Use
+`orchestrator/artifact-manifest.md` for canonical artifact keys and path
+resolution. The normal round artifact set is:
 
 - `selection.md`
+- `selection-record.json`
 - `plan.md`
+- `round-plan-record.json`
 - `implementation-notes.md`
 - `review.md`
 - `review-record.json`
+- `closeout-record.json` for status-only closeout rounds
 - `merge.md`
 
 Add more files only when a round needs them.
 
 Every round must record the active `roadmap_id`, `roadmap_revision`,
 `roadmap_dir`, `milestone_id`, `direction_id`, and `extracted_item_id` in
-`selection.md` and `review-record.json` so archived packets remain
+`selection-record.json` and `review-record.json` so archived packets remain
 self-contained.
+
+`selection-record.json` must follow `orchestrator/selection-record-schema.md`.
+`round-plan-record.json` must follow
+`orchestrator/round-plan-record-schema.md`.
+`review-record.json` must follow `orchestrator/round-finalization-schema.md`.
+Status-only closeout rounds must also include controller-authored
+`closeout-record.json` following `orchestrator/round-finalization-schema.md`.
 
 For live rounds, artifact paths recorded in `state.json` are repo-relative
 paths resolved inside that round's `worktree_path`. The parent checkout sees
 those artifacts only after the round branch is merged, so runtime must inspect
 the recorded worktree first while a round is active.
 
-When planner-authored worker fan-out is active, the round should also contain:
+When planner-authored worker fan-out is active, `round-plan-record.json`
+records worker assignment, dependency, verification, branch, worktree, and
+integration metadata. The `workers/` subtree is human-facing evidence owned by
+delegated workers. The JSON shape, worker artifact paths, dependency fields,
+and integration lifecycle are defined by
+`orchestrator/round-plan-record-schema.md`.
 
-- `worker-plan.json`
-- `workers/<worker-id>/assignment.md`
-- `workers/<worker-id>/implementation-notes.md`
-- `workers/<worker-id>/handoff.md`
+## Roadmap Closeout And Update Artifacts
 
-`worker-plan.json` is controller-readable machine state for worker scheduling.
-The `workers/` subtree is human-facing evidence owned by delegated workers.
-The JSON shape, allowed worker statuses, dependency fields, and integration
-lifecycle are defined by `orchestrator/worker-plan-schema.md`.
+After a successful round merge, the controller reads the approved
+`review-record.json`.
 
-## Roadmap Update Artifacts
+When `review-record.json` classifies the round as status-only, the controller
+applies only the selected milestone status changes, compact completion
+pointers, and compact history entries recorded there in the canonical round
+worktree by resolving selectors through `roadmap-view.json` before squash
+merge. The round branch carries those closeout edits into the squash merge. The
+controller does not create a roadmap-update branch, does not set
+`state.json.roadmap_update`, and does not change `roadmap_id`,
+`roadmap_revision`, or `roadmap_dir`.
 
-After a successful round merge, `update-roadmap` is a delegated, reviewable
-stage. It must use:
+The controller must write `closeout-record.json` after applying status-only
+closeout and must revalidate it before merge whenever the base branch or active
+roadmap bundle changed while the round waited in `pending-merge`.
 
-- branch `orchestrator/roadmap-update-<round-id>-<slug>`
-- worktree `orchestrator/worktrees/roadmap-update-<round-id>`
-- artifact `orchestrator/roadmap-updates/<round-id>-roadmap-update.md`
-- review artifact
-  `orchestrator/roadmap-updates/<round-id>-roadmap-update-review.md`
-- `state.json.roadmap_update` record pointing at that branch, worktree, and
-  artifact pair until the update is approved and merged
+If an approving `review-record.json` lacks a valid `roadmap_closeout`, the
+round is not mergeable. Return to review or recovery instead of treating the
+missing field as a semantic roadmap update.
 
-The guider authors `roadmap-update.md` and any roadmap bundle edits. The
-reviewer checks that the update matches the merged round evidence, preserves
-roadmap immutability, and keeps `state.json` activation metadata consistent.
-The controller may activate a new roadmap revision only after the roadmap
-update review approves it. After the roadmap-update branch merges and any
-approved active revision metadata is applied, clear `state.json.roadmap_update`.
+When `review-record.json` requires a semantic roadmap update, `update-roadmap`
+is a delegated, reviewable stage. Use
+`orchestrator/roadmap-update-schema.md` for the `state.json.roadmap_update`
+shape, branch/worktree conventions, update artifact, review artifact,
+rejection loop, and activation rules.
 
-`roadmap-update.md` must record:
+The guider authors `roadmap-update.md` and the proposed roadmap bundle revision.
+The reviewer checks that the update matches the merged round evidence,
+preserves roadmap immutability, and keeps `state.json` activation metadata
+consistent. The controller may activate a new roadmap revision only after the
+roadmap update review approves it. After the roadmap-update branch merges and
+any approved active revision metadata is applied, clear
+`state.json.roadmap_update`.
 
-- source round id and merged commit
-- roadmap id, prior revision, and proposed active revision
-- files changed
-- status changes or new revision summary
-- evidence from the merged round that justifies the update
-- whether `state.json` activation metadata must change
-
-`roadmap-update-review.md` must record an explicit `APPROVED` or `REJECTED`
-decision with evidence.
+If the reviewer rejects `roadmap-update.md`, follow
+`orchestrator/roadmap-update-schema.md`; do not start a new roadmap-update
+branch unless recovery records the prior branch/worktree as unusable.
 
 ## Worktree Preparation
 

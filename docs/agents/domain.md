@@ -20,7 +20,11 @@ Single-context repo (this repo):
 ├── docs/adr/
 │   ├── 0001-drop-legacy-flat-and-mirror-fields.md
 │   ├── 0002-minimize-controller-state-shape.md
-│   └── 0003-remove-top-level-roadmap-pointer-stubs.md
+│   ├── 0003-remove-top-level-roadmap-pointer-stubs.md
+│   ├── 0004-require-active-roadmap-bundle-contract.md
+│   ├── 0005-controller-owned-status-only-round-closeout.md
+│   ├── 0006-deepen-machine-contracts.md
+│   └── 0007-collapse-residual-orchestrator-contract-surfaces.md
 └── skills/
 ```
 

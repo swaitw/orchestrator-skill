@@ -101,4 +101,4 @@ Candidate directions:
   Boundary notes: Keep this focused on the new delivery front rather than
     reopening earlier milestone scope.
   Extraction notes: If this changes future coordination, publish a new roadmap
-    revision instead of hiding the change only in `selection.md`.
+    revision instead of hiding the change only in `selection-record.json`.

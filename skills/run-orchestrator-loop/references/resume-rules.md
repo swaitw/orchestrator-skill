@@ -6,8 +6,10 @@ Resolve the active roadmap bundle from `state.json` `roadmap_id`,
 `roadmap_revision`, and `roadmap_dir` before reading any human-facing control
 files.
 
-Read the active roadmap bundle `retry-subloop.md` before deciding how to
-resume review outcomes.
+Load `orchestrator/active-roadmap-bundle.md` before interpreting
+`roadmap.md`, `roadmap-view.json`, or `verification.md`.
+
+Load `orchestrator/artifact-manifest.md` before resolving artifact paths.
 
 ## Startup
 
@@ -18,36 +20,47 @@ resume review outcomes.
 3. Treat `roadmap_id` as the scaffolded family identifier, normally in
    `YYYY-MM-DD-NN-<slug>` form; preserve it verbatim and do not recompute it
    from roadmap titles or directory names.
-4. Resolve the active roadmap bundle from `roadmap_dir`.
-5. If `active_rounds` is empty and `controller_stage` is `done`, inspect the
-   active roadmap bundle `roadmap.md` before stopping or replying.
-6. If `active_rounds` is empty, `controller_stage` is `done`, and the active
-   roadmap bundle has unfinished milestones,
-   treat that as a stale non-terminal `done` state and resume at
-   `dispatch-rounds`.
-7. If `active_rounds` is empty, `controller_stage` is `done`, and the active
-   roadmap bundle has no unfinished milestones, the
-   controller may stop.
+4. Load `orchestrator/active-roadmap-bundle.md`. If it is missing, record a
+   migration-needed controller error in `state.json.resume_errors.controller`
+   and stop instead of falling back to scattered roadmap rules.
+5. Load `orchestrator/artifact-manifest.md`.
+6. Resolve the active roadmap bundle from `roadmap_dir`.
+7. If `state.json.roadmap_update` is not `null`, resume `update-roadmap` from
+   that record before making any terminal `done` decision.
 8. If `controller_stage` is `blocked`, if any live round stage is `blocked`, if
    any controller `resume_errors` entry exists, or if any owned-record
    `resume_error` exists for a live round or roadmap update,
    resume into automatic recovery for the matching controller, round, or
    roadmap-update context instead of stopping at the prior blockage note.
-9. If live rounds exist, reopen each recorded branch and worktree, resume the
-   recorded round stage, and recover round lineage from `milestone_id`,
-   `direction_id`, and `extracted_item_id`.
-10. Before deciding a round-owned stage artifact is missing, inspect the
+9. If `active_rounds` is empty and `controller_stage` is `done`, inspect the
+   active roadmap bundle under `orchestrator/active-roadmap-bundle.md` before
+   stopping or replying.
+10. If `active_rounds` is empty, `controller_stage` is `done`, and the active
+   roadmap bundle has unfinished milestones,
+   treat that as a stale non-terminal `done` state and resume at
+   `dispatch-rounds`.
+11. If `active_rounds` is empty, `controller_stage` is `done`,
+   `state.json.roadmap_update` is `null`, no unresolved resume errors remain,
+   and the active roadmap bundle has no unfinished milestones, the
+   controller may stop.
+12. If live rounds exist, reopen each recorded branch and worktree, resume the
+   recorded round stage, and recover round lineage from
+   `selection-record.json`.
+13. Before deciding a round-owned stage artifact is missing, inspect the
     recorded canonical round worktree and treat that worktree as the primary
-    observation surface for `selection.md`, `plan.md`, `implementation-notes.md`,
-    `review.md`, `review-record.json`, and `merge.md`.
-11. If repo-local machine state includes retry bookkeeping, resume the exact
+    observation surface for `selection.md`, `selection-record.json`, `plan.md`,
+    `round-plan-record.json`, `implementation-notes.md`, `review.md`,
+    `review-record.json`, and `merge.md`.
+14. If repo-local machine state includes retry bookkeeping, resume the exact
     recorded attempt instead of guessing a new one.
-12. If the host exposes prior subagent handles for the recorded role/stage,
+15. If the host exposes prior subagent handles for the recorded role/stage,
     prefer the compatible prior subagent under
     `delegation-boundaries.md` before launching a new one.
 
 ## Round Artifact Path Resolution
 
+- Follow `orchestrator/artifact-manifest.md` for canonical artifact keys and
+  path resolution.
 - Treat every `round_artifacts` path in `state.json` as repo-relative unless it
   is already absolute.
 - While a round is live, resolve repo-relative artifact paths against that
@@ -77,10 +90,24 @@ resume review outcomes.
 
 ## Pending-Merge Rounds
 
-- If a round is in `pending-merge`, re-check `merge_after_item_ids`, dependency
-  rounds, and base freshness before advancing. Interpret
-  `merge_after_item_ids` as extracted round ordering for strategy-backlog
-  revisions.
+Use [state-machine.md](state-machine.md) as the authoritative transition table.
+This section only defines the observations needed to choose the lawful
+transition.
+
+- If a round is in `pending-merge`, load `selection-record.json` from the
+  canonical round worktree and re-check scheduler fields, dependency rounds,
+  and base freshness before advancing. Interpret
+  `scheduler.merge_after_item_ids` as extracted round ordering for
+  strategy-backlog revisions.
+- If a pending-merge round has `roadmap_closeout.mode == "status-only"`,
+  revalidate `closeout-record.json` against the latest base branch and active
+  roadmap bundle before allowing `merge`.
+- If that revalidation fails, return the round to `closeout`, `review`, or
+  recovery according to whether the approved closeout can still be applied.
+- If a pending-merge round has
+  `roadmap_closeout.mode == "semantic-update-required"` and
+  `state.json.roadmap_update` is not `null`, keep it in `pending-merge` until
+  the active semantic update is cleared.
 - If drift requires substantive code refresh, return the round to `implement`.
 - The whole-round implementer owns refresh when `worker_mode` is `none`.
 - The integration implementer owns refresh when `worker_mode` is `fanout` or
@@ -89,27 +116,56 @@ resume review outcomes.
 ## Worker Fan-Out
 
 - If `worker_mode` is `fanout` or `integrate`, resume the exact incomplete
-  worker or integration phase recorded in `worker_records`.
-- Use `worker-plan.json` plus `worker_records` as the controller-readable source
-  of truth for worker scheduling and resume.
-- Validate `worker-plan.json` against `orchestrator/worker-plan-schema.md`
-  before launching or resuming workers.
+  worker or integration phase derived from `round-plan-record.json`, worker
+  branch/worktree state, and worker artifacts.
+- Use `round-plan-record.json` as the controller-readable source of truth for
+  worker assignments, dependencies, branch/worktree paths, and integration
+  ownership.
+- Validate `round-plan-record.json` against
+  `orchestrator/round-plan-record-schema.md` before launching or resuming
+  workers.
 - Do not infer worker ownership or dependency order from `plan.md` prose during
   resume.
 
 ## Roadmap Terminal Detection
 
-- Parse milestone headings under `## Milestones`; any `### [pending]` or
-  `### [in-progress]` milestone is unfinished.
-- Unknown status strings or missing required status markers are parse errors.
-  Record the exact controller error in
+- Follow `orchestrator/active-roadmap-bundle.md` for milestone status parsing,
+  unfinished-work detection, and roadmap-view validation behavior. On
+  validation error, record the exact controller error in
   `state.json.resume_errors.controller` instead of treating the roadmap as
   terminal.
+
+## Status-Only Round Closeout Resume
+
+Use [state-machine.md](state-machine.md) for legal transitions out of
+`closeout`. This section only defines how to observe and repair closeout
+evidence.
+
+- If a live round stage is `closeout`, reopen the canonical round worktree and
+  read its approved `review-record.json` plus the active `roadmap-view.json`.
+- If `review-record.json` is missing, malformed, or lacks
+  `roadmap_closeout.mode`, resume the round to `review` or recovery; do not
+  merge and do not silently enter `update-roadmap`.
+- If `roadmap_closeout.mode` is `status-only`, verify whether the canonical
+  round worktree already contains the approved roadmap-view status updates,
+  completion pointers, history entries, and matching `closeout-record.json`.
+- If those exact status-only edits are missing, apply only the approved edits
+  from `review-record.json` inside the canonical round worktree by resolving
+  selectors through `roadmap-view.json`, then re-read the active roadmap bundle
+  in that worktree, write `closeout-record.json`, and only then move the round
+  to `pending-merge` or `merge`.
+- If `roadmap_closeout.mode` is `semantic-update-required`, leave `closeout`
+  and resume the round at `pending-merge` or `merge`; semantic roadmap changes
+  happen after the round squash merge.
+- If a previously merged round is discovered whose approved status-only
+  closeout is not present on the base branch, record a precise controller
+  recovery error in `state.json.resume_errors.controller` instead of applying
+  post-merge edits directly.
 
 ## Roadmap Update Resume
 
 - If `controller_stage` is `update-roadmap`, read `state.json.roadmap_update`
-  and reopen the recorded
+  under `orchestrator/roadmap-update-schema.md` and reopen the recorded
   roadmap-update branch/worktree when present, or recreate them from the base
   branch after the merged round when lawful.
 - Observe `orchestrator/roadmap-updates/<round-id>-roadmap-update.md` and the
@@ -118,6 +174,18 @@ resume review outcomes.
   until `roadmap-update-review.md` explicitly approves it.
 - If the update artifact exists but review is missing, dispatch the reviewer
   instead of mutating state directly.
+- If `roadmap-update-review.md` rejects the update, keep the same
+  `roadmap_update` branch and worktree, increment `roadmap_update.attempt`, set
+  status to `rejected`, record `last_rejection_artifact` and
+  `last_rejection_summary`, and re-dispatch the guider to revise
+  `roadmap-update.md` and the proposed revision in place unless the review
+  records a non-recoverable blockage.
+- If the same roadmap update reaches 3 rejected attempts, set status to
+  `blocked`, record the precise blocker in `roadmap_update.resume_error`, and
+  do not dispatch another same-mechanism retry until recovery chooses a
+  different lawful action.
+- After the guider revises a rejected roadmap update, set status back to
+  `review` and dispatch the reviewer again.
 - After approved roadmap-update merge and state activation, clear
   `state.json.roadmap_update`.
 

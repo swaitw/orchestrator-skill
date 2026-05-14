@@ -172,6 +172,8 @@ After approval, persist alignment in the scaffolded control plane:
   non-goals, chosen strategy, and deferred alternatives.
 - `roadmap.md`: turn approved strategy into milestone and candidate-direction
   structure.
+- `roadmap-view.json`: mirror milestone ids, direction ids, dependencies,
+  statuses, and closeout anchors for runtime decisions.
 - `project-contract.md`: record repo-wide invariants, compatibility promises,
   and architecture constraints that should outlive one roadmap family.
 - `verification.md`: record baseline checks and alignment checks that prove the

@@ -24,7 +24,13 @@ It is responsible for:
 - running a deep alignment brainstorm before roadmap generation
 - getting explicit approval of the roadmap strategy
 - generating the first roadmap
-- scaffolding revisioned roadmap bundle files (for example `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/roadmap.md`, `.../verification.md`, and `.../retry-subloop.md`, which stays present even when same-round retry is disabled), `orchestrator/state.json`, repo-local role definitions under `orchestrator/roles/`, and `orchestrator/worktrees/`
+- scaffolding `orchestrator/active-roadmap-bundle.md`, revisioned roadmap bundle
+  files (for example
+  `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/roadmap.md`,
+  `.../roadmap-view.json`, and `.../verification.md`), shared contracts such as
+  `artifact-manifest.md`, `role-contract.md`, and schema files,
+  `orchestrator/state.json`, repo-local role definitions under
+  `orchestrator/roles/`, and `orchestrator/worktrees/`
 - preparing the repository for per-round worktrees
 - creating the initial checkpoint commit
 
@@ -38,8 +44,9 @@ It is responsible for:
 - resuming current live rounds or starting new ones up to the configured cap
 - delegating `select-task`, `plan`, `implement`, `review`, and `merge` stages to role subagents that load their runtime instructions from `orchestrator/roles/`, reusing compatible prior handles when available
 - updating only controller-owned state
-- squash-merging approved rounds, handling `pending-merge`, and advancing the
-  roadmap through a reviewable `update-roadmap` artifact
+- handling reviewer-approved status-only round closeout in the round worktree,
+  squash-merging approved rounds, handling `pending-merge`, and using a
+  reviewable `update-roadmap` artifact only for semantic roadmap updates
 
 ## Workflow Model
 
@@ -51,8 +58,13 @@ The runtime loop is strict about ownership:
 - Each live round uses one canonical branch plus one canonical worktree.
 - Different rounds may be active at the same time when the roadmap and controller state authorize it.
 - Review rejection or drift can send a round back to `plan`, `implement`, or `review` again.
-- Worker fan-out is allowed only when the planner authors machine-readable `worker-plan.json` for a round.
-- Roadmap updates after merges are delegated and reviewable before activation.
+- Worker fan-out is allowed only when the planner authors machine-readable
+  worker assignments in `round-plan-record.json` for a round.
+- Status-only round closeout is controller-owned before merge when
+  `review-record.json` approves status selectors and compact completion
+  pointers that resolve through `roadmap-view.json`.
+- Semantic roadmap updates after round merges are delegated and reviewable before
+  activation.
 - Resume behavior comes from files in the repository, not hidden session context.
 
 Per-round stage order is:
@@ -61,15 +73,22 @@ Per-round stage order is:
 2. `plan`
 3. `implement`
 4. `review`
-5. `pending-merge`
-6. `merge`
-7. `done`
+5. `closeout`
+6. `pending-merge`
+7. `merge`
+8. `done`
 
 Controller-global stage order is:
 
 1. `dispatch-rounds`
 2. `update-roadmap`
 3. `done`
+
+Status-only round closeout is a round stage, not a controller-global stage. It
+is deterministic pre-merge bookkeeping performed inside the canonical round
+worktree from the approved `review-record.json`, so the closeout lands in the
+round squash merge. The controller enters `update-roadmap` only after merge
+when the approved record requires a semantic roadmap update.
 
 ## Repo-Local Contract
 
@@ -79,8 +98,14 @@ The scaffolded repository gets a visible top-level `orchestrator/` directory wit
 orchestrator/
 ├── state.json
 ├── state-schema.md
+├── artifact-manifest.md
 ├── project-contract.md
-├── worker-plan-schema.md
+├── active-roadmap-bundle.md
+├── role-contract.md
+├── selection-record-schema.md
+├── round-plan-record-schema.md
+├── round-finalization-schema.md
+├── roadmap-update-schema.md
 ├── roles/
 │   ├── guider.md
 │   ├── planner.md
@@ -92,10 +117,11 @@ orchestrator/
 ├── roadmap-updates/
 ├── roadmaps/
 │   └── <roadmap_id>/
+│       ├── roadmap-history.md
 │       └── <roadmap_revision>/
 │           ├── roadmap.md
-│           ├── verification.md
-│           └── retry-subloop.md
+│           ├── roadmap-view.json
+│           └── verification.md
 └── worktrees/
 ```
 
@@ -103,16 +129,41 @@ Key ideas behind that contract:
 
 - `state.json` stays machine-oriented and tracks controller state,
   `active_rounds`, `roadmap_update`, and structured resume errors.
-- Human-facing reasoning stays in the active roadmap bundle `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/roadmap.md`, repo-local role definitions, and round artifacts.
+- `artifact-manifest.md` owns the file layout, artifact keys, and path
+  resolution rules used by runtime and roles.
+- `role-contract.md` owns shared role obligations so role prompts stay focused
+  on role-specific behavior.
+- Human-facing reasoning stays in the active roadmap bundle
+  `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/roadmap.md`,
+  repo-local role definitions, and round artifacts.
+- The repo-local Active roadmap bundle Interface lives in
+  `orchestrator/active-roadmap-bundle.md`; runtime treats an existing control
+  plane missing that file as migration-needed instead of falling back to older
+  scattered roadmap rules.
 - Roadmaps use milestones plus candidate directions; the guider extracts
   round-sized work from dependency-ready directions and may select concurrent
   slices when roadmap lanes and boundaries make that safe.
-- Each round folder stores delegated artifacts such as `selection.md`, `plan.md`, `implementation-notes.md`, `review.md`, and `merge.md`.
-- Round artifacts record extraction lineage so planner, reviewer, and merger
-  work stays traceable back to the active roadmap bundle.
-- Worker fan-out adds controller-readable `worker-plan.json` plus worker handoff artifacts, but approval and merge stay canonical at the round level.
-- Roadmap updates after round merge are recorded under
-  `orchestrator/roadmap-updates/` and require reviewer approval.
+- `roadmap-view.json` is the machine view for terminal detection, roadmap
+  anchors, milestone ids, and direction ids; `roadmap.md` stays the human
+  coordination narrative.
+- Each round folder stores delegated artifacts such as `selection.md`,
+  `selection-record.json`, `plan.md`, `implementation-notes.md`, `review.md`,
+  `review-record.json`, and `merge.md`; status-only rounds also store
+  controller-authored `closeout-record.json`.
+- `selection-record.json` records extraction lineage and scheduler fields so
+  planner, reviewer, and merger work stays traceable without duplicating those
+  fields in `state.json`.
+- `round-plan-record.json` records the planner's machine-readable round plan
+  and optional worker fan-out assignments; approval and merge stay canonical at
+  the round level.
+- Status-only round closeout uses reviewer-approved `review-record.json`
+  classification, runs before merge in the round worktree, and does not create
+  a roadmap-update branch.
+- Status-only closeout writes controller-owned `closeout-record.json` before
+  merge and revalidates it after base refresh.
+- Semantic roadmap updates after round merge are recorded under
+  `orchestrator/roadmap-updates/`, follow
+  `orchestrator/roadmap-update-schema.md`, and require reviewer approval.
 - The runtime skill loads role instructions from `orchestrator/roles/*.md`.
 
 ## Repository Layout
@@ -191,6 +242,7 @@ the symlink.
 
 - Round branches are expected to use the `orchestrator/round-*` prefix.
 - Round worktrees live under `orchestrator/worktrees/` in the target repository.
-- Worker fan-out uses planner-authored `worker-plan.json` and worker worktrees beneath `orchestrator/worktrees/`.
+- Worker fan-out uses planner-authored `round-plan-record.json` and worker
+  worktrees beneath `orchestrator/worktrees/`.
 - Reviewer approval is required before merge.
 - Merge strategy is squash merge into the recorded base branch.

@@ -4,9 +4,16 @@
 Implement the approved round plan in the repo-local orchestrator loop.
 Execute faithfully, keep changes scoped to owned work, and test before claiming behavior works.
 
+Follow `orchestrator/role-contract.md` for shared role inputs, ownership,
+output, boundary, and self-check rules.
+
 ## Inputs
 - `plan.md`
+- `selection-record.json`
+- `round-plan-record.json`
 - Active round worktree
+- `orchestrator/role-contract.md`
+- `orchestrator/active-roadmap-bundle.md`
 - Active roadmap bundle `verification.md` resolved from `orchestrator/state.json`
 - `orchestrator/project-contract.md`
 
@@ -15,7 +22,8 @@ Execute faithfully, keep changes scoped to owned work, and test before claiming 
 - Implement the approved round plan in the round worktree.
 - Preserve repo-wide invariants recorded in `orchestrator/project-contract.md`
   when the round touches those surfaces.
-- When the planner authored `worker-plan.json`, own only the assigned worker slice or the integration pass named by that contract.
+- When `round-plan-record.json` authorizes worker fan-out, own only the
+  assigned worker slice or the integration pass named by that contract.
 - Add or update tests before relying on new behavior.
 - Record a concise change summary in `implementation-notes.md`.
 - Keep intermediate commits and working tree changes aligned with the current round scope.

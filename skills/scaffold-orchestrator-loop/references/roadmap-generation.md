@@ -22,8 +22,10 @@ repository survey.
 2. Complete the alignment brainstorm and use the approved strategy as the
    roadmap source of truth.
 3. If `orchestrator/` already exists, confirm the prior family is finished,
-   detect `contract_version` and `roadmap_style`, and record any constraints
-   inherited from the live control plane.
+   detect `contract_version`, load
+   `orchestrator/active-roadmap-bundle.md`, and record any constraints inherited
+   from the live control plane. If that file is missing, stop as
+   migration-needed before drafting a new family.
 4. Choose a stable descriptive slug that names the control-plane family rather
    than one transient round.
 5. Mint `roadmap_id` as `YYYY-MM-DD-NN-<slug>`, where `YYYY-MM-DD` is the
@@ -39,18 +41,14 @@ repository survey.
 
 ## Roadmap Rules
 
-- Use a layered document with `Goal`, `Alignment Summary`, `Outcome
-  boundaries`, `Global sequencing rules`, `Parallel lanes`, and `Milestones`.
-- Record milestone status with `[pending]`, `[in-progress]`, or `[done]`.
+- Follow `orchestrator/active-roadmap-bundle.md` for the required `roadmap.md`
+  sections, `roadmap-view.json` machine view, required milestone fields,
+  required candidate-direction fields, terminal detection, and validation-error
+  behavior.
+- Record roadmap-specific retry policy, when needed, in `verification.md`
+  `## Roadmap Overrides`; do not create a separate required retry-policy file.
 - Make each milestone a coordination unit that is larger than a round and
   shaped around one delivery front or shared objective.
-- For each milestone, include `Milestone id:`, `Depends on:`, `Intent:`,
-  `Completion signal:`, `Parallel lane:`, and `Coordination notes:`.
-- Under each milestone, write `Candidate directions:` that describe plausible
-  work fronts the guider may extract from.
-- For each candidate direction, include `Direction id:`, `Summary:`, `Why it
-  matters now:`, `Preconditions:`, `Parallel hints:`, `Boundary notes:`, and
-  `Extraction notes:`.
 - Default milestones and directions to serial execution unless the repo survey
   gives you strong, explicit evidence that multiple delivery fronts are safe to
   advance together.
@@ -63,10 +61,14 @@ repository survey.
   boundary rules into every roadmap revision.
 - Prefer 3-7 initial milestones unless the goal is truly smaller.
 - Write the new active roadmap to `orchestrator/roadmaps/<roadmap_id>/rev-001/roadmap.md`.
+- Write the matching machine view to
+  `orchestrator/roadmaps/<roadmap_id>/rev-001/roadmap-view.json`.
 - Keep the descriptive slug stable once chosen; later revisions under the same roadmap family keep the same `roadmap_id`.
 - Never reopen a completed family by appending items or reusing `rev-001`; mint
   a fresh family id instead.
-- Keep a roadmap revision immutable once any round uses it; later semantic updates should create `rev-00N+1` under the same `roadmap_id`.
+- Follow `orchestrator/active-roadmap-bundle.md` for status-only round closeout
+  versus semantic updates that must create `rev-00N+1` under the same
+  `roadmap_id`.
 
 Parallel metadata guidance:
 
@@ -92,15 +94,17 @@ a guider can extract lawful round work without guessing:
 
 ## Revision Rules
 
-The roadmap is expected to change after accepted rounds. Keep it stable enough
-to guide execution, but lightweight enough that the guider can update it
-without rewriting the whole file. Publish a new revision when a refinement
-changes future coordination, sequencing, boundaries, or shared interpretation.
-Used older families and revisions remain immutable history.
+The roadmap is expected to record accepted rounds. Keep `roadmap.md` stable
+enough to guide execution and keep `roadmap-view.json` small enough that the
+controller can apply reviewer-approved status-only closeout without parsing
+human prose.
+Publish a new revision when required by
+`orchestrator/active-roadmap-bundle.md`. Used older families and revisions
+remain durable history.
 
 Active revisions should describe live and future coordination only. Do not copy
 all completed milestones, directions, or extracted items forward into every new
 revision. Move completed detail into
 `orchestrator/roadmaps/<roadmap_id>/roadmap-history.md`, or keep only compact
-completion pointers in the active revision when the pointer changes sequencing
-for remaining work.
+completion pointers in the active revision when the pointer does not change
+sequencing for remaining work.

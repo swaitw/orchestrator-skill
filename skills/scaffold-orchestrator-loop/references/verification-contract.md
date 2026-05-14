@@ -4,6 +4,9 @@ Create `orchestrator/roadmaps/<roadmap_id>/<roadmap_revision>/verification.md`
 as the repo- and roadmap-specific check list for the active roadmap bundle.
 Universal reviewer duties stay in `orchestrator/roles/reviewer.md`.
 Repo-wide invariants stay in `orchestrator/project-contract.md`.
+Active roadmap bundle semantics stay in
+`orchestrator/active-roadmap-bundle.md`.
+Shared role obligations stay in `orchestrator/role-contract.md`.
 
 ## Required Sections
 
@@ -35,10 +38,15 @@ review expectations in shared role or setup-contract text, including:
 
 - the round stayed within the active roadmap bundle recorded in `state.json`;
 - the round's recorded `roadmap_id` matches the active family's scaffolded `YYYY-MM-DD-NN-<slug>` identifier rather than a recomputed title-derived value;
-- `selection.md` records `roadmap_id`, `roadmap_revision`, `roadmap_dir`,
+- `selection-record.json` records `roadmap_id`, `roadmap_revision`, `roadmap_dir`,
   `milestone_id`, `direction_id`, and `extracted_item_id`;
 - `review-record.json` records the same roadmap lineage when the round
   finalizes;
+- `review-record.json` classifies round closeout as either `status-only`
+  with controller-applicable selectors through `roadmap-view.json` or
+  `semantic-update-required` with a reason;
+- `review-record.json` validates against
+  `orchestrator/round-finalization-schema.md`;
 - a `next-family` setup preserved prior roadmap families and revisions
   unchanged; and
 - the setup change stopped after the checkpoint commit without starting runtime
@@ -47,17 +55,36 @@ review expectations in shared role or setup-contract text, including:
 For planner-authored worker fan-out, shared review expectations should also
 cover:
 
-- `worker-plan.json` exists, conforms to `orchestrator/worker-plan-schema.md`,
-  and matches the integrated extracted round scope;
+- `round-plan-record.json` exists, conforms to
+  `orchestrator/round-plan-record-schema.md`, and matches the integrated
+  extracted round scope;
 - worker ownership boundaries were respected; and
 - approval is based on the integrated round result rather than isolated worker
   slices.
 
-For roadmap updates, shared review expectations should cover:
+For status-only round closeout, shared review expectations should cover:
+
+- the requested edits are limited to milestone status markers, compact
+  completion pointers, or compact history entries allowed by
+  `orchestrator/active-roadmap-bundle.md`; and
+- every requested status-only edit resolves through `roadmap-view.json`
+  anchors; and
+- controller-applied status-only closeout is recorded in
+  `closeout-record.json` following
+  `orchestrator/round-finalization-schema.md`;
+- status-only closeout is revalidated after base refresh before merge; and
+- the closeout does not change future coordination, milestone or direction
+  meaning, sequencing, parallel lanes, extraction scope, verification meaning,
+  or retry policy.
+
+For semantic roadmap updates, shared review expectations should cover:
 
 - `roadmap-update.md` exists under `orchestrator/roadmap-updates/`;
+- `state.json.roadmap_update` and the update artifacts conform to
+  `orchestrator/roadmap-update-schema.md`;
 - the update is justified by the merged round evidence;
-- used roadmap revisions remain immutable unless a new revision is authored;
+- the update publishes a new revision when required by
+  `orchestrator/active-roadmap-bundle.md`;
 - `state.json.roadmap_update` points at the active update branch, worktree, and
   artifacts while the update is in progress; and
 - new `roadmap_id`, `roadmap_revision`, or `roadmap_dir` metadata is activated
@@ -84,3 +111,7 @@ revision. Put universal approval criteria and review-record format in
 `orchestrator/roles/reviewer.md`, and put shared event schema, fixture,
 dry-run, or package-boundary invariants in `orchestrator/project-contract.md`
 instead of every roadmap verification file.
+
+Use this section for roadmap-specific retry policy only when the active
+revision needs behavior beyond the shared runtime retry mechanics. Otherwise
+record `none`.

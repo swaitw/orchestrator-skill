@@ -1,0 +1,83 @@
+{
+  "schema_version": "roadmap-view-v1",
+  "roadmap_id": "TEMPLATE_ROADMAP_ID",
+  "roadmap_revision": "rev-001",
+  "roadmap_dir": "orchestrator/roadmaps/TEMPLATE_ROADMAP_ID/rev-001",
+  "roadmap_file": "orchestrator/roadmaps/TEMPLATE_ROADMAP_ID/rev-001/roadmap.md",
+  "milestones": [
+    {
+      "milestone_id": "milestone-001-example",
+      "title": "Milestone 1: Replace this example with the first coordination milestone",
+      "status": "pending",
+      "depends_on": [],
+      "parallel_lane": "lane-core",
+      "status_anchor": "milestone-001-example",
+      "completion_anchor": "milestone-001-example-completion",
+      "direction_ids": [
+        "direction-001-example",
+        "direction-002-example"
+      ]
+    },
+    {
+      "milestone_id": "milestone-002-example",
+      "title": "Milestone 2: Replace this example with a dependent follow-up milestone",
+      "status": "pending",
+      "depends_on": [
+        "milestone-001-example"
+      ],
+      "parallel_lane": "lane-expansion",
+      "status_anchor": "milestone-002-example",
+      "completion_anchor": "milestone-002-example-completion",
+      "direction_ids": [
+        "direction-003-example"
+      ]
+    }
+  ],
+  "directions": [
+    {
+      "direction_id": "direction-001-example",
+      "milestone_id": "milestone-001-example",
+      "summary": "Extract the first bounded round from this milestone.",
+      "preconditions": [],
+      "parallel_hints": "serial-by-default"
+    },
+    {
+      "direction_id": "direction-002-example",
+      "milestone_id": "milestone-001-example",
+      "summary": "Replace this example with a second candidate direction in the same milestone.",
+      "preconditions": [],
+      "parallel_hints": "lane-safe-only"
+    },
+    {
+      "direction_id": "direction-003-example",
+      "milestone_id": "milestone-002-example",
+      "summary": "Replace this example with the first follow-up direction.",
+      "preconditions": [
+        "milestone-001-example"
+      ],
+      "parallel_hints": "serial-by-default"
+    }
+  ],
+  "anchors": {
+    "milestone-001-example": {
+      "target_file": "orchestrator/roadmaps/TEMPLATE_ROADMAP_ID/rev-001/roadmap.md",
+      "selector": "Milestone id: milestone-001-example"
+    },
+    "milestone-001-example-completion": {
+      "target_file": "orchestrator/roadmaps/TEMPLATE_ROADMAP_ID/rev-001/roadmap.md",
+      "selector": "Completion signal:"
+    },
+    "milestone-002-example": {
+      "target_file": "orchestrator/roadmaps/TEMPLATE_ROADMAP_ID/rev-001/roadmap.md",
+      "selector": "Milestone id: milestone-002-example"
+    },
+    "milestone-002-example-completion": {
+      "target_file": "orchestrator/roadmaps/TEMPLATE_ROADMAP_ID/rev-001/roadmap.md",
+      "selector": "Completion signal:"
+    },
+    "roadmap-history-completed-rounds": {
+      "target_file": "orchestrator/roadmaps/TEMPLATE_ROADMAP_ID/roadmap-history.md",
+      "selector": "## Completed Rounds"
+    }
+  }
+}
