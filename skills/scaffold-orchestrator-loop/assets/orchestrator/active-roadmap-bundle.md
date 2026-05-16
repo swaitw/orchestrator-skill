@@ -196,6 +196,11 @@ roadmap-specific retry policy exists, record `none`.
 
 ## Status-Only Round Closeout
 
+This section owns the decision boundary between `status-only` closeout and
+semantic roadmap update. Reviewers classify the round in `review-record.json`
+using this section; runtime applies the resulting machine record under
+`orchestrator/round-finalization-schema.md`.
+
 After a round is approved and before it is squash-merged, the controller may
 apply status-only round closeout directly to the active revision copy in the
 canonical round worktree only when `review-record.json` explicitly approves it
@@ -240,16 +245,8 @@ such as marking completed work in `roadmap-view.json` and `roadmap.md` or
 adding compact completion pointers, when the reviewer approves that no future
 coordination meaning changed.
 
-Publish a new `rev-00N+1` directory under the same `roadmap_id` when a roadmap
-update changes any of:
-
-- future coordination
-- milestone or direction meaning
-- sequencing
-- parallel lanes
-- extraction scope
-- verification meaning
-- retry policy
+Publish a new `rev-00N+1` directory under the same `roadmap_id` when a round or
+roadmap update crosses the semantic roadmap update boundary above.
 
 Move completed detail to
 `orchestrator/roadmaps/<roadmap_id>/roadmap-history.md`, or keep only compact

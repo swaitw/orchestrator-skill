@@ -1,8 +1,6 @@
 # Artifact Manifest
 
-This file is the canonical repo-local Interface for orchestrator file layout,
-artifact keys, and path resolution. Other control-plane documents may point
-here, but should not duplicate the complete file list or artifact map.
+This file owns orchestrator file layout, artifact keys, and path resolution.
 
 ## Shared Control-Plane Files
 
@@ -22,7 +20,6 @@ The scaffolded `orchestrator/` directory must contain:
 - `roles/planner.md`
 - `roles/implementer.md`
 - `roles/reviewer.md`
-- `roles/merger.md`
 - `roles/recovery-investigator.md`
 - `rounds/`
 - `roadmap-updates/`
@@ -42,18 +39,14 @@ The roadmap family directory must contain:
 
 - `roadmap-history.md`
 
-Roadmap-specific retry policy, when any exists, lives in `verification.md`
-under `## Roadmap Overrides`. Shared retry mechanics live in runtime
-references, not in the active bundle.
-
 ## Round Artifact Keys
 
-`state.json.active_rounds[].round_artifacts` records artifact keys, not a
-parallel schema. Use these keys:
+Round artifact paths are derived from `round_id`, not persisted in
+`state.json`. Schema files may name the artifact path for their record format;
+this manifest owns live-vs-archived path resolution. Use these keys:
 
 | Key | Path |
 |-----|------|
-| `selection` | `orchestrator/rounds/<round-id>/selection.md` |
 | `selection_record` | `orchestrator/rounds/<round-id>/selection-record.json` |
 | `plan` | `orchestrator/rounds/<round-id>/plan.md` |
 | `round_plan_record` | `orchestrator/rounds/<round-id>/round-plan-record.json` |
@@ -61,7 +54,6 @@ parallel schema. Use these keys:
 | `review` | `orchestrator/rounds/<round-id>/review.md` |
 | `review_record` | `orchestrator/rounds/<round-id>/review-record.json` |
 | `closeout_record` | `orchestrator/rounds/<round-id>/closeout-record.json` |
-| `merge` | `orchestrator/rounds/<round-id>/merge.md` |
 
 `closeout_record` is required only for status-only closeout rounds.
 
@@ -73,30 +65,20 @@ When `round-plan-record.json` authorizes worker fan-out, worker artifacts use:
 - `orchestrator/rounds/<round-id>/workers/<worker-id>/implementation-notes.md`
 - `orchestrator/rounds/<round-id>/workers/<worker-id>/handoff.md`
 
-Worker branch and worktree names are deterministic from the round and worker
-ids:
-
-- branch `orchestrator/<round-id>-<worker-id>`
-- worktree `orchestrator/worktrees/<round-id>-<worker-id>`
+Worker branch and worktree fields belong to
+`orchestrator/round-plan-record-schema.md`; this manifest owns artifact paths
+only.
 
 ## Roadmap Update Artifacts
 
-Semantic roadmap updates use the paths defined by
-`orchestrator/roadmap-update-schema.md`:
-
-- branch `orchestrator/roadmap-update-<round-id>-<slug>`
-- worktree `orchestrator/worktrees/roadmap-update-<round-id>`
-- update artifact
-  `orchestrator/roadmap-updates/<round-id>-roadmap-update.md`
-- review artifact
-  `orchestrator/roadmap-updates/<round-id>-roadmap-update-review.md`
+Semantic roadmap-update branch, worktree, update artifact, and review artifact
+paths are defined by `orchestrator/roadmap-update-schema.md`. Load that schema
+instead of copying those conventions into callers.
 
 ## Path Resolution
 
 - Treat manifest paths as repo-relative unless explicitly absolute.
 - While a round is live, resolve round artifact paths inside the round record's
-  `worktree_path`.
-- While a round is live, resolve `active_round_dir` inside the round record's
   `worktree_path`.
 - After a successful round merge, resolve archived round artifacts from the
   parent checkout.

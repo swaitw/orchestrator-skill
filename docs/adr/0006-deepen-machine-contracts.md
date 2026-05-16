@@ -2,7 +2,11 @@
 
 ## Status
 
-Accepted
+Accepted, partially superseded by ADR-0009 and ADR-0010
+
+ADR-0009 removes the human merge note after round finalization becomes
+controller-owned. ADR-0010 removes the prose selection handoff after selection
+becomes planner-owned.
 
 ## Context
 
@@ -10,10 +14,10 @@ After ADR-0002 minimized top-level controller state and ADR-0005 made
 status-only closeout controller-owned, several smaller shallow Interfaces
 remained:
 
-- `merge_ready` duplicated reviewer approval, closeout validity, dependency
-  ordering, base freshness, and semantic roadmap-update serialization.
-- selected lineage and scheduling appeared in both `selection.md` and
-  `state.json`.
+- a persisted merge-readiness flag duplicated reviewer approval, closeout
+  validity, dependency ordering, base freshness, and semantic roadmap-update
+  serialization.
+- selected lineage and scheduling appeared in both prose and `state.json`.
 - terminal detection and closeout anchors still depended on Markdown headings
   and insertion text.
 - review and closeout schemas repeated lineage and edit-shape rules.
@@ -28,7 +32,7 @@ truth.
 
 Deepen the machine contracts:
 
-- remove persisted `merge_ready`; derive merge admissibility at runtime;
+- remove persisted merge readiness; derive merge admissibility at runtime;
 - make `selection-record.json` the machine authority for selected lineage and
   scheduler fields;
 - add `roadmap-view.json` as the machine view for terminal detection, roadmap
@@ -54,11 +58,11 @@ machine Interfaces.
 **Negative:**
 - Scaffolds gain `selection-record-schema.md`, `round-finalization-schema.md`,
   and active-bundle `roadmap-view.json`.
-- Existing control planes need migration if they still rely on `merge_ready` or
-  the older split finalization schema files.
+- Existing control planes need migration if they still rely on persisted merge
+  readiness or the older split finalization schema files.
 
 **Neutral:**
-- `selection.md`, `roadmap.md`, `review.md`, and `merge.md` remain
-  human-facing artifacts.
+- `roadmap.md` and `review.md` remain human-facing artifacts. ADR-0009 and
+  ADR-0010 later remove the extra prose handoff artifacts.
 - `review-record.json` and `closeout-record.json` remain separate artifacts
   because their owners differ.

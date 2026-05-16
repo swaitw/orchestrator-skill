@@ -40,12 +40,16 @@ Use this skill after setup, when the repository already has an initialized `orch
 
 It is responsible for:
 
+- starting from the basic serial workflow before loading advanced recovery,
+  worker fan-out, or roadmap-update machinery
 - loading persisted orchestration state
 - resuming current live rounds or starting new ones up to the configured cap
-- delegating `select-task`, `plan`, `implement`, `review`, and `merge` stages to role subagents that load their runtime instructions from `orchestrator/roles/`, reusing compatible prior handles when available
+- delegating `plan`, `implement`, and `review` stages to role subagents that
+  load their runtime instructions from `orchestrator/roles/`; the planner owns
+  normal task selection and writes `selection-record.json`
 - updating only controller-owned state
-- handling reviewer-approved status-only round closeout in the round worktree,
-  squash-merging approved rounds, handling `pending-merge`, and using a
+- finalizing approved rounds by applying reviewer-approved status-only closeout
+  when needed, deriving merge admissibility, squash-merging, and using a
   reviewable `update-roadmap` artifact only for semantic roadmap updates
 
 ## Workflow Model
@@ -53,6 +57,9 @@ It is responsible for:
 The runtime loop is strict about ownership:
 
 - The orchestrator is a controller, not an implementer.
+- The basic serial workflow is the default path: one round branch, one
+  worktree, `plan` -> `implement` -> `review` -> `finalize-round`, then a
+  roadmap recheck.
 - Serial execution is the default unless roadmap lanes, candidate-direction
   hints, and extracted-scope boundaries explicitly allow concurrency.
 - Each live round uses one canonical branch plus one canonical worktree.
@@ -66,17 +73,16 @@ The runtime loop is strict about ownership:
 - Semantic roadmap updates after round merges are delegated and reviewable before
   activation.
 - Resume behavior comes from files in the repository, not hidden session context.
+- Advanced references are loaded only when the basic serial workflow exits for
+  recovery, worker fan-out, parallel rounds, or semantic roadmap update.
 
 Per-round stage order is:
 
-1. `select-task`
-2. `plan`
-3. `implement`
-4. `review`
-5. `closeout`
-6. `pending-merge`
-7. `merge`
-8. `done`
+1. `plan`
+2. `implement`
+3. `review`
+4. `finalize-round`
+5. `done`
 
 Controller-global stage order is:
 
@@ -84,11 +90,10 @@ Controller-global stage order is:
 2. `update-roadmap`
 3. `done`
 
-Status-only round closeout is a round stage, not a controller-global stage. It
-is deterministic pre-merge bookkeeping performed inside the canonical round
-worktree from the approved `review-record.json`, so the closeout lands in the
-round squash merge. The controller enters `update-roadmap` only after merge
-when the approved record requires a semantic roadmap update.
+Round finalization is controller-owned. It applies status-only closeout when
+needed, derives merge admissibility, performs the squash merge, and enters
+`update-roadmap` only after merge when the approved record requires a semantic
+roadmap update.
 
 ## Repo-Local Contract
 
@@ -111,7 +116,6 @@ orchestrator/
 │   ├── planner.md
 │   ├── implementer.md
 │   ├── reviewer.md
-│   ├── merger.md
 │   └── recovery-investigator.md
 ├── rounds/
 ├── roadmap-updates/
@@ -140,27 +144,27 @@ Key ideas behind that contract:
   `orchestrator/active-roadmap-bundle.md`; runtime treats an existing control
   plane missing that file as migration-needed instead of falling back to older
   scattered roadmap rules.
-- Roadmaps use milestones plus candidate directions; the guider extracts
-  round-sized work from dependency-ready directions and may select concurrent
-  slices when roadmap lanes and boundaries make that safe.
+- Roadmaps use milestones plus candidate directions; the planner chooses the
+  next dependency-ready round and may select lawful concurrent slices when
+  roadmap lanes and boundaries make that safe.
 - `roadmap-view.json` is the machine view for terminal detection, roadmap
   anchors, milestone ids, and direction ids; `roadmap.md` stays the human
   coordination narrative.
-- Each round folder stores delegated artifacts such as `selection.md`,
-  `selection-record.json`, `plan.md`, `implementation-notes.md`, `review.md`,
-  `review-record.json`, and `merge.md`; status-only rounds also store
+- Each round folder stores artifacts such as `selection-record.json`,
+  `plan.md`, `implementation-notes.md`, `review.md`, and
+  `review-record.json`; status-only rounds also store
   controller-authored `closeout-record.json`.
 - `selection-record.json` records extraction lineage and scheduler fields so
-  planner, reviewer, and merger work stays traceable without duplicating those
-  fields in `state.json`.
+  planner, reviewer, and finalization work stays traceable without duplicating
+  those fields in `state.json`.
 - `round-plan-record.json` records the planner's machine-readable round plan
-  and optional worker fan-out assignments; approval and merge stay canonical at
-  the round level.
+  and optional worker fan-out assignments; selection, approval, and merge stay
+  canonical at the round level.
 - Status-only round closeout uses reviewer-approved `review-record.json`
   classification, runs before merge in the round worktree, and does not create
   a roadmap-update branch.
-- Status-only closeout writes controller-owned `closeout-record.json` before
-  merge and revalidates it after base refresh.
+- Status-only closeout writes compact controller-owned `closeout-record.json`
+  during `finalize-round` and revalidates it before merge after base refresh.
 - Semantic roadmap updates after round merge are recorded under
   `orchestrator/roadmap-updates/`, follow
   `orchestrator/roadmap-update-schema.md`, and require reviewer approval.
@@ -188,7 +192,10 @@ skills/
 ```
 
 - `SKILL.md` is the entrypoint instruction file.
-- `references/` contains supporting rules for roadmap generation, state transitions, resume behavior, and merge boundaries.
+- `references/` contains supporting rules for roadmap generation, state
+  transitions, resume behavior, and finalization boundaries.
+- `run-orchestrator-loop/references/basic-serial-workflow.md` is the runtime
+  front door for the common one-round-at-a-time path.
 - `assets/` contains the starter `orchestrator/` state, role definitions, and worktree layout used by the scaffold skill.
 
 ## Installation

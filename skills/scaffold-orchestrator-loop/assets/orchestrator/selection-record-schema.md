@@ -1,17 +1,12 @@
 # Selection Record Schema
 
-`selection-record.json` is the guider-authored machine contract for selected
-round lineage and merge ordering. `selection.md` remains the human handoff, but
-runtime must not infer lineage or scheduling from prose.
+`selection-record.json` owns selected round lineage and merge ordering.
 
 Each round stores the record at:
 
 ```text
 orchestrator/rounds/<round-id>/selection-record.json
 ```
-
-While the round is live, resolve this path inside the round's recorded
-`worktree_path`.
 
 ```json
 {
@@ -45,6 +40,18 @@ Required fields:
 - `summary`
 - `scheduler`
 
+Selection lineage fields are `roadmap_id`, `roadmap_revision`, `roadmap_dir`,
+`milestone_id`, `direction_id`, and `extracted_item_id`. Other round records
+copy these fields only as integrity checks; `selection-record.json` remains the
+authority.
+
+`extracted_item_id` may be minted by the planner when the active roadmap
+direction does not already name a smaller extraction id. It
+must remain stable for the life of the round.
+
+Use serial scheduler defaults unless the active roadmap metadata and selected
+scope justify explicit dependency or co-scheduling fields.
+
 Scheduler fields:
 
 - `depends_on_round_ids`: round ids that must merge before this round may merge
@@ -52,6 +59,5 @@ Scheduler fields:
   may merge
 - `parallel_group`: co-scheduling group, or `null`
 
-Merge readiness is not persisted. The controller derives merge admissibility
-from reviewer approval, closeout validity, scheduler fields, dependency state,
-base freshness, and active semantic roadmap-update state.
+Scheduler fields are inputs to runtime merge admissibility; this schema owns
+only their machine shape.

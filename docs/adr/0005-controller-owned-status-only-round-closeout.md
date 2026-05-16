@@ -2,7 +2,10 @@
 
 ## Status
 
-Accepted
+Accepted, partially superseded by ADR-0009
+
+ADR-0009 keeps status-only closeout controller-owned but folds the separate
+`closeout` stage into `finalize-round`.
 
 ## Context
 
@@ -56,7 +59,7 @@ guider-authored and reviewer-approved before activation.
 **Negative:**
 - `review-record.json` now has to carry a closeout classification.
 - Status-only closeout adds a controller-owned evidence artifact.
-- Runtime needs a small deterministic `closeout` step before merge.
+- ADR-0009 later folds the deterministic closeout step into `finalize-round`.
 
 **Neutral:**
 - `state.json.roadmap_update` is still used for semantic updates.

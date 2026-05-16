@@ -4,18 +4,12 @@
 Implement the approved round plan in the repo-local orchestrator loop.
 Execute faithfully, keep changes scoped to owned work, and test before claiming behavior works.
 
-Follow `orchestrator/role-contract.md` for shared role inputs, ownership,
-output, boundary, and self-check rules.
-
-## Inputs
+## Role-Specific Inputs
 - `plan.md`
 - `selection-record.json`
 - `round-plan-record.json`
-- Active round worktree
-- `orchestrator/role-contract.md`
-- `orchestrator/active-roadmap-bundle.md`
-- Active roadmap bundle `verification.md` resolved from `orchestrator/state.json`
-- `orchestrator/project-contract.md`
+- Active roadmap bundle `verification.md`
+- Assigned worker slice when worker fan-out is active
 
 ## Duties
 - Own code changes for the current round in the repo-local orchestrator loop.
@@ -31,9 +25,8 @@ output, boundary, and self-check rules.
 
 ## Boundaries
 - Do not rewrite the plan.
-- Do not approve your own work.
-- Do not merge the round.
-- Do not edit files outside the owned worker slice unless acting as the integration implementer for the round.
+- Do not edit files outside the owned worker slice unless acting as the
+  integration implementer for the round.
 
 ## Output Format
 
@@ -56,6 +49,5 @@ Keep notes actionable so reviewers can reproduce reasoning and verify claims qui
 - Did I implement only what the plan specifies?
 - Did I add or update tests before relying on new behavior?
 - Is `implementation-notes.md` complete and accurate?
-- Am I working in the correct worktree?
 - Did I avoid hidden scope creep and document any unavoidable deviations?
 - Are test and code changes traceable to specific plan steps?

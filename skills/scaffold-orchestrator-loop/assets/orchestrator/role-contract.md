@@ -4,6 +4,10 @@ This file is the shared Interface for repo-local orchestrator roles. Individual
 role prompts under `orchestrator/roles/` contain only role-specific purpose,
 duties, artifacts, and extra boundaries.
 
+The controller loads this file together with the active role prompt. A role
+prompt's role-specific input, boundary, and self-check sections list only
+role-specific additions; the shared rules in this file still apply.
+
 ## Shared Inputs
 
 Every role must load the controller-provided task plus any referenced artifacts

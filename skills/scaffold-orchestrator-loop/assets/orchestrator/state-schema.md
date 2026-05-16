@@ -1,8 +1,6 @@
 # State Schema
 
-This document is the canonical field reference for `orchestrator/state.json`.
-Other control-plane documents may point here, but should not duplicate the full
-schema table.
+This document owns the `orchestrator/state.json` field contract.
 
 Use a small machine-oriented state file that supports safe serial defaults plus
 explicit parallel execution.
@@ -35,13 +33,9 @@ explicit parallel execution.
 | Key | Type | Description |
 |-----|------|-------------|
 | `round_id` | string | Stable round identifier |
-| `current_task` | string | Human-readable summary of the extracted round scope |
-| `stage` | string | One of: `select-task`, `plan`, `implement`, `review`, `closeout`, `pending-merge`, `merge`, `done`, `blocked` |
+| `stage` | string | One of: `plan`, `implement`, `review`, `finalize-round`, `done`, `blocked` |
 | `branch` | string | Canonical round branch |
 | `worktree_path` | string | Canonical round worktree |
-| `active_round_dir` | string | Repo-relative canonical round artifact directory, resolved against `worktree_path` while the round is live and against the parent checkout only after merge |
-| `round_artifacts` | object | Canonical round artifact path map using keys from `orchestrator/artifact-manifest.md`; repo-relative paths are resolved against `worktree_path` while live |
-| `worker_mode` | string | `none`, `fanout`, or `integrate`; fan-out assignments and worker artifact paths are recorded in `round-plan-record.json` |
 | `resume_error` | string or null | Per-round recoverable error |
 
 ## Invariants
@@ -49,18 +43,17 @@ explicit parallel execution.
 When no semantic roadmap update is in progress, `roadmap_update` should be
 `null`.
 Only one semantic roadmap update may be active. If `roadmap_update` is not
-`null`, additional rounds requiring semantic roadmap updates must wait in
-`pending-merge`.
+`null`, additional rounds requiring semantic roadmap updates must remain in
+`finalize-round`.
 The record shape, branch/worktree convention, artifact paths, rejection loop,
 and activation rules are defined by `orchestrator/roadmap-update-schema.md`.
-Pending-merge queues are derived from live round records whose `stage` is
-`pending-merge`.
+Round artifact paths and worker artifact paths are not duplicated in
+`state.json`; use `orchestrator/artifact-manifest.md` and
+`orchestrator/round-plan-record-schema.md`.
 
-Round lineage and merge-order scheduling come from the guider-authored
+Round lineage and merge-order scheduling come from planner-authored
 `selection-record.json` following `orchestrator/selection-record-schema.md`.
-They are not duplicated in `state.json`.
+These fields are not duplicated in `state.json`.
 
-Merge readiness is not persisted. The controller derives merge admissibility
-from reviewer approval, closeout validity, scheduler fields in
-`selection-record.json`, dependency state, base freshness, and active semantic
-roadmap-update state.
+Merge readiness is not persisted. The controller derives it during
+`finalize-round`.

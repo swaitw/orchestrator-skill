@@ -1,9 +1,7 @@
 # Round Plan Record Schema
 
-`round-plan-record.json` is the planner-authored machine contract for the
-current round plan and optional worker fan-out. `plan.md` remains the human
-implementation plan, but runtime must not infer worker ownership or dependency
-order from prose.
+`round-plan-record.json` owns machine-readable planning data and optional
+worker fan-out. `plan.md` remains the human implementation plan.
 
 The lineage fields in `round-plan-record.json` must match
 `selection-record.json`. They are integrity checks for the plan, not the
@@ -14,9 +12,6 @@ Each planned round stores the record at:
 ```text
 orchestrator/rounds/<round-id>/round-plan-record.json
 ```
-
-While the round is live, resolve this path inside the round's recorded
-`worktree_path`.
 
 ```json
 {
@@ -39,12 +34,7 @@ Required fields:
 
 - `schema_version`: must be `round-plan-record-v1`
 - `round_id`
-- `roadmap_id`
-- `roadmap_revision`
-- `roadmap_dir`
-- `milestone_id`
-- `direction_id`
-- `extracted_item_id`
+- selection lineage fields copied from `selection-record.json`
 - `plan_path`
 - `worker_mode`: `none` or `fanout`
 - `workers`
@@ -100,7 +90,7 @@ state, and worker artifacts:
 - `integrated`: integration notes record that the worker output was consumed
 
 The integration phase begins only after every `blocks_integration` worker is
-`complete`. During integration, the round record uses
-`worker_mode: "integrate"` and the controller launches the integration
-implementer in the canonical round worktree. After integration writes the
-round-level `implementation-notes.md`, the round advances to review.
+`complete`. The controller derives integration state from this record, worker
+artifacts, and the canonical round worktree; it does not persist worker mode in
+`state.json`. After integration writes the round-level
+`implementation-notes.md`, the round advances to review.

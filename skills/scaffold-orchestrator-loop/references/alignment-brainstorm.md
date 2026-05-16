@@ -189,5 +189,5 @@ The approved alignment is good enough when:
 - a human can see why this roadmap exists and what it will not do;
 - the first milestone has an obvious completion signal;
 - the verifier can connect checks back to the user's success criteria;
-- the guider can later extract round work without re-litigating the strategy;
+- the planner can later select lawful rounds without re-litigating the strategy;
 - no placeholder strategy or generic project-management language remains.

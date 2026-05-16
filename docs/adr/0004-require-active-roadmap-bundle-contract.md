@@ -6,7 +6,7 @@ Accepted, amended by ADR-0007
 
 ## Context
 
-After ADR-0001 removed the legacy-flat roadmap style and ADR-0003 removed
+After ADR-0001 removed the legacy roadmap style and ADR-0003 removed
 top-level roadmap pointer stubs, the active roadmap bundle still had rules
 spread across runtime resume rules, scaffold roadmap-generation rules, role
 prompts, and verification guidance.
@@ -19,8 +19,8 @@ The repeated rules covered:
 - validation-error behavior;
 - revision immutability;
 - status-only closeout handling; and
-- the relationship between `roadmap.md`, `verification.md`,
-  `retry-subloop.md`, and `roadmap-history.md`.
+- the relationship between `roadmap.md`, `verification.md`, roadmap-specific
+  retry policy, and `roadmap-history.md`.
 
 That made the Interface shallow: every caller needed to know nearly the same
 roadmap details, and any change to the Strategy-backlog roadmap contract risked
@@ -37,8 +37,8 @@ The file defines the Interface for the active roadmap bundle:
 - which active bundle files are required;
 - how `roadmap-view.json` milestone statuses determine unfinished work;
 - which malformed roadmap-view shapes are validation errors;
-- how `verification.md` and the then-required `retry-subloop.md` relate to the
-  active revision;
+- how `verification.md` and roadmap-specific retry policy relate to the active
+  revision;
 - when status-only round closeout may stay in the same revision; and
 - when a roadmap update must publish a new revision.
 
@@ -70,5 +70,5 @@ the contract for interpreting that bundle; it is not a shortcut copy of
 **Neutral:**
 - `state.json.roadmap_dir` remains the only pointer to the active revision.
 - Top-level roadmap pointer stubs remain unsupported.
-- ADR-0007 later removed required active-bundle `retry-subloop.md`; roadmap
-  retry overrides now live in `verification.md` `## Roadmap Overrides`.
+- ADR-0007 later removed the separate required active-bundle retry file;
+  roadmap retry overrides now live in `verification.md` `## Roadmap Overrides`.

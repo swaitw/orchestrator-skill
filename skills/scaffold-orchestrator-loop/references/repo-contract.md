@@ -78,11 +78,12 @@ roadmap-shape field.
 - Each `project-contract.md` section must contain concrete repo-specific
   entries or the exact phrase `none discovered yet`; blank headings are not a
   valid setup result.
-- Delegated role agents author roadmap bundle content, round artifacts, review
-  records, and merge notes.
+- Delegated role agents author roadmap bundle content, round selection and
+  planning artifacts, implementation artifacts, and review records.
 - The controller may apply only reviewer-approved status-only round closeout to
   the active roadmap revision.
-- The guider owns task selection and semantic roadmap updates.
+- The planner owns normal task selection and round planning. The guider owns
+  semantic roadmap updates.
 - Once any round has used a roadmap revision, follow
   `orchestrator/active-roadmap-bundle.md` for status-only round closeout versus
   semantic new revision publication.
@@ -95,26 +96,14 @@ roadmap-shape field.
 
 ## Round Artifacts
 
-Each round folder should contain delegated artifacts only. Use
-`orchestrator/artifact-manifest.md` for canonical artifact keys and path
-resolution. The normal round artifact set is:
+Each round folder should contain round artifacts only. Use
+`orchestrator/artifact-manifest.md` for the canonical round artifact set,
+artifact keys, and live-vs-archived path resolution. Add extra files only when a
+round needs them.
 
-- `selection.md`
-- `selection-record.json`
-- `plan.md`
-- `round-plan-record.json`
-- `implementation-notes.md`
-- `review.md`
-- `review-record.json`
-- `closeout-record.json` for status-only closeout rounds
-- `merge.md`
-
-Add more files only when a round needs them.
-
-Every round must record the active `roadmap_id`, `roadmap_revision`,
-`roadmap_dir`, `milestone_id`, `direction_id`, and `extracted_item_id` in
-`selection-record.json` and `review-record.json` so archived packets remain
-self-contained.
+Every round must record the selection lineage fields from
+`orchestrator/selection-record-schema.md` in `selection-record.json` and
+`review-record.json` so archived packets remain self-contained.
 
 `selection-record.json` must follow `orchestrator/selection-record-schema.md`.
 `round-plan-record.json` must follow
@@ -123,57 +112,19 @@ self-contained.
 Status-only closeout rounds must also include controller-authored
 `closeout-record.json` following `orchestrator/round-finalization-schema.md`.
 
-For live rounds, artifact paths recorded in `state.json` are repo-relative
-paths resolved inside that round's `worktree_path`. The parent checkout sees
-those artifacts only after the round branch is merged, so runtime must inspect
-the recorded worktree first while a round is active.
-
-When planner-authored worker fan-out is active, `round-plan-record.json`
-records worker assignment, dependency, verification, branch, worktree, and
-integration metadata. The `workers/` subtree is human-facing evidence owned by
-delegated workers. The JSON shape, worker artifact paths, dependency fields,
-and integration lifecycle are defined by
-`orchestrator/round-plan-record-schema.md`.
+When planner-authored worker fan-out is active, follow
+`orchestrator/round-plan-record-schema.md` for worker metadata and integration
+lifecycle. The `workers/` subtree is human-facing evidence owned by delegated
+workers.
 
 ## Roadmap Closeout And Update Artifacts
 
-After a successful round merge, the controller reads the approved
-`review-record.json`.
+During `finalize-round`, closeout classification follows
+`orchestrator/active-roadmap-bundle.md`, and reviewer/controller records follow
+`orchestrator/round-finalization-schema.md`. A round with missing or invalid
+`roadmap_closeout` is not mergeable.
 
-When `review-record.json` classifies the round as status-only, the controller
-applies only the selected milestone status changes, compact completion
-pointers, and compact history entries recorded there in the canonical round
-worktree by resolving selectors through `roadmap-view.json` before squash
-merge. The round branch carries those closeout edits into the squash merge. The
-controller does not create a roadmap-update branch, does not set
-`state.json.roadmap_update`, and does not change `roadmap_id`,
-`roadmap_revision`, or `roadmap_dir`.
-
-The controller must write `closeout-record.json` after applying status-only
-closeout and must revalidate it before merge whenever the base branch or active
-roadmap bundle changed while the round waited in `pending-merge`.
-
-If an approving `review-record.json` lacks a valid `roadmap_closeout`, the
-round is not mergeable. Return to review or recovery instead of treating the
-missing field as a semantic roadmap update.
-
-When `review-record.json` requires a semantic roadmap update, `update-roadmap`
-is a delegated, reviewable stage. Use
-`orchestrator/roadmap-update-schema.md` for the `state.json.roadmap_update`
-shape, branch/worktree conventions, update artifact, review artifact,
-rejection loop, and activation rules.
-
-The guider authors `roadmap-update.md` and the proposed roadmap bundle revision.
-The reviewer checks that the update matches the merged round evidence,
-preserves roadmap immutability, and keeps `state.json` activation metadata
-consistent. The controller may activate a new roadmap revision only after the
-roadmap update review approves it. After the roadmap-update branch merges and
-any approved active revision metadata is applied, clear
-`state.json.roadmap_update`.
-
-If the reviewer rejects `roadmap-update.md`, follow
-`orchestrator/roadmap-update-schema.md`; do not start a new roadmap-update
-branch unless recovery records the prior branch/worktree as unusable.
+Semantic roadmap updates follow `orchestrator/roadmap-update-schema.md`.
 
 ## Worktree Preparation
 

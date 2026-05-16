@@ -10,11 +10,10 @@ Shared role obligations stay in `orchestrator/role-contract.md`.
 
 ## Required Sections
 
-- `## Baseline Checks`
-- `## Alignment Checks`
-- `## Task-Specific Checks`
-- `## Manual Checks`
-- `## Roadmap Overrides`
+Use the section set required by
+`orchestrator/active-roadmap-bundle.md`. This reference owns how to fill those
+sections during scaffold; the repo-local active roadmap bundle contract owns
+the exact required section names.
 
 ## Baseline Checks
 
@@ -33,62 +32,21 @@ Fill these with checks that prove the approved alignment, especially success
 criteria and non-goals that are not covered by baseline automation. Each check
 should explain which approved criterion it protects.
 
-Do not restate the full reviewer role in `verification.md`. Keep universal
-review expectations in shared role or setup-contract text, including:
+Do not restate reviewer role behavior, schema fields, closeout semantics,
+worker fan-out rules, or roadmap-update state in `verification.md`. Point
+reviewers to:
 
-- the round stayed within the active roadmap bundle recorded in `state.json`;
-- the round's recorded `roadmap_id` matches the active family's scaffolded `YYYY-MM-DD-NN-<slug>` identifier rather than a recomputed title-derived value;
-- `selection-record.json` records `roadmap_id`, `roadmap_revision`, `roadmap_dir`,
-  `milestone_id`, `direction_id`, and `extracted_item_id`;
-- `review-record.json` records the same roadmap lineage when the round
-  finalizes;
-- `review-record.json` classifies round closeout as either `status-only`
-  with controller-applicable selectors through `roadmap-view.json` or
-  `semantic-update-required` with a reason;
-- `review-record.json` validates against
-  `orchestrator/round-finalization-schema.md`;
-- a `next-family` setup preserved prior roadmap families and revisions
-  unchanged; and
-- the setup change stopped after the checkpoint commit without starting runtime
-  rounds.
+- `orchestrator/roles/reviewer.md` for approval duties and evidence;
+- `orchestrator/selection-record-schema.md` for selection lineage;
+- `orchestrator/round-plan-record-schema.md` for worker fan-out checks;
+- `orchestrator/round-finalization-schema.md` for review and closeout records;
+- `orchestrator/roadmap-update-schema.md` for semantic roadmap updates; and
+- `orchestrator/active-roadmap-bundle.md` for status-only versus semantic
+  roadmap-update classification.
 
-For planner-authored worker fan-out, shared review expectations should also
-cover:
-
-- `round-plan-record.json` exists, conforms to
-  `orchestrator/round-plan-record-schema.md`, and matches the integrated
-  extracted round scope;
-- worker ownership boundaries were respected; and
-- approval is based on the integrated round result rather than isolated worker
-  slices.
-
-For status-only round closeout, shared review expectations should cover:
-
-- the requested edits are limited to milestone status markers, compact
-  completion pointers, or compact history entries allowed by
-  `orchestrator/active-roadmap-bundle.md`; and
-- every requested status-only edit resolves through `roadmap-view.json`
-  anchors; and
-- controller-applied status-only closeout is recorded in
-  `closeout-record.json` following
-  `orchestrator/round-finalization-schema.md`;
-- status-only closeout is revalidated after base refresh before merge; and
-- the closeout does not change future coordination, milestone or direction
-  meaning, sequencing, parallel lanes, extraction scope, verification meaning,
-  or retry policy.
-
-For semantic roadmap updates, shared review expectations should cover:
-
-- `roadmap-update.md` exists under `orchestrator/roadmap-updates/`;
-- `state.json.roadmap_update` and the update artifacts conform to
-  `orchestrator/roadmap-update-schema.md`;
-- the update is justified by the merged round evidence;
-- the update publishes a new revision when required by
-  `orchestrator/active-roadmap-bundle.md`;
-- `state.json.roadmap_update` points at the active update branch, worktree, and
-  artifacts while the update is in progress; and
-- new `roadmap_id`, `roadmap_revision`, or `roadmap_dir` metadata is activated
-  only after `roadmap-update-review.md` approves the change.
+Use `verification.md` for repo- or roadmap-specific checks only, plus setup
+checks such as preserving prior roadmap families during `next-family` and
+stopping after the scaffold checkpoint without starting runtime rounds.
 
 ## Task-Specific Checks
 
@@ -112,6 +70,5 @@ revision. Put universal approval criteria and review-record format in
 dry-run, or package-boundary invariants in `orchestrator/project-contract.md`
 instead of every roadmap verification file.
 
-Use this section for roadmap-specific retry policy only when the active
-revision needs behavior beyond the shared runtime retry mechanics. Otherwise
-record `none`.
+Roadmap-specific retry overrides follow
+`orchestrator/active-roadmap-bundle.md`. Otherwise record `none`.

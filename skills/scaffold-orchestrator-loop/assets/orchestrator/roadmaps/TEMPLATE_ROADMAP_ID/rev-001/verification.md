@@ -9,11 +9,8 @@ lineage requirements, evidence requirements, and approve/reject format live in
 Repo-wide invariants live in `orchestrator/project-contract.md`; reference them
 here only when this roadmap needs a specific check or override.
 Active roadmap bundle semantics live in
-`orchestrator/active-roadmap-bundle.md`.
-Terminal detection, milestone ids, direction ids, and status-only closeout
-anchors live in `roadmap-view.json`.
-Reviewer-approved status-only round closeout must be recorded in
-`review-record.json`; semantic roadmap changes use `update-roadmap`.
+`orchestrator/active-roadmap-bundle.md`; machine review and update records live
+in their schema files.
 
 ## Baseline Checks
 
@@ -37,7 +34,3 @@ Reviewer-approved status-only round closeout must be recorded in
 ## Roadmap Overrides
 
 - none
-
-Use this section for roadmap-specific retry policy only when the active
-revision needs behavior beyond the shared runtime retry mechanics. Otherwise
-leave it as `none`.

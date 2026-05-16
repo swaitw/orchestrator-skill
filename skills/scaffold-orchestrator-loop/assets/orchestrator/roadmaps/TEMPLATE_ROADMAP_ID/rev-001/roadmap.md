@@ -96,9 +96,10 @@ Candidate directions:
   Why it matters now: This becomes ready after the preceding milestone creates
     the necessary base.
   Preconditions: milestone-001-example complete
-  Parallel hints: Start serially unless the guider can show clear ownership
+  Parallel hints: Start serially unless the planner can show clear ownership
     separation from other ready work.
   Boundary notes: Keep this focused on the new delivery front rather than
     reopening earlier milestone scope.
-  Extraction notes: If this changes future coordination, publish a new roadmap
-    revision instead of hiding the change only in `selection-record.json`.
+  Extraction notes: If this crosses the semantic-update boundary in
+    `orchestrator/active-roadmap-bundle.md`, publish a new roadmap revision
+    instead of hiding the change only in `selection-record.json`.

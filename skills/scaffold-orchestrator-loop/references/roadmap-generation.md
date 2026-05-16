@@ -36,17 +36,15 @@ repository survey.
    forward.
 8. Sequence milestones so each one leaves the repo in a coherent state.
 9. Record dependencies only when they change ordering.
-10. Keep later milestones coarse while still giving the guider enough direction
-   to extract concrete round work.
+10. Keep later milestones coarse while still giving the planner enough
+   direction to select lawful rounds.
 
 ## Roadmap Rules
 
-- Follow `orchestrator/active-roadmap-bundle.md` for the required `roadmap.md`
-  sections, `roadmap-view.json` machine view, required milestone fields,
-  required candidate-direction fields, terminal detection, and validation-error
-  behavior.
-- Record roadmap-specific retry policy, when needed, in `verification.md`
-  `## Roadmap Overrides`; do not create a separate required retry-policy file.
+- Follow `orchestrator/active-roadmap-bundle.md` for roadmap shape,
+  `roadmap-view.json`, terminal detection, and validation behavior.
+- Follow `orchestrator/active-roadmap-bundle.md` for roadmap-specific retry
+  overrides; do not create a separate required retry-policy file.
 - Make each milestone a coordination unit that is larger than a round and
   shaped around one delivery front or shared objective.
 - Default milestones and directions to serial execution unless the repo survey
@@ -74,18 +72,18 @@ Parallel metadata guidance:
 
 - Use `Parallel lanes` to advertise the obvious concurrent fronts the roadmap
   already knows about.
-- Keep lane definitions stable enough that the guider can lawfully co-schedule
-  extracted work across teams.
+- Keep lane definitions stable enough that the planner can lawfully
+  co-schedule extracted work across teams.
 - Use `Parallel hints:` inside candidate directions to explain whether the
-  guider should keep extraction serial, lane-bound, or broadly co-runnable.
-- Do not force every legal concurrent combination into the roadmap. The guider
+  planner should keep selection serial, lane-bound, or broadly co-runnable.
+- Do not force every legal concurrent combination into the roadmap. The planner
   may still assemble additional safe concurrent selections when boundaries and
   dependencies are explicit.
 
 ## Extraction Quality Bar
 
 The first milestone and its candidate directions should be concrete enough that
-a guider can extract lawful round work without guessing:
+the planner can select a lawful round without re-litigating strategy:
 
 - explicit connection to the approved alignment
 - clear outcome
@@ -95,16 +93,11 @@ a guider can extract lawful round work without guessing:
 ## Revision Rules
 
 The roadmap is expected to record accepted rounds. Keep `roadmap.md` stable
-enough to guide execution and keep `roadmap-view.json` small enough that the
-controller can apply reviewer-approved status-only closeout without parsing
-human prose.
+enough to guide execution and keep `roadmap-view.json` small enough for the
+machine contract in `orchestrator/active-roadmap-bundle.md`.
 Publish a new revision when required by
 `orchestrator/active-roadmap-bundle.md`. Used older families and revisions
 remain durable history.
 
-Active revisions should describe live and future coordination only. Do not copy
-all completed milestones, directions, or extracted items forward into every new
-revision. Move completed detail into
-`orchestrator/roadmaps/<roadmap_id>/roadmap-history.md`, or keep only compact
-completion pointers in the active revision when the pointer does not change
-sequencing for remaining work.
+Follow `orchestrator/active-roadmap-bundle.md` for active revision and durable
+history rules.

@@ -4,21 +4,14 @@
 Verify the current round and make an explicit approve-or-reject decision.
 Every check runs, every conclusion is evidence-backed, and every decision is explicit.
 
-Follow `orchestrator/role-contract.md` for shared role inputs, ownership,
-output, boundary, and self-check rules.
-
-## Inputs
+## Role-Specific Inputs
 - Round diff
 - `plan.md`
 - `round-plan-record.json`
-- `orchestrator/active-roadmap-bundle.md`
-- `orchestrator/role-contract.md`
 - `orchestrator/round-finalization-schema.md`
 - `orchestrator/roadmap-update-schema.md`
-- Active roadmap bundle `roadmap-view.json` resolved from
-  `orchestrator/state.json`
-- Active roadmap bundle `verification.md` resolved from `orchestrator/state.json`
-- `orchestrator/project-contract.md`
+- Active roadmap bundle `roadmap-view.json`
+- Active roadmap bundle `verification.md`
 - `implementation-notes.md`
 - `selection-record.json`
 
@@ -30,13 +23,11 @@ output, boundary, and self-check rules.
 - Compare the diff against the round plan.
 - Write `review.md` with commands, evidence, and an explicit approve or reject decision.
 - Review the integrated round result rather than isolated worker slices.
-- When the round finalizes, write `review-record.json` with the active
-  `roadmap_id`, `roadmap_revision`, `roadmap_dir`, `milestone_id`,
-  `direction_id`, `extracted_item_id`, and a round closeout
-  classification.
-- Classify closeout as `status-only` only when the controller can apply exact
-  selectors from `review-record.json` through `roadmap-view.json` without
-  changing future coordination meaning.
+- On approval, write `review-record.json` with the selection lineage fields
+  from `selection-record.json` and a round closeout classification.
+- Classify closeout under the decision boundary in
+  `orchestrator/active-roadmap-bundle.md`, then encode that decision using
+  `orchestrator/round-finalization-schema.md`.
 - Do not approve a round unless `review-record.json` contains a valid
   `roadmap_closeout` object that follows
   `orchestrator/round-finalization-schema.md`.
@@ -47,7 +38,6 @@ output, boundary, and self-check rules.
 ## Boundaries
 - Do not fix implementation directly.
 - Do not skip checks because the round looks small.
-- Do not merge changes.
 - Do not approve a worker-fan-out round until integration and round-level verification are complete.
 
 ## Output Format
@@ -67,15 +57,12 @@ Write `review.md` with this structure:
 ### Evidence
 <Supporting details, test output, diff observations>
 
-When the round finalizes, also write `review-record.json` following
+On approval, also write `review-record.json` following
 `orchestrator/round-finalization-schema.md`.
 
-Use `"mode": "semantic-update-required"` instead when the merged round changes
-future coordination, milestone or direction meaning, sequencing, parallel lanes,
-extraction scope, verification meaning, or retry policy. In that case leave
-`status_changes`, `completion_pointers`, and `history_entries` empty and fill
-`semantic_update_required_reason`. Do not use free-form closeout instructions;
-every status-only edit must use ids and anchors from `roadmap-view.json`.
+Use `orchestrator/active-roadmap-bundle.md` to decide the
+`roadmap_closeout.mode`, then use
+`orchestrator/round-finalization-schema.md` for the required fields.
 
 For `update-roadmap`, write the review artifact required by
 `orchestrator/roadmap-update-schema.md`.

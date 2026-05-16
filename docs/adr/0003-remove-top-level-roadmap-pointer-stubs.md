@@ -14,7 +14,7 @@ The scaffold contract still allowed optional top-level convenience pointer files
 
 - `orchestrator/roadmap.md`
 - `orchestrator/verification.md`
-- `orchestrator/retry-subloop.md`
+- a top-level retry-policy pointer
 
 Those stubs duplicated files already present inside the active roadmap bundle.
 They were non-authoritative, but keeping them required setup, refresh, and review
@@ -29,7 +29,7 @@ The active roadmap bundle under
 
 - `roadmap.md`
 - `verification.md`
-- `retry-subloop.md`
+- retry policy
 
 Runtime and scaffold instructions must resolve these files from
 `state.json.roadmap_dir`. New scaffolds and `next-family` setups do not create,

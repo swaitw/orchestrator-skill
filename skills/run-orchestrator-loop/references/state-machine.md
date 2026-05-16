@@ -3,9 +3,9 @@
 The controller may manage multiple live rounds at once, but each round follows
 one strict legal stage order.
 
-This file is the authoritative lifecycle Interface. Resume, worktree, merge,
-and role docs may define predicates and observations, but legal stage
-transitions live here.
+This file is the authoritative lifecycle Interface. Resume, worktree,
+finalization, and role docs may define predicates and observations, but legal
+stage transitions live here.
 
 ## Controller Stages
 
@@ -16,15 +16,12 @@ transitions live here.
 
 ## Round Stages
 
-1. `select-task`
-2. `plan`
-3. `implement`
-4. `review`
-5. `closeout`
-6. `pending-merge`
-7. `merge`
-8. `done`
-9. `blocked`
+1. `plan`
+2. `implement`
+3. `review`
+4. `finalize-round`
+5. `done`
+6. `blocked`
 
 `blocked` is a persisted recovery-needed snapshot, not a terminal success or
 failure state. On the same controller pass or the next resume, the controller
@@ -33,17 +30,13 @@ the recorded blockage note.
 
 ## Ownership
 
-- `select-task`: guider
-- `plan`: planner
+- `plan`: planner owns normal round selection and planning
 - `implement`: implementer
-- `review`: reviewer
-- `closeout`: controller applies reviewer-approved status-only roadmap
-  bookkeeping in the canonical round worktree
-- `merge`: merger prepares notes, controller performs bookkeeping
-- status-only round closeout: controller applies reviewer-approved status
-  markers and compact completion pointers from `review-record.json`
-- semantic `update-roadmap`: guider authors `roadmap-update.md`; reviewer
-  approves `roadmap-update-review.md`
+- `review`: reviewer owns approval or rejection
+- `finalize-round`: controller applies reviewer-approved status-only roadmap
+  bookkeeping, derives merge admissibility, performs squash merge bookkeeping,
+  and dispatches semantic roadmap updates when required
+- semantic `update-roadmap`: guider authors, reviewer approves
 
 ## Controller Legal Transitions
 
@@ -71,57 +64,35 @@ the recorded blockage note.
 
 ## Round Legal Transitions
 
-- `select-task` -> `plan`
 - `plan` -> `implement`
 - `implement` -> `review`
 - `review` -> `plan` when the repo-local review contract requests full-round
   retry
 - `review` -> `blocked` when approval is attempted without a valid
   `review-record.json` closeout classification
-- `review` -> `closeout` when approval is granted, `roadmap_closeout.mode` is
-  `status-only`, and the status-only edits have not yet been applied in the
-  canonical round worktree
-- `review` -> `pending-merge` when approval is granted, no status-only closeout
-  remains to apply, and merge admissibility is blocked by base freshness,
-  selection-record scheduler fields, or semantic roadmap-update serialization
-- `review` -> `merge` when the repo-local review contract approves finalization
-  and either `roadmap_closeout.mode` is `semantic-update-required` or
-  status-only closeout is already applied in the canonical round worktree, and
-  merge admissibility is derived as true
-- `closeout` -> `pending-merge` when status-only closeout is applied but merge
-  admissibility is blocked by base freshness, selection-record scheduler
-  fields, or semantic roadmap-update serialization
-- `closeout` -> `merge` when status-only closeout is applied and merge
-  admissibility is derived as true
-- `pending-merge` -> `implement` when base refresh or dependency drift requires
+- `review` -> `finalize-round` when approval is granted and
+  `review-record.json` contains a valid `roadmap_closeout` classification
+- `finalize-round` -> `implement` when base refresh or dependency drift requires
   substantive code refresh before merge
-- `pending-merge` -> `closeout` when a status-only closeout must be
-  revalidated or reapplied after base refresh
-- `pending-merge` -> `review` when closeout revalidation shows the approved
+- `finalize-round` -> `review` when closeout revalidation shows the approved
   review record is no longer valid for the active roadmap bundle
-- `pending-merge` -> `review` when re-review is required after refresh or drift
-- `pending-merge` -> `plan` when the repo-local retry contract requires a new
+- `finalize-round` -> `review` when re-review is required after refresh or drift
+- `finalize-round` -> `plan` when the repo-local retry contract requires a new
   plan
-- `pending-merge` -> `merge` when blockers clear and the round remains
-  review-valid
-- `merge` -> `done`
-- `blocked` -> `select-task`, `plan`, `implement`, `review`, `closeout`,
-  `pending-merge`, or `merge` when recovery re-establishes controller-visible
-  evidence for that same round/stage or the repo-local retry contract lawfully
-  steps the round
+- `finalize-round` -> `done` when closeout, merge admissibility, and squash
+  merge all succeed
+- `blocked` -> `plan`, `implement`, `review`, or `finalize-round` when
+  recovery re-establishes controller-visible evidence for that same round/stage
+  or the repo-local retry contract lawfully steps the round
 
 If approved `update-roadmap` activates a new roadmap revision, the controller
 must update `state.json` roadmap metadata before evaluating those transitions.
-Status-only round closeout must not change `roadmap_id`, `roadmap_revision`, or
-`roadmap_dir`, and it must be applied and recorded in `closeout-record.json`
-before the round squash merge so the closeout edits are included in the round
-merge commit. Semantic roadmap updates are serialized through the single
-`state.json.roadmap_update` slot.
-
-Merge admissibility is derived from reviewer approval, valid round
-finalization records, scheduler fields in `selection-record.json`, dependency
-state, base freshness, and active semantic roadmap-update state. It is not a
-persisted boolean in `state.json`.
+Status-only closeout, semantic roadmap update serialization, and merge
+admissibility happen inside `finalize-round`; the exact predicates and records
+live in [worktree-finalization-rules.md](worktree-finalization-rules.md),
+`orchestrator/round-finalization-schema.md`, and
+`orchestrator/roadmap-update-schema.md`. Merge admissibility is not a persisted
+boolean in `state.json`.
 
 Do not skip forward and do not invent parallelism that the roadmap or planner
 artifacts do not authorize.
@@ -147,27 +118,18 @@ stateDiagram-v2
 
 ```mermaid
 stateDiagram-v2
-    [*] --> select_task
-    select_task --> plan
+    [*] --> plan
     plan --> implement
     implement --> review
     review --> plan: full retry
-    review --> closeout: approved, status-only closeout needed
-    review --> pending_merge: approved but blocked
-    review --> merge: approved and admissible
-    closeout --> pending_merge: closeout applied, still blocked
-    closeout --> merge: closeout applied and admissible
-    pending_merge --> implement: needs refresh
-    pending_merge --> closeout: closeout needs revalidation
-    pending_merge --> review: needs re-review
-    pending_merge --> plan: needs replan
-    pending_merge --> merge: blockers cleared
+    review --> finalize_round: approved
+    finalize_round --> implement: needs refresh
+    finalize_round --> review: needs re-review
+    finalize_round --> plan: needs replan
+    finalize_round --> done: finalized and merged
     blocked --> plan: retry contract steps back
     blocked --> implement: recovery resumes implement
     blocked --> review: recovery resumes review
-    blocked --> closeout: recovery resumes closeout
-    blocked --> pending_merge: recovery resumes pending-merge
-    blocked --> merge: recovery resumes merge
-    merge --> done
+    blocked --> finalize_round: recovery resumes finalization
     done --> [*]
 ```

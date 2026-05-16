@@ -18,13 +18,16 @@ Single-context repo (this repo):
 /
 ├── CONTEXT.md
 ├── docs/adr/
-│   ├── 0001-drop-legacy-flat-and-mirror-fields.md
+│   ├── 0001-retire-compatibility-layers.md
 │   ├── 0002-minimize-controller-state-shape.md
 │   ├── 0003-remove-top-level-roadmap-pointer-stubs.md
 │   ├── 0004-require-active-roadmap-bundle-contract.md
 │   ├── 0005-controller-owned-status-only-round-closeout.md
 │   ├── 0006-deepen-machine-contracts.md
-│   └── 0007-collapse-residual-orchestrator-contract-surfaces.md
+│   ├── 0007-collapse-residual-orchestrator-contract-surfaces.md
+│   ├── 0008-basic-serial-workflow-front-door.md
+│   ├── 0009-collapse-round-finalization.md
+│   └── 0010-collapse-round-preparation-into-planning.md
 └── skills/
 ```
 

@@ -4,10 +4,11 @@ This file is the single machine contract for semantic roadmap updates. It owns
 the `state.json.roadmap_update` shape, update branch/worktree conventions,
 review artifact contract, rejection loop, and activation metadata.
 
-Semantic roadmap updates are used only after a merged round changes future
-coordination, milestone or direction meaning, sequencing, parallel lanes,
-extraction scope, verification meaning, or retry policy. Status-only round
-closeout stays in the round worktree under `round-finalization-schema.md`.
+Semantic roadmap updates are entered only after reviewer-approved
+`review-record.json` classifies the round as `semantic-update-required` under
+`orchestrator/active-roadmap-bundle.md` and
+`orchestrator/round-finalization-schema.md`. Status-only round closeout stays
+in the round worktree under `round-finalization-schema.md`.
 
 ## `state.json.roadmap_update`
 
@@ -50,7 +51,7 @@ Required fields:
 - `resume_error`
 
 Only one semantic roadmap update may be active. Additional rounds that require
-semantic roadmap updates wait in `pending-merge`.
+semantic roadmap updates remain in `finalize-round`.
 
 ## Branch And Artifact Conventions
 

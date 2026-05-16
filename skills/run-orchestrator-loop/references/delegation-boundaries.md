@@ -24,13 +24,14 @@ Runtime role loading happens only from `orchestrator/roles/`.
   `review-record.json`
 - write and revalidate controller-owned `closeout-record.json` for status-only
   round closeout
+- derive merge admissibility and perform squash merge bookkeeping during
+  `finalize-round`
 - serialize semantic roadmap updates through the single
   `state.json.roadmap_update` record
-- record artifact paths, retry-state fields, pending-merge stage, worker-mode
-  fields, and stage markers exactly as the repo-local contract requires
-- resolve live round artifact paths against the recorded round
-  `worktree_path`, using the parent checkout only for archived post-merge
-  artifacts
+- record retry-state fields and stage markers exactly as the repo-local
+  contract requires
+- resolve artifact paths exactly as `orchestrator/artifact-manifest.md`
+  prescribes
 - launch and use the repo-local `recovery-investigator` from
   `orchestrator/roles/recovery-investigator.md` for recovery diagnosis when
   controller-visible evidence for the active stage is missing or untrustworthy,
@@ -38,9 +39,9 @@ Runtime role loading happens only from `orchestrator/roles/`.
   the investigation itself
 - re-read the recorded canonical round worktree and treat it as the primary
   observation surface for round-owned stage artifacts during recovery
-- clear stale blockage bookkeeping, refresh artifact-path bookkeeping, and
-  recreate missing worktrees when those controller-owned repairs can recover an
-  already-produced stage result without authoring new stage content
+- clear stale blockage bookkeeping and recreate missing worktrees when those
+  controller-owned repairs can recover an already-produced stage result without
+  authoring new stage content
 - attempt `recovery-investigator` for non-terminal delegated-stage stop
   situations before recording delegation blockage
 - record the precise blockage in
@@ -53,16 +54,14 @@ Runtime role loading happens only from `orchestrator/roles/`.
 
 ## The Orchestrator Must Delegate
 
-- task selection
+- normal round task selection, round planning, and worker fan-out assignment
+  design
 - semantic roadmap bundle edits
 - roadmap update review
-- round planning
-- worker planning via `round-plan-record.json`
 - implementation
 - integration implementation when worker fan-out is active
 - review decisions
-- merge-note authoring
-- all substantive guider/planner/implementer/reviewer/merger outputs, including
+- all substantive guider/planner/implementer/reviewer outputs, including
   retry-stage outputs
 
 ## Subagent Rules
@@ -76,8 +75,7 @@ Runtime role loading happens only from `orchestrator/roles/`.
 - Same-round retry should first go back to the prior compatible role subagent:
   planner retries to the planner, whole-round implementation retries to the
   implementer, integration retries to the integration implementer, worker
-  retries to the named worker, review-only retries to the reviewer, and merge
-  note retries to the merger.
+  retries to the named worker, and review-only retries to the reviewer.
 - Resume a closed but resumable compatible subagent when the host supports it;
   otherwise send the next task to an idle compatible subagent. If no compatible
   prior subagent exists, if the prior subagent is non-observable, stale,
@@ -93,6 +91,14 @@ Runtime role loading happens only from `orchestrator/roles/`.
 - Never set a cancellation timeout on a live subagent. Non-interrupting
   observation intervals are allowed for liveness checks.
 - Wait for the subagent to finish before continuing.
+- Close or release host subagent handles only after they are finished and no
+  longer compatible with same-role reuse, such as after the round is merged,
+  the roadmap update is cleared, lineage changes, a role boundary would be
+  crossed, or recovery marks the handle stale or unusable.
+- Do not close a live compatible subagent to force progress; first consume its
+  controller-visible artifacts or enter the recovery ladder below.
+- After 50 tool calls in one delegated stage, pause for assessment before
+  continuing or re-dispatching.
 - If a live subagent becomes non-observable, do not hang forever and do not
   interrupt it. Re-read controller-visible artifacts, check any host-provided
   non-interrupting status surface, and enter the recovery ladder when three
@@ -108,13 +114,11 @@ Runtime role loading happens only from `orchestrator/roles/`.
 
 ## The Orchestrator May Not Do
 
-- author `selection.md`, `selection-record.json`, `plan.md`,
-  `round-plan-record.json`, `implementation-notes.md`, `review.md`,
-  `review-record.json`, `merge.md`, `roadmap-update.md`, or
-  `roadmap-update-review.md`
-- change future roadmap coordination, milestone or direction meaning,
-  sequencing, parallel lanes, extraction scope, verification meaning, or retry
-  policy without delegated `update-roadmap` and reviewer approval
+- author role-owned artifacts defined by `orchestrator/artifact-manifest.md`
+  and the repo-local schemas
+- make changes classified as semantic roadmap updates under
+  `orchestrator/active-roadmap-bundle.md` without delegated `update-roadmap`
+  and reviewer approval
 - choose worker ownership boundaries on its own
 - perform substantive code integration or refresh itself
 - approve work without a round-level reviewer

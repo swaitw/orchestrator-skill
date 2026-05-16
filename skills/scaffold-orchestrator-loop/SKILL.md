@@ -13,9 +13,8 @@ brainstorm, get explicit approval of the roadmap strategy, then either
 bootstrap a tailored top-level `orchestrator/` contract from assets or open a
 fresh roadmap family inside an existing terminal control plane. In both modes,
 stop after the setup checkpoint commit. Do not start runtime rounds. The
-contract must support milestone-level roadmap strategy, guider-extracted round
-work, planner-authored worker fan-out, and safe serial defaults for
-repositories that never opt into concurrency.
+referenced contracts own file layout, state shape, roadmap-bundle semantics,
+role contracts, and setup reset rules.
 
 ## Workflow
 
@@ -99,73 +98,42 @@ Read [roadmap-generation.md](references/roadmap-generation.md), mint a fresh
 stable `roadmap_id` in `YYYY-MM-DD-NN-<slug>` form, and draft the repo-specific
 roadmap content from the approved alignment for
 `orchestrator/roadmaps/<roadmap_id>/rev-001/roadmap.md`. Make milestones larger
-than a round, include
-candidate directions for guider extraction, and keep the roadmap strategic
-rather than implementation-sized. Use stable milestone and direction ids plus
-explicit coordination and parallel-lane guidance. Never reopen an older roadmap
-family by appending items or reusing a used revision.
+than a round, include candidate directions that let the planner select lawful
+rounds, and keep the roadmap strategic rather than implementation-sized. Use
+stable milestone and direction ids plus explicit coordination and parallel-lane
+guidance. Never reopen an older roadmap family by appending items or reusing a
+used revision.
 
 ## Step 4: Bootstrap Or Update the Repo Contract
 
-Read [repo-contract.md](references/repo-contract.md) and [verification-contract.md](references/verification-contract.md).
+Read [repo-contract.md](references/repo-contract.md) and
+[verification-contract.md](references/verification-contract.md). Treat this
+section as coordination only; those references own the setup details.
 
 ### Mode A: `bootstrap`
 
-- copy the full [assets/orchestrator](assets/orchestrator) scaffold tree into
-  the target repo root as `orchestrator/`
-- include `orchestrator/active-roadmap-bundle.md` as the repo-local contract for
-  reading roadmap bundles
-- include `orchestrator/artifact-manifest.md` as the canonical file layout and
-  artifact path contract
-- include `orchestrator/role-contract.md` as the shared role Interface
-- include `orchestrator/selection-record-schema.md` as the machine contract for
-  selected round lineage and scheduling
-- include `orchestrator/round-plan-record-schema.md` as the machine contract
-  for planner-authored round plans and optional worker fan-out
-- include `orchestrator/round-finalization-schema.md` as the machine contract
-  for reviewer approval and controller closeout evidence
-- include `orchestrator/roadmap-update-schema.md` as the machine contract for
-  semantic roadmap update records and artifacts
-- write the drafted roadmap into the new active roadmap bundle and tailor
-  `roadmap-view.json` and `verification.md` for the repo
-- replace template placeholders with repo-specific content
-- persist the approved alignment summary, success criteria, non-goals, and
-  chosen strategy in the active roadmap bundle
-- set `state.json` `roadmap_id`, `roadmap_revision`, and `roadmap_dir` to the
-  initial active roadmap bundle
-- set `state.json` `contract_version`
-- set `state.json` parallel-safe defaults such as `controller_stage`,
-  `max_parallel_rounds`, `active_rounds`, `resume_errors`, and `retry`
-- tailor `orchestrator/project-contract.md` for repo-wide invariants and keep
-  roadmap revisions pointed at it instead of copying shared invariants forward
-- tune the repo-local role files under `orchestrator/roles/` if the goal or
-  repo needs stronger guidance
-- ensure `orchestrator/worktrees/` is ignored by a tracked ignore rule so
-  future rounds can use dedicated worktrees
+- Copy the full [assets/orchestrator](assets/orchestrator) scaffold tree into
+  the target repo root as `orchestrator/`.
+- Tailor the active roadmap bundle, `state.json`, `project-contract.md`,
+  `verification.md`, role prompts, and worktree ignore rule under the ownership
+  rules in [repo-contract.md](references/repo-contract.md).
+- Use `orchestrator/artifact-manifest.md` for the required file list and path
+  rules, and use `orchestrator/state-schema.md` for state fields.
 
 ### Mode B: `next-family`
 
 Do not recopy the full scaffold tree over the existing repo contract.
 
-- apply the `next-family` setup and reset rules from
-  [repo-contract.md](references/repo-contract.md)
-- create only the new active roadmap bundle and any missing shared contract
-  files, except a missing `orchestrator/active-roadmap-bundle.md` which must be
-  handled as a migration-needed repair before `next-family`
-- create or update `orchestrator/roadmaps/<roadmap_id>/roadmap-history.md`
-  with compact prior-family or migration notes when needed
-- preserve prior roadmap families, prior rounds, worktrees, and role files by
-  default
+- Apply the `next-family` setup and reset rules from
+  [repo-contract.md](references/repo-contract.md).
+- Create only the new active roadmap bundle plus any missing shared files that
+  the repo contract allows this mode to create.
+- Preserve prior roadmap families, prior rounds, worktrees, and role files by
+  default.
 
-For `next-family`, reset `state.json` to an idle-but-runnable state for the
-new family using the reset rules in [repo-contract.md](references/repo-contract.md).
-
-Keep `state.json` machine-oriented. Put reasoning and reviewable content in the
-human-facing files under the active roadmap bundle and round artifacts under
-`orchestrator/`. The planner must always author
-`round-plan-record.json`; when worker fan-out is used, that record carries
-worker scheduling rather than smuggling worker state into prose or
-`state.json`.
+Keep `state.json` machine-oriented. Put reasoning and reviewable content in
+the active roadmap bundle, `project-contract.md`, `verification.md`, and round
+artifacts rather than chat history.
 
 ## Guardrails
 
