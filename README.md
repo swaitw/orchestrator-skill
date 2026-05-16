@@ -46,7 +46,8 @@ It is responsible for:
 - resuming current live rounds or starting new ones up to the configured cap
 - delegating `plan`, `implement`, and `review` stages to role subagents that
   load their runtime instructions from `orchestrator/roles/`; the planner owns
-  normal task selection and writes `selection-record.json`
+  normal task selection and writes `selection-record.json`, and rejected
+  reviews carry a machine retry target for same-round feedback
 - updating only controller-owned state
 - finalizing approved rounds by applying reviewer-approved status-only closeout
   when needed, deriving merge admissibility, squash-merging, and using a
@@ -64,7 +65,10 @@ The runtime loop is strict about ownership:
   hints, and extracted-scope boundaries explicitly allow concurrency.
 - Each live round uses one canonical branch plus one canonical worktree.
 - Different rounds may be active at the same time when the roadmap and controller state authorize it.
-- Review rejection or drift can send a round back to `plan`, `implement`, or `review` again.
+- Review rejection or drift can send a round back to `implement` for bounded
+  fixes or `plan` for replanning, using the retry target recorded in
+  `review-record.json`. Finalization drift can also require re-review before
+  merge.
 - Worker fan-out is allowed only when the planner authors machine-readable
   worker assignments in `round-plan-record.json` for a round.
 - Status-only round closeout is controller-owned before merge when
@@ -83,6 +87,10 @@ Per-round stage order is:
 3. `review`
 4. `finalize-round`
 5. `done`
+
+Rejected reviews stay on the same round, branch, and worktree. The controller
+does not finalize or open a replacement round; it follows
+`review-record.json.retry_target` and redispatches the owning role.
 
 Controller-global stage order is:
 
@@ -154,6 +162,9 @@ Key ideas behind that contract:
   `plan.md`, `implementation-notes.md`, `review.md`, and
   `review-record.json`; status-only rounds also store
   controller-authored `closeout-record.json`.
+- Rejected `review-record.json` files record the retry target and required
+  changes so feedback can return to `implement` or `plan` without relying on
+  chat history.
 - `selection-record.json` records extraction lineage and scheduler fields so
   planner, reviewer, and finalization work stays traceable without duplicating
   those fields in `state.json`.
@@ -252,4 +263,6 @@ the symlink.
 - Worker fan-out uses planner-authored `round-plan-record.json` and worker
   worktrees beneath `orchestrator/worktrees/`.
 - Reviewer approval is required before merge.
+- Reviewer rejection must name a same-round retry target before the controller
+  redispatches fixes or replanning.
 - Merge strategy is squash merge into the recorded base branch.

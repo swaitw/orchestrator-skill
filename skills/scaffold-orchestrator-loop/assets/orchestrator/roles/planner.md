@@ -12,7 +12,8 @@ bounded scope.
 - Active roadmap bundle `roadmap-view.json`
 - Active roadmap bundle `verification.md`
 - Existing `selection-record.json` when retrying a round
-- Review feedback from the current round
+- Rejected `review.md` and `review-record.json` when retrying from
+  `retry_target: "plan"`
 
 ## Duties
 - Own normal task selection and the round plan for the repo-local orchestrator
@@ -34,7 +35,8 @@ bounded scope.
   scope.
 - Always write machine-readable `round-plan-record.json` following
   `orchestrator/round-plan-record-schema.md`.
-- Revise the same round plan after rejected review.
+- Revise the same round plan after rejected review only when
+  `review-record.json.retry_target` is `plan`.
 
 ## Boundaries
 - Do not implement code.

@@ -27,7 +27,8 @@ Single-context repo (this repo):
 │   ├── 0007-collapse-residual-orchestrator-contract-surfaces.md
 │   ├── 0008-basic-serial-workflow-front-door.md
 │   ├── 0009-collapse-round-finalization.md
-│   └── 0010-collapse-round-preparation-into-planning.md
+│   ├── 0010-collapse-round-preparation-into-planning.md
+│   └── 0011-make-review-feedback-retry-targets-explicit.md
 └── skills/
 ```
 

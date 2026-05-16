@@ -38,6 +38,13 @@ the matching repo-local role prompt for delegated stages. Re-read `state.json`
 and the active roadmap bundle after finalization, then start another serial
 round if unfinished milestones remain or enter terminal `done`.
 
+Rejected reviews do not create a new round and do not enter finalization.
+Consume `review-record.json.retry_target` from the canonical round worktree:
+`implement` redispatches the implementer for bounded fixes, `plan`
+redispatches the planner for a same-round replan, and `blocked` enters
+recovery under [resume-rules.md](resume-rules.md). Keep the same round id,
+branch, and worktree for every same-round retry.
+
 ## Advanced Exits
 
 Exit this basic path and load the named Module when:

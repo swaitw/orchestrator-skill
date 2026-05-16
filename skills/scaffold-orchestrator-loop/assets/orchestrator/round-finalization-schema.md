@@ -6,8 +6,9 @@ This file is the machine contract for the two artifacts that finalize a round:
 - controller-authored `closeout-record.json`
 
 The artifacts remain separate because ownership differs. `review-record.json`
-owns lineage and closeout selectors; `closeout-record.json` is a compact
-controller proof that those approved selectors were applied and revalidated.
+owns lineage, approval closeout selectors, and rejected-review retry targets;
+`closeout-record.json` is a compact controller proof that approved selectors
+were applied and revalidated.
 
 ## `review-record.json`
 
@@ -67,6 +68,39 @@ Required top-level fields:
 
 Rejected reviews may omit `roadmap_closeout`, because no merge may follow a
 rejected review.
+
+Rejected reviews must still write a machine-readable retry decision:
+
+```json
+{
+  "schema_version": "review-record-v3",
+  "round_id": "round-001-example",
+  "roadmap_id": "YYYY-MM-DD-00-example",
+  "roadmap_revision": "rev-001",
+  "roadmap_dir": "orchestrator/roadmaps/YYYY-MM-DD-00-example/rev-001",
+  "milestone_id": "milestone-001-example",
+  "direction_id": "direction-001-example",
+  "extracted_item_id": "item-001-example",
+  "decision": "rejected",
+  "evidence_summary": "Focused test is missing for the changed behavior.",
+  "retry_target": "implement",
+  "required_changes": [
+    "Add the focused regression test named in the round plan.",
+    "Update implementation notes with the exact verification command."
+  ]
+}
+```
+
+For `decision: "rejected"`:
+
+- `retry_target` is required and must be `implement`, `plan`, or `blocked`.
+- Use `implement` when the required changes fit inside the current plan.
+- Use `plan` when the feedback changes scope, selected lineage, verification
+  strategy, worker fan-out, or the order of work.
+- Use `blocked` only when the reviewer found no lawful same-round retry
+  target; `required_changes` must explain the blocker precisely.
+- `required_changes` is required and must contain at least one actionable item.
+- `roadmap_closeout` must be absent or null.
 
 ## Closeout Modes
 

@@ -58,8 +58,11 @@ load order. This file adds recovery-specific validation and resume decisions.
 
 - Keep the same `round_id`.
 - Keep the same branch and worktree for the round.
-- Return from `review` to `plan`, `implement`, or `review` exactly as the
-  repo-local review contract requests.
+- Return from `review` according to `review-record.json.retry_target`:
+  `implement` for bounded fixes inside the existing plan, `plan` for a
+  same-round replan, and `blocked` for no lawful same-round retry target.
+- If a rejected `review-record.json` is missing a valid `retry_target`, return
+  to review-stage recovery instead of inferring the next stage from prose.
 - When a retry returns to `plan`, `implement`, or `review`, prefer the prior
   compatible planner, implementer, worker/integration implementer, or reviewer
   for that same round/branch/worktree. Use a fresh role subagent only when no
@@ -72,9 +75,9 @@ load order. This file adds recovery-specific validation and resume decisions.
 - After 3 consecutive same-mechanism retry attempts for one round, escalate to a
   different lawful recovery action; do not stop on same-mechanism exhaustion
   alone.
-- If a single round cycles through review -> plan -> implement -> review more
-  than 3 times, record the pattern and ask the user only after the recovery
-  ladder cannot narrow the problem further.
+- If a single round cycles through review-driven retry more than 3 times,
+  record the pattern and ask the user only after the recovery ladder cannot
+  narrow the problem further.
 
 ## Finalize-Round Resume
 

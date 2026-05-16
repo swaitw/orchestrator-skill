@@ -30,6 +30,8 @@ Runtime role loading happens only from `orchestrator/roles/`.
   `state.json.roadmap_update` record
 - record retry-state fields and stage markers exactly as the repo-local
   contract requires
+- consume rejected-review retry targets from `review-record.json` and
+  redispatch the owning role without authoring the required changes directly
 - resolve artifact paths exactly as `orchestrator/artifact-manifest.md`
   prescribes
 - launch and use the repo-local `recovery-investigator` from

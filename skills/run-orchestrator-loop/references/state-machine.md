@@ -66,10 +66,15 @@ the recorded blockage note.
 
 - `plan` -> `implement`
 - `implement` -> `review`
-- `review` -> `plan` when the repo-local review contract requests full-round
-  retry
+- `review` -> `implement` when rejected review feedback can be addressed
+  inside the existing plan and `review-record.json.retry_target` is
+  `implement`
+- `review` -> `plan` when rejected review feedback requires replanning and
+  `review-record.json.retry_target` is `plan`
 - `review` -> `blocked` when approval is attempted without a valid
   `review-record.json` closeout classification
+- `review` -> `blocked` when a rejected `review-record.json` has
+  `retry_target` set to `blocked` or lacks a valid retry target
 - `review` -> `finalize-round` when approval is granted and
   `review-record.json` contains a valid `roadmap_closeout` classification
 - `finalize-round` -> `implement` when base refresh or dependency drift requires
@@ -121,7 +126,9 @@ stateDiagram-v2
     [*] --> plan
     plan --> implement
     implement --> review
-    review --> plan: full retry
+    review --> implement: fix feedback
+    review --> plan: replan feedback
+    review --> blocked: no valid retry target
     review --> finalize_round: approved
     finalize_round --> implement: needs refresh
     finalize_round --> review: needs re-review
